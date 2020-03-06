@@ -27,7 +27,7 @@ import os
 import glob
 import pandas as pd
 # Local
-import useful_functions as uf
+from . import useful_functions as uf
 
 # Name of the current file
 py_file = 'omega_data.py'

@@ -19,9 +19,9 @@ from matplotlib.widgets import Slider, Button, RadioButtons
 from copy import deepcopy
 from tqdm import tqdm
 # Local
-import useful_functions as uf
-from omega_data import OMEGAdata
-import omega_data as od
+from . import useful_functions as uf
+from . import omega_data as od
+from .omega_data import OMEGAdata
 
 if __name__ == '__main__':
     # Activation of the interactive mode
