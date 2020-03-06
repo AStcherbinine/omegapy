@@ -1,0 +1,9 @@
+/data2/opt/geomeg/data/product/
+/data2/opt/geomeg/data/product/
+
+first line: path to the directory where you put 
+           OMEGA data cubes (.QUB)
+second line: path to the directory where you put 
+           OMEGA geometry cubes (.NAV)	   
+a "/" must be appended for UNIX,LINUX, a "\" for windows
+

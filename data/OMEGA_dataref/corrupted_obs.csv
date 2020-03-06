@@ -1,0 +1,17 @@
+# corrupted_obs.csv
+#
+# Created by Aurélien STCHERBININE
+# Last modification by Aurélien STCHERBININE : 05/03/2020
+#
+# List of corrupted OMEGA/MEx observations, 
+# complementary to the 2017 OBC good_orbits and the mode 128 detection.
+#
+corrupted_obs, comment
+ORB0980_0, Quarter-corrupted observation
+ORB1017_0, Partially-corrupted observation
+ORB1032_0, Half-corrupted observation
+ORB1043_0, Half-corrupted observation
+ORB1050_0, Half-corrupted observation
+ORB1054_0, Half-corrupted observation
+ORB1076_0, Half-corrupted observation
+ORB1083_0, Half-corrupted observation
