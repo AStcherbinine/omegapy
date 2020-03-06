@@ -1,0 +1,6 @@
+numpy>=1.17
+matplotlib>=3.0
+tqdm>=4.31
+pidly>=0.2
+scipy>=1.3
+pandas>=0.25
