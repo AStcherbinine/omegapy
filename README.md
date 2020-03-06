@@ -13,3 +13,4 @@ pip install .
 
 --------------------
 Developped at the Institut d'Astrophysique Spatiale (IAS), Université Paris-Saclay, Orsay, France
+(c) Aurélien Stcherbinine 2020
