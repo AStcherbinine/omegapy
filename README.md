@@ -15,6 +15,14 @@ cd omegapy
 pip install .
 ~~~
 
+## Update
+Go to the previously cloned repository, pull the last updates, and install with pip:
+~~~bash
+cd omegapy
+git pull
+pip install .
+~~~
+
 --------------------
 Developped at the Institut d'Astrophysique Spatiale (IAS), Université Paris-Saclay, Orsay, France  
 
