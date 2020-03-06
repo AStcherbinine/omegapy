@@ -10,3 +10,6 @@ git clone https://git.ias.u-psud.fr/astcherb1/omegapy
 cd omegapy
 pip install .
 ~~~
+
+--------------------
+Developped at the Institut d'Astrophysique Spatiale (IAS), Université Paris-Saclay, Orsay, France
