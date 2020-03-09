@@ -1,9 +1,20 @@
-# OMEGAPy documentation - v1.2
+# OMEGA Py documentation - v1.2
 
-## omegapy.omega_data
+## `omegapy.omega_data`
 
 Importation of OMEGA observations in the OMEGAdata class.
-Using IDL routines containing in ./omega_routines/.
+Using IDL routines containing in *./omega_routines/*.
+
+`class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path='/data2/opt/geomeg/data/product/')`
+
+`omegapy.omega_data.find_cube(lat, lon, cmin=0, cmax=10000, out=False)`
+
+`omegapy.omega_data.save_omega(omega, savname='auto', folder='', base_folder='../data/OMEGA/', pref ='', suff='', disp=True)`
+
+`omegapy.omega_data.load_omega(filename, disp=True)`
+
+`omegapy.omega_data.load_omega_list(basename, disp=True)`
+
 
 ### OMEGAdata class
 ~~~python
@@ -69,15 +80,15 @@ omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path='/data2/opt/geomeg/d
     
     Methods
     =======
-    OMEGAdata.__init__(self, obs='', empty=False, data_path='/data2/opt/geomeg/data/product/')
+    __init__(self, obs='', empty=False, data_path='/data2/opt/geomeg/data/product/')
     
-    OMEGAdata.__copy__(self)
+    __copy__(self)
 
-    OMEGAdata.__deepcopy(self, memo)
+    __deepcopy(self, memo)
 
-    OMEGAdata.__eq__(self, other)
+    __eq__(self, other)
 
-    OMEGAdata.__repr__(self)
+    __repr__(self)
 ~~~
 
 ### Observation search
