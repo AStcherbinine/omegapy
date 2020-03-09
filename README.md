@@ -25,12 +25,21 @@ pip install .
 
 ## Usage
 ~~~python
-In [1]: import omegapy.omega_data as od
-
-In [2]: import omegapy.omega_plots as op
+# package importation
+import omegapy.omega_data as od
+import omegapy.omega_plots as op
+# OMEGA file importation (ORB0964_2)
+omega = od.OMEGAdata('0964_2')
+# Thermal correction
+omega_corr_therm = od.corr_therm(omega)
+# Atmospheric correction
+omega_corr_therm_atm = od.corr_atm(omega_corr_therm)
+# Interactive display of the observation (@ λ = 1.085 µm)
+op.show_omega_interactif_v2(omega_corr_therm_atm, lam=1.085, cmap='Greys_r', vmin=0, vmax=0.5, polar=True)
 ~~~
 
 See `doc.md` or the interactive IPython help for more details.
+
 
 --------------------
 Developped at the Institut d'Astrophysique Spatiale (IAS), Université Paris-Saclay, Orsay, France  
