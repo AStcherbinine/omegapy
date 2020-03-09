@@ -7,7 +7,7 @@
 
 ##----------------------------------------------------------------------------------------
 """Importation of OMEGA observations in the OMEGAdata class.
-Using IDL routines containing in ./omega_routines/.
+Using IDL routines containing in omegapy/omega_routines/.
 """
 ##----------------------------------------------------------------------------------------
 ##----------------------------------------------------------------------------------------
@@ -32,6 +32,10 @@ from . import useful_functions as uf
 # Name of the current file
 py_file = 'omega_data.py'
 Version = 1.2
+
+# Path of the package files
+package_path = os.path.abspath(os.path.dirname(__file__))
+omega_routines_path = os.path.join(package_path, 'omega_routines')
 
 ##----------------------------------------------------------------------------------------
 ## Class OMEGAdata - Importation of OMEGA data cubes
@@ -151,7 +155,7 @@ class OMEGAdata:
 
         else:
             idl = pidly.IDL()
-            idl("cd, 'omega_routines'")
+            idl("cd, '{0:s}'".format(omega_routines_path))
             obs_name = uf.myglob(data_path + '*' + obs + '*.QUB')
             if obs_name is None:
                 print("\033[1;33mAborted\033[0m")
@@ -264,9 +268,9 @@ class OMEGAdata:
             self.surf_temp = temp_init
             #--------------------------
             # Cube quality
-            OBC = readsav('../data/OMEGA_dataref/OBC_OMEGA_OCT2017.sav')
+            OBC = readsav(os.path.join(package_path, 'OMEGA_dataref/OBC_OMEGA_OCT2017.sav'))
             good_orbits_OBC = np.array(OBC['good_orbits'][0], dtype=int)
-            corrupted_orbits_csv = pd.read_csv('../data/OMEGA_dataref/corrupted_obs.csv', comment='#',
+            corrupted_orbits_csv = pd.read_csv(os.path.join(package_path, 'OMEGA_dataref/corrupted_obs.csv'), comment='#',
                                                 skipinitialspace=True)
             corrupted_orbits = np.array(corrupted_orbits_csv['corrupted_obs'], dtype=str)
             corrupted_orbits_comments = np.array(corrupted_orbits_csv['comment'], dtype=str)
@@ -482,12 +486,12 @@ def find_cube(lat, lon, cmin=0, cmax=10000, out=False):
         Format : (orbit, x, y, dmin, altMEx, inci, emer, phas, Ls)
     """
     idl = pidly.IDL()
-    idl("cd, 'omega_routines'")
+    idl("cd, '{0:s}'".format(omega_routines_path))
     idl.pro('findcub', lon, lat, cmin, cmax)
     idl.close()
     if out:
-        cub_list = np.genfromtxt('omega_routines/cubliste', skip_header=2, skip_footer=1,
-                                 dtype=None, encoding='utf8')
+        cub_list = np.genfromtxt(os.path.join(omega_routines_path, 'cubliste', skip_header=2, 
+                                 skip_footer=1, dtype=None, encoding='utf8')
         return cub_list
 
 ##----------------------------------------------------------------------------------------
@@ -623,7 +627,7 @@ def corr_therm_sp(omega, x, y, disp=True):
     sp_sol = omega.specmars
     ecl = np.cos(omega.inci[y, x] * np.pi/180)
     # spectels #97-#112 des spectres de ref <-> 2.3-2.5µm
-    fref = '../data/OMEGA_dataref/refclair_sombr_omega_CL.dat' # from Erard and Calvin (1997)
+    fref = os.path.join(package_path, 'OMEGA_dataref/refclair_sombr_omega_CL.dat') # from Erard and Calvin (1997)
     sp_clair, sp_sombre = np.loadtxt(fref, unpack=True)
     i_lam1, i_lam2 = uf.where_closer_array([2.3, 2.5], lam)
     alb_clair = np.average(sp_clair[97:113])
@@ -838,7 +842,7 @@ def corr_atm(omega):
     ic_CL = np.concatenate([omega.ic['C'], omega.ic['L']])
     nV = len(omega.ic['V'])
     # Chargement données atmosphère
-    atmorap = np.loadtxt('../data/OMEGA_dataref/omega_atmorap_CL.dat')
+    atmorap = np.loadtxt(os.path.join(package_path, 'OMEGA_dataref/omega_atmorap_CL.dat'))
     tr_atm = np.ones(nlam)
     tr_atm[nV:] = atmorap[ic_CL]    # données atm uniquement voies C & L
     # Détermination exposant
@@ -922,7 +926,7 @@ def corr_atm2(omega):
     ic_CL = np.concatenate([omega.ic['C'], omega.ic['L']])
     nV = len(omega.ic['V'])
     # Chargement données atmosphère
-    atmorap = np.loadtxt('../data/OMEGA_dataref/omega_atmorap_CL.dat')
+    atmorap = np.loadtxt(os.path.join(package_path, 'OMEGA_dataref/omega_atmorap_CL.dat'))
     tr_atm = np.ones(nlam)
     tr_atm[nV:] = atmorap[ic_CL]    # données atm uniquement voies C & L
     # Détermination exposant
@@ -954,7 +958,7 @@ def corr_mode_128(omega):
         print('\033[1mNot a 128 pixel cube\033[0m')
     elif (npixel==128) & (omega.orbit >= 513):
         print('\033[33mCorrupted 128 pixel cube\033[0m')
-        omega128_interp = readsav('../data/OMEGA_dataref/omega128_interpol.sav')
+        omega128_interp = readsav(os.path.join(package_path, 'OMEGA_dataref/omega128_interpol.sav')
         if str.encode(omega.name[3:]) in omega128_interp['cublist']:
             i_omega = np.where(omega128_interp['cublist'] == str.encode(omega.name[3:]))[0][0]
             cubtype = omega128_interp['cubstatus'][i_omega]
