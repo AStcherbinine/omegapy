@@ -958,7 +958,7 @@ def corr_mode_128(omega):
         print('\033[1mNot a 128 pixel cube\033[0m')
     elif (npixel==128) & (omega.orbit >= 513):
         print('\033[33mCorrupted 128 pixel cube\033[0m')
-        omega128_interp = readsav(os.path.join(package_path, 'OMEGA_dataref/omega128_interpol.sav')
+        omega128_interp = readsav(os.path.join(package_path, 'OMEGA_dataref/omega128_interpol.sav'))
         if str.encode(omega.name[3:]) in omega128_interp['cublist']:
             i_omega = np.where(omega128_interp['cublist'] == str.encode(omega.name[3:]))[0][0]
             cubtype = omega128_interp['cubstatus'][i_omega]
