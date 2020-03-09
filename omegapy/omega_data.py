@@ -36,6 +36,10 @@ Version = 1.2
 # Path of the package files
 package_path = os.path.abspath(os.path.dirname(__file__))
 omega_routines_path = os.path.join(package_path, 'omega_routines')
+# try:
+    # omega_pydata_folder = os.path.abspath(os.getenv('OMEGA_PYDATA'))
+# except TypeError:
+    # omega_pydata_folder = '../data/OMEGA/'
 
 ##----------------------------------------------------------------------------------------
 ## Class OMEGAdata - Importation of OMEGA data cubes
