@@ -9,7 +9,7 @@ Importation and display of OMEGA/MEx observations in Python 3, based on IDL rout
 ## Installation
 Clone the repository (or download the sources), and install with pip:
 
-~~~console
+~~~bash
 git clone https://git.ias.u-psud.fr/astcherb1/omegapy
 cd omegapy
 pip install .
@@ -17,7 +17,7 @@ pip install .
 
 ## Update
 Go to the previously cloned repository, pull the last updates, and install with pip:
-~~~console
+~~~bash
 cd omegapy
 git pull
 pip install .
