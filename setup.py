@@ -6,7 +6,7 @@ with open('requirements.txt', 'r') as f:
     requirements = f.read().strip('\n').split('\n')
 
 package_data = {
-    '': ['../data/OMEGA_dataref/*', 'omega_routines/*'],
+    '': ['OMEGA_dataref/*', 'omega_routines/*'],
     }
 
 setuptools.setup(
