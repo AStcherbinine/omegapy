@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 06/03/2020
+## Last modified by Aurélien STCHERBININE : 09/03/2020
 
 ##----------------------------------------------------------------------------------------
 """Importation of OMEGA observations in the OMEGAdata class.
@@ -832,7 +832,7 @@ def corr_atm(omega):
     # Initialisation
     omega2 = deepcopy(omega)
     omega_corr = deepcopy(omega)
-    ny, nx, nlam = omega2.cube_i.shape
+    ny, nx, nlam = omega2.cube_rf.shape
     lam = omega2.lam
     cube_rf = omega2.cube_rf
     ic_CL = np.concatenate([omega.ic['C'], omega.ic['L']])
@@ -916,7 +916,7 @@ def corr_atm2(omega):
     # Initialisation
     omega2 = deepcopy(omega)
     omega_corr = deepcopy(omega)
-    ny, nx, nlam = omega2.cube_i.shape
+    ny, nx, nlam = omega2.cube_rf.shape
     lam = omega2.lam
     cube_rf = omega2.cube_rf
     ic_CL = np.concatenate([omega.ic['C'], omega.ic['L']])
