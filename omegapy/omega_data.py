@@ -490,7 +490,7 @@ def find_cube(lat, lon, cmin=0, cmax=10000, out=False):
     idl.pro('findcub', lon, lat, cmin, cmax)
     idl.close()
     if out:
-        cub_list = np.genfromtxt(os.path.join(omega_routines_path, 'cubliste', skip_header=2, 
+        cub_list = np.genfromtxt(os.path.join(omega_routines_path, 'cubliste'), skip_header=2, 
                                  skip_footer=1, dtype=None, encoding='utf8')
         return cub_list
 
