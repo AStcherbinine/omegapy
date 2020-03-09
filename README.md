@@ -23,6 +23,15 @@ git pull
 pip install .
 ~~~
 
+## Usage
+~~~python
+In [1]: import omegapy.omega_data as od
+
+In [2]: import omegapy.omega_plots as op
+~~~
+
+See `doc.md` or the interactive IPython help for more details.
+
 --------------------
 Developped at the Institut d'Astrophysique Spatiale (IAS), Université Paris-Saclay, Orsay, France  
 
