@@ -2,7 +2,7 @@
 ![pythonversion](https://img.shields.io/badge/Python-3.7-blue)
 ![idlversion](https://img.shields.io/badge/IDL-8.3-blue)
 
-# OMEGA Py : Python OMEGA analysis tools
+# OMEGA-Py : Python OMEGA analysis tools
 
 Importation and display of OMEGA/MEx observations in Python 3, based on IDL routines developped in the IAS planetary team.
 
