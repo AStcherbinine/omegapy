@@ -1,4 +1,4 @@
-# OMEGA Py documentation - v1.2
+# OMEGA-Py documentation - v1.2
 
 ## [`omegapy.omega_data`](doc_omega_data.md)
 
