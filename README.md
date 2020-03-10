@@ -38,7 +38,7 @@ omega_corr_therm_atm = od.corr_atm(omega_corr_therm)
 op.show_omega_interactif_v2(omega_corr_therm_atm, lam=1.085, cmap='Greys_r', vmin=0, vmax=0.5, polar=True)
 ~~~
 
-See `doc.md` or the interactive IPython help for more details.
+See [`docs/*.md`](docs/) or the interactive IPython help for more details.
 
 ## Credits
 Developped at the Institut d'Astrophysique Spatiale (IAS), Université Paris-Saclay, Orsay, France  
