@@ -1,6 +1,6 @@
 # OMEGA Py documentation - v1.2
 
-## `omegapy.omega_data`
+## [`omegapy.omega_data`](doc_omega_data.md)
 
 Importation of OMEGA observations in the OMEGAdata class.
 Using IDL routines containing in *./omega_routines/*.
@@ -30,7 +30,7 @@ Using IDL routines containing in *./omega_routines/*.
 `omegapy.omega_data.corr_save_omega_list(liste_obs, folder='auto', base_folder='../data/OMEGA/', security=True, overwrite=True, compress=True)`
 
 
-## `omegapy.omega_plots`
+## [`omegapy.omega_plots`](doc_omega_plots.md)
 
 Display of OMEGAdata cubes.
 
