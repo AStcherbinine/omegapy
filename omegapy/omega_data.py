@@ -90,6 +90,44 @@ class OMEGAdata:
         The Solar radiation spectrum on Mars (W.m-2.sr-1.µm-1).
     utc : datetime.datetime
         The average UCT time of the observation.
+    ic : dict
+        The index of the used spectral pixels for each channel.
+    lat_grid : 2D array
+        The latitude grid of the observation (from the edge of the pixels).
+    lon_grid : 2D array
+        The longitude grid of the observation (from the edge of the pixels).
+    surf_temp : 2D array
+        The retrieved surface temperature of each pixel (from the thermal correction).
+    lrec : int
+        The number of bytes in each physical record in the data product file.
+    nrec : int
+        The number of physical records that make up the PDS product label.
+    sol_dist_au : float
+        The distance between the center of the observation and the Sun (a.u.).
+    npixel : int
+        The number of pixels of the length of scan (can be 16, 32, 64, or 128 pixels).
+    nscan : int
+        Number of scanned pixel lines.
+    npara : int
+        Number of parameters describing the geometry of the observation.
+    point_mode : str
+        The pointing mode of the instrument.
+    orient : array
+        The vector orientation of the spacecraft.
+    subsol_lat : float
+        Latitude of the sub-solar point at observation time.
+    subsol_lon : float
+        Longitude of the sub-solar point at observation time.
+    min_lat : float
+        Southernmost latitude of the observation (deg).
+    max_lat : float
+        Northernmost latitude of the observation (deg).
+    min_lon : float
+        Easternmost longitude of the observation (deg).
+    max_lon : float
+        Westernmost longitude of the observation (dego.
+    slant : float
+        Distance from the spacecraft to the center of the observation along the line of sight (km).
     quality : int
         The quality level of the cube.
         (0: corrupted | 1: good | 128 : corrupted mode 128)
@@ -104,17 +142,13 @@ class OMEGAdata:
     atm_corr_infos : dict
         Information about the atmospheric correction (date, method).
     version : float
-        The version of the omega_data.py file used.
-    attributes : list
-        The list of the attributes of the object.
-    **TO BE COMPLETED**
+        The version of the omegapy.omega_data.py file used.
+    add_infos : str
+        Additional informations about the observation.
+        Show in the OMEGAdata representation.
     """
 
     def __init__(self, obs='', empty=False, data_path=omega_bin_path):
-        self.attributes = ['name', 'lam', 'cube_i', 'cube_rf', 'ls', 'lat', 'lon', 'alt',
-                           'emer', 'inci', 'specmars', 'utc', 'quality', 'therm_corr',
-                           'atm_corr', 'therm_corr_infos', 'atm_corr_infos', 
-                           'version', 'attributes']
         # Infos
         self.version = Version
         self.therm_corr = False
