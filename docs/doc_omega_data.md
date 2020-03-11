@@ -41,7 +41,7 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path='/data2/opt/ge
         The name of the OMEGA observation.
     empty : bool, optional (default False)
         If True, return an empty OMEGAdata object.
-    data_path : str, optional (default '/data2/opt/geomeg/data/product/')
+    data_path : str, optional (default $OMEGA_BIN_PATH or '/data2/opt/geomeg/data/product/')
         The path of the directory containing the data (.QUB) and 
         navigation (.NAV) files.
 
@@ -94,7 +94,7 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path='/data2/opt/ge
     
     Methods
     =======
-    __init__(self, obs='', empty=False, data_path='/data2/opt/geomeg/data/product/')
+    __init__(self, obs='', empty=False, data_path=omega_bin_path)
     
     __copy__(self)
 
@@ -133,7 +133,7 @@ omegapy.omega_data.find_cube(lat, lon, cmin=0, cmax=10000, out=False):
 
 ### OMEGAdata files handling
 ~~~python
-omegapy.omega_data.save_omega(omega, savname='auto', folder='', base_folder='../data/OMEGA/',
+omegapy.omega_data.save_omega(omega, savname='auto', folder='', base_folder=omega_py_path,
                pref ='', suff='', disp=True):
     Save an OMEGA object at the selected path using the pickle module.
 
@@ -148,7 +148,7 @@ omegapy.omega_data.save_omega(omega, savname='auto', folder='', base_folder='../
         | If 'auto' -> savname = 'pref_omega.name_ext.pkl'
     folder : str, optional (default '')
         The subfolder to save the data.
-    base_folder : str, optional (default '../data/OMEGA/')
+    base_folder : str, optional (default omega_py_path)
         The base folder path.
     pref : str, optional (default '')
         The prefix of the savname.
@@ -292,7 +292,7 @@ omegapy.omega_data.corr_atm2(omega):
 Import an OMEGA/MEx observation, apply a thermal and atmospheric correction (M1) and save the OMEGAdata object at each step.
 
 ~~~
-omegapy.omega_data.corr_save_omega(obsname, folder='auto', base_folder='../data/OMEGA/', security=True,
+omegapy.omega_data.corr_save_omega(obsname, folder='auto', base_folder=omega_py_path, security=True,
                     overwrite=True, compress=True):
     Correction and saving of OMEGA/MEx observations.
 
@@ -303,7 +303,7 @@ omegapy.omega_data.corr_save_omega(obsname, folder='auto', base_folder='../data/
     folder : str, optional (default 'auto')
         The subfolder to save the data.
         | If 'auto' -> folder = 'vX.X', where X.X is the Version of the current code.
-    base_folder : str, optional (default '../data/OMEGA/')
+    base_folder : str, optional (default omega_py_path)
         The base folder path.
     security : bool, optional (default True)
         Enable / disable checking before overwriting a file.
@@ -318,7 +318,7 @@ omegapy.omega_data.corr_save_omega(obsname, folder='auto', base_folder='../data/
 ~~~
 
 ~~~
-omegapy.omega_data.corr_save_omega_list(liste_obs, folder='auto', base_folder='../data/OMEGA/',
+omegapy.omega_data.corr_save_omega_list(liste_obs, folder='auto', base_folder=omega_py_path,
                          security=True, overwrite=True, compress=True):
     Correction and saving of a list of OMEGA/MEx observations.
 
@@ -329,7 +329,7 @@ omegapy.omega_data.corr_save_omega_list(liste_obs, folder='auto', base_folder='.
     folder : str, optional (default 'auto')
         The subfolder to save the data.
         | If 'auto' -> folder = 'vX.X', where X.X is the Version of the current code.
-    base_folder : str, optional (default '../data/OMEGA/')
+    base_folder : str, optional (default omega_py_path)
         The base folder path.
     security : bool, optional (default True)
         Enable / disable checking before overwriting a file.
@@ -343,3 +343,42 @@ omegapy.omega_data.corr_save_omega_list(liste_obs, folder='auto', base_folder='.
         in order to reduce the size of the saved file.
 ~~~
 
+~~~python
+omegapy.omega_data.set_omega_bin_path(new_path):
+    Set the global omega_bin_path variable to new_path.
+
+    Parameters
+    ==========
+    new_path : str
+        The new path of the OMEGA binary files (.QUB and .NAV).
+~~~
+
+~~~python
+omegapy.omega_data.set_omega_py_path(new_path):
+    Set the global omega_py_path variable to new_path.
+
+    Parameters
+    ==========
+    new_path : str
+        The new path of the OMEGA python-made files.
+~~~
+
+~~~python
+omegapy.omega_data.get_omega_bin_path():
+    Return the vavue of the global omega_bin_path variable.
+
+    Returns
+    =======
+    omega_bin_path : str
+        The path of the OMEGA binary files (.QUB and .NAV).
+~~~
+
+~~~python
+def get_omega_py_path():
+    Return the vavue of the global omega_py_path variable.
+
+    Returns
+    =======
+    omega_py_path : str
+        The new path of the OMEGA python-made files.
+~~~
