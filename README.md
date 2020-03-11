@@ -2,12 +2,12 @@
 ![pythonversion](https://img.shields.io/badge/Python-3.7-blue)
 ![idlversion](https://img.shields.io/badge/IDL-8.3-blue)
 
-# OMEGA-Py : Python OMEGA analysis tools
+# OMEGA-Py : Python tools for OMEGA data
 
 Importation and display of OMEGA/MEx observations in Python 3, based on IDL routines developped in the IAS planetary team.
 
 ## Installation
-Clone the repository (or download the sources), and install with pip:
+Clone the repository and install with pip:
 
 ~~~bash
 git clone https://git.ias.u-psud.fr/astcherb1/omegapy
