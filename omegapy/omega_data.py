@@ -38,7 +38,7 @@ package_path = os.path.abspath(os.path.dirname(__file__))
 omega_routines_path = os.path.join(package_path, 'omega_routines')
 # Path of the directory containing the OMEGA binary files (.QUB and .NAV)
 omega_bin_path = os.getenv('OMEGA_BIN_PATH', default='/data2/opt/geomeg/data/product/')
-# Path of the directory containing the OMEGA python files
+# Path of the directory containing the OMEGA python-made files
 omega_py_path = os.getenv('OMEGA_PY_PATH', default='/data/mex-omegj/data1/omega_python/omegapy/')
 # Warnings for non-defined path
 if os.getenv('OMEGA_BIN_PATH') is None:
@@ -58,7 +58,7 @@ class OMEGAdata:
         The name of the OMEGA observation.
     empty : bool, optional (default False)
         If True, return an empty OMEGAdata object.
-    data_path : str, optional (default $OMEGA_BIN_PATH or '/data2/opt/geomeg/data/product/')
+    data_path : str, optional (default omega_py_path)
         The path of the directory containing the data (.QUB) and 
         navigation (.NAV) files.
 
@@ -521,7 +521,7 @@ def save_omega(omega, savname='auto', folder='', base_folder=omega_py_path,
         | If 'auto' -> savname = 'pref_omega.name_ext.pkl'
     folder : str, optional (default '')
         The subfolder to save the data.
-    base_folder : str, optional (default $OMEGA_PY_PATH)
+    base_folder : str, optional (default omega_py_path)
         The base folder path.
     pref : str, optional (default '')
         The prefix of the savname.
@@ -1081,7 +1081,7 @@ def corr_save_omega(obsname, folder='auto', base_folder=omega_py_path, security=
     folder : str, optional (default 'auto')
         The subfolder to save the data.
         | If 'auto' -> folder = 'vX.X', where X.X is the Version of the current code.
-    base_folder : str, optional (default $OMEGA_PY_PATH)
+    base_folder : str, optional (default omega_py_path)
         The base folder path.
     security : bool, optional (default True)
         Enable / disable checking before overwriting a file.
@@ -1131,7 +1131,7 @@ def corr_save_omega_list(liste_obs, folder='auto', base_folder=omega_py_path,
     folder : str, optional (default 'auto')
         The subfolder to save the data.
         | If 'auto' -> folder = 'vX.X', where X.X is the Version of the current code.
-    base_folder : str, optional (default $OMEGA_PY_PATH)
+    base_folder : str, optional (default omega_py_path)
         The base folder path.
     security : bool, optional (default True)
         Enable / disable checking before overwriting a file.
@@ -1171,6 +1171,56 @@ def import_list_obs_csv(filename):
     columns_id = df.columns
     liste_obs = np.array(df['product_id_trunc'])
     return liste_obs
+
+##----------------------------------------------------------------------------------------
+## Setters
+def set_omega_bin_path(new_path):
+    """Set the global omega_bin_path variable to new_path.
+
+    Parameters
+    ==========
+    new_path : str
+        The new path of the OMEGA binary files (.QUB and .NAV).
+    """
+    if not isinstance(new_path, str):
+        raise ValueError('new_path must be a str')
+    global omega_bin_path
+    omega_bin_path = new_path
+
+def set_omega_py_path(new_path):
+    """Set the global omega_py_path variable to new_path.
+
+    Parameters
+    ==========
+    new_path : str
+        The new path of the OMEGA python-made files.
+    """
+    if not isinstance(new_path, str):
+        raise ValueError('new_path must be a str')
+    global omega_py_path
+    omega_py_path = new_path
+
+##----------------------------------------------------------------------------------------
+## Getters
+def get_omega_bin_path():
+    """Return the vavue of the global omega_bin_path variable.
+
+    Returns
+    =======
+    omega_bin_path : str
+        The path of the OMEGA binary files (.QUB and .NAV).
+    """
+    return omega_bin_path
+
+def get_omega_py_path():
+    """Return the vavue of the global omega_py_path variable.
+
+    Returns
+    =======
+    omega_py_path : str
+        The new path of the OMEGA python-made files.
+    """
+    return omega_py_path
 
 ##----------------------------------------------------------------------------------------
 ## End of code
