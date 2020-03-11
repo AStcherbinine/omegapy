@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 09/03/2020
+## Last modified by Aurélien STCHERBININE : 11/03/2020
 
 ##----------------------------------------------------------------------------------------
 """Importation of OMEGA observations in the OMEGAdata class.
@@ -36,10 +36,16 @@ Version = 1.2
 # Path of the package files
 package_path = os.path.abspath(os.path.dirname(__file__))
 omega_routines_path = os.path.join(package_path, 'omega_routines')
-# try:
-    # omega_pydata_folder = os.path.abspath(os.getenv('OMEGA_PYDATA'))
-# except TypeError:
-    # omega_pydata_folder = '../data/OMEGA/'
+# Path of the directory containing the OMEGA binary files (.QUB and .NAV)
+omega_bin_path = os.getenv('OMEGA_BIN_PATH', default='/data2/opt/geomeg/data/product/')
+# Path of the directory containing the OMEGA python files
+omega_py_path = os.getenv('OMEGA_PY_PATH', default='/data/mex-omegj/data1/omega_python/omegapy/')
+# Warnings for non-defined path
+if os.getenv('OMEGA_BIN_PATH') is None:
+    print("\033[33mWarning: $OMEGA_BIN_PATH not defined, set to '/data2/opt/geomeg/data/product/' by default.\033[0m")
+if os.getenv('OMEGA_PY_PATH') is None:
+    print("\033[33mWarning: $OMEGA_PY_PATH not defined, set to '/data/mex-omegj/data1/omega_python/omegapy/' by default.\033[0m")
+
 
 ##----------------------------------------------------------------------------------------
 ## Class OMEGAdata - Importation of OMEGA data cubes
@@ -52,7 +58,7 @@ class OMEGAdata:
         The name of the OMEGA observation.
     empty : bool, optional (default False)
         If True, return an empty OMEGAdata object.
-    data_path : str, optional (default '/data2/opt/geomeg/data/product/')
+    data_path : str, optional (default $OMEGA_BIN_PATH or '/data2/opt/geomeg/data/product/')
         The path of the directory containing the data (.QUB) and 
         navigation (.NAV) files.
 
@@ -104,7 +110,7 @@ class OMEGAdata:
     **TO BE COMPLETED**
     """
 
-    def __init__(self, obs='', empty=False, data_path='/data2/opt/geomeg/data/product/'):
+    def __init__(self, obs='', empty=False, data_path=omega_bin_path):
         self.attributes = ['name', 'lam', 'cube_i', 'cube_rf', 'ls', 'lat', 'lon', 'alt',
                            'emer', 'inci', 'specmars', 'utc', 'quality', 'therm_corr',
                            'atm_corr', 'therm_corr_infos', 'atm_corr_infos', 
@@ -500,7 +506,7 @@ def find_cube(lat, lon, cmin=0, cmax=10000, out=False):
 
 ##----------------------------------------------------------------------------------------
 ## Sauvegarde / Importation
-def save_omega(omega, savname='auto', folder='', base_folder='../data/OMEGA/',
+def save_omega(omega, savname='auto', folder='', base_folder=omega_py_path,
                pref ='', suff='', disp=True):
     """Save an OMEGA object at the selected path using the pickle module.
 
@@ -515,7 +521,7 @@ def save_omega(omega, savname='auto', folder='', base_folder='../data/OMEGA/',
         | If 'auto' -> savname = 'pref_omega.name_ext.pkl'
     folder : str, optional (default '')
         The subfolder to save the data.
-    base_folder : str, optional (default '../data/OMEGA/')
+    base_folder : str, optional (default $OMEGA_PY_PATH)
         The base folder path.
     pref : str, optional (default '')
         The prefix of the savname.
@@ -526,11 +532,6 @@ def save_omega(omega, savname='auto', folder='', base_folder='../data/OMEGA/',
             | True -> Print the saving filename.
             | False -> Nothing printed.
     """
-    # Vérification syntaxe chemin
-    if (len(base_folder) > 0) and (base_folder[-1] != '/'):
-        base_folder += '/'
-    if (len(folder) > 0) and (folder[-1] != '/'):
-        folder += '/'
     # Initialisation nom fichier auto
     if savname == 'auto':
         if (len(suff)>0) and (suff[0] != '_'):
@@ -539,7 +540,7 @@ def save_omega(omega, savname='auto', folder='', base_folder='../data/OMEGA/',
             pref = pref + '_'
         savname = '{pref}{name}{suff}.pkl'.format(name=omega.name, pref=pref, suff=suff)
     # Chemin sav fichier
-    target_path = base_folder + folder + savname
+    target_path = os.path.join(base_folder, folder, savname)
     # Sauvegarde pickle
     with open(target_path, 'wb') as output:
         pickle.dump(omega, output)
@@ -1069,7 +1070,7 @@ def test_security_overwrite(path):
     else:
         return True
 
-def corr_save_omega(obsname, folder='auto', base_folder='../data/OMEGA/', security=True,
+def corr_save_omega(obsname, folder='auto', base_folder=omega_py_path, security=True,
                     overwrite=True, compress=True):
     """Correction and saving of OMEGA/MEx observations.
 
@@ -1080,7 +1081,7 @@ def corr_save_omega(obsname, folder='auto', base_folder='../data/OMEGA/', securi
     folder : str, optional (default 'auto')
         The subfolder to save the data.
         | If 'auto' -> folder = 'vX.X', where X.X is the Version of the current code.
-    base_folder : str, optional (default '../data/OMEGA/')
+    base_folder : str, optional (default $OMEGA_PY_PATH)
         The base folder path.
     security : bool, optional (default True)
         Enable / disable checking before overwriting a file.
@@ -1098,11 +1099,7 @@ def corr_save_omega(obsname, folder='auto', base_folder='../data/OMEGA/', securi
     omega = OMEGAdata(obsname)
     name = omega.name
     # path synthax
-    if (base_folder != '') and (base_folder[-1] != '/'):
-        base_folder += '/'
-    if (folder != '') and (folder[-1] != '/'):
-        folder += '/'
-    basename = base_folder + folder + name + '{0}.pkl'
+    basename = os.join(base_folder, folder, name, '{0}.pkl')
     # Testing existent file
     if os.path.exists(basename.format('_corr_therm_atm')):
         exists = True
@@ -1123,7 +1120,7 @@ def corr_save_omega(obsname, folder='auto', base_folder='../data/OMEGA/', securi
     else:
         print('\n\033[01;34mExistent files preserved for {0} - v{1}\033[0m\n'.format(name, Version))
 
-def corr_save_omega_list(liste_obs, folder='auto', base_folder='../data/OMEGA/',
+def corr_save_omega_list(liste_obs, folder='auto', base_folder=omega_py_path,
                          security=True, overwrite=True, compress=True):
     """Correction and saving of a list of OMEGA/MEx observations.
 
@@ -1134,7 +1131,7 @@ def corr_save_omega_list(liste_obs, folder='auto', base_folder='../data/OMEGA/',
     folder : str, optional (default 'auto')
         The subfolder to save the data.
         | If 'auto' -> folder = 'vX.X', where X.X is the Version of the current code.
-    base_folder : str, optional (default '../data/OMEGA/')
+    base_folder : str, optional (default $OMEGA_PY_PATH)
         The base folder path.
     security : bool, optional (default True)
         Enable / disable checking before overwriting a file.
