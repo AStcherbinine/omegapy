@@ -23,6 +23,18 @@ git pull
 pip install .
 ~~~
 
+## Configuration
+You have to configure the default path of the folders containing the OMEGA binary and omegapy-made files
+using the environment variables `OMEGA_BIN_PATH` (for the binary .QUB and .NAV files)
+and `OMEGA_PY_PATH` (for the omegapy-made files).
+
+To do so, add the following lines to your `~/.bashrc` :
+~~~bash
+export OMEGA_BIN_PATH="/data2/opt/geomeg/data/product/"
+export OMEGA_PY_PATH="/data/mex-omegj/data1/omega_python/omegapy/"
+~~~
+*Adapt the path if needed, here is the default configuration for internal IAS use on the server.*
+
 ## Usage
 ~~~python
 # package importation
