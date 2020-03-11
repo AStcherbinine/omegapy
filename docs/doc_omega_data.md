@@ -5,29 +5,29 @@
 Importation of OMEGA observations in the OMEGAdata class.
 Using IDL routines containing in *./omega_routines/*.
 
-`class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path='/data2/opt/geomeg/data/product/')`
+`class OMEGAdata(obs='', empty=False, data_path='/data2/opt/geomeg/data/product/')`
 
-`omegapy.omega_data.find_cube(lat, lon, cmin=0, cmax=10000, out=False)`
+`find_cube(lat, lon, cmin=0, cmax=10000, out=False)`
 
-`omegapy.omega_data.save_omega(omega, savname='auto', folder='', base_folder='../data/OMEGA/', pref ='', suff='', disp=True)`
+`save_omega(omega, savname='auto', folder='', base_folder='../data/OMEGA/', pref ='', suff='', disp=True)`
 
-`omegapy.omega_data.load_omega(filename, disp=True)`
+`load_omega(filename, disp=True)`
 
-`omegapy.omega_data.load_omega_list(basename, disp=True)`
+`load_omega_list(basename, disp=True)`
 
-`omegapy.omega_data.import_list_obs_csv(filename)`
+`import_list_obs_csv(filename)`
 
-`omegapy.omega_data.corr_therm(omega)`
+`corr_therm(omega)`
 
-`omegapy.omega_data.corr_therm2(omega)`
+`corr_therm2(omega)`
 
-`omegapy.omega_data.corr_atm(omega)`
+`corr_atm(omega)`
 
-`omegapy.omega_data.corr_atm2(omega)`
+`corr_atm2(omega)`
 
-`omegapy.omega_data.corr_save_omega(obsname, folder='auto', base_folder='../data/OMEGA/', security=True, overwrite=True, compress=True)`
+`corr_save_omega(obsname, folder='auto', base_folder='../data/OMEGA/', security=True, overwrite=True, compress=True)`
 
-`omegapy.omega_data.corr_save_omega_list(liste_obs, folder='auto', base_folder='../data/OMEGA/', security=True, overwrite=True, compress=True)`
+`corr_save_omega_list(liste_obs, folder='auto', base_folder='../data/OMEGA/', security=True, overwrite=True, compress=True)`
 
 
 ### OMEGAdata class
