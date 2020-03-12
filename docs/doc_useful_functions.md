@@ -65,7 +65,7 @@ omegapy.useful_functions.where_closer_array(values, array):
 ~~~
 
 ### File search
-~~python
+~~~python
 omegapy.useful_functions.myglob(basename):
     Return the absolute path according to the input basename.
     If mulitple files corresponds to the basename, the user will be asked
