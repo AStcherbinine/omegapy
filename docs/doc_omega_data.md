@@ -9,6 +9,10 @@ Using IDL routines containing in *./omega_routines/*.
 
 `find_cube(lat, lon, cmin=0, cmax=10000, out=False)`
 
+`autosave_omega(omega, folder='auto', base_folder=omega_py_path, security=True, disp=True)`
+
+`autoload_omega(obs_name, folder='auto', version=Version, base_folder=omega_py_path, disp=True)`
+
 `save_omega(omega, savname='auto', folder='', base_folder='../data/OMEGA/', pref ='', suff='', disp=True)`
 
 `load_omega(filename, disp=True)`
@@ -170,6 +174,53 @@ omegapy.omega_data.find_cube(lat, lon, cmin=0, cmax=10000, out=False):
 ~~~
 
 ### OMEGAdata files handling
+~~~python
+omegapy.omega_data.autosave_omega(omega, folder='auto', base_folder=omega_py_path, security=True, disp=True):
+    Save an OMEGA object at the selected path using the pickle module, with automatic
+    configuration of the target name.
+
+    Final_path = base_folder + folder + name{_corr_therm_atm}.pkl
+
+    Parameters
+    ==========
+    omega : OMEGAdata
+        The OMEGA/MEx observation object.
+    folder : str, optional (default 'auto')
+        The subfolder to save the data.
+        | If 'auto' -> folder = 'vX.X', where X.X is the Version of the current code.
+    base_folder : str, optional (default $OMEGA_PY_PATH)
+        The base folder path.
+    security : bool, optional (default True)
+        Enable / disable checking before overwriting a file.
+        | True -> Check if the target file already exists before overwriting on it.
+                  And if is the case, you will be asked for a confirmation.
+        | False -> Didn't care about the already existing files.
+    disp : bool
+        Control the display.
+            | True -> Print the saving filename.
+            | False -> Nothing printed.
+~~~
+
+~~~python
+omegapy.omega_data.autoload_omega(obs_name, folder='auto', version=Version, base_folder=omega_py_path,
+                   disp=True):
+    Load and return a previously saved OMEGAdata object (with save_omega()).
+
+    Parameters
+    ==========
+    filename : str
+        The file path.
+    disp : bool
+        Control the display.
+            | True -> Print the loading filename.
+            | False -> Nothing printed.
+
+    Returns
+    =======
+    omega : OMEGAdata 
+        The loaded object of OMEGA/MEx observation.
+~~~
+
 ~~~python
 omegapy.omega_data.save_omega(omega, savname='auto', folder='', base_folder=omega_py_path,
                pref ='', suff='', disp=True):
@@ -340,7 +391,7 @@ omegapy.omega_data.corr_save_omega(obsname, folder='auto', base_folder=omega_py_
         The name of the OMEGA observation.
     folder : str, optional (default 'auto')
         The subfolder to save the data.
-        | If 'auto' -> folder = 'vX.X', where X.X is the Version of the current code.
+        | If 'auto' -> folder = 'vX.X', where X.X is the OMEGAdata version.
     base_folder : str, optional (default omega_py_path)
         The base folder path.
     security : bool, optional (default True)

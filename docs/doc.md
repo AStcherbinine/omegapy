@@ -9,6 +9,10 @@ Using IDL routines containing in *./omega_routines/*.
 
 `find_cube(lat, lon, cmin=0, cmax=10000, out=False)`
 
+`autosave_omega(omega, folder='auto', base_folder=omega_py_path, security=True, disp=True)`
+
+`autoload_omega(obs_name, folder='auto', version=Version, base_folder=omega_py_path, disp=True)`
+
 `save_omega(omega, savname='auto', folder='', base_folder=omega_py_path, pref ='', suff='', disp=True)`
 
 `load_omega(filename, disp=True)`
