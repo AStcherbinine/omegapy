@@ -3,7 +3,7 @@
 
 ## useful_functions.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 06/03/2020
+## Last modified by Aurélien STCHERBININE : 12/03/2020
 
 ##-----------------------------------------------------------------------------------
 """Useful generics functions.
@@ -250,7 +250,9 @@ def myglob(basename):
     fnames = glob.glob(basename)
     fnames.sort()
     if fnames == []:
-        raise ValueError("No such file found.")
+        # raise ValueError("No such file found.")
+        print("\033[1;33mNo such file found.\033[0m")
+        return None
     elif len(fnames) == 1:
         return fnames[0]
     else:
