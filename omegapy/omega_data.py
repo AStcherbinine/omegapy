@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 11/03/2020
+## Last modified by Aurélien STCHERBININE : 12/03/2020
 
 ##----------------------------------------------------------------------------------------
 """Importation of OMEGA observations in the OMEGAdata class.
@@ -200,7 +200,7 @@ class OMEGAdata:
         else:
             idl = pidly.IDL()
             idl("cd, '{0:s}'".format(omega_routines_path))
-            obs_name = uf.myglob(data_path + '*' + obs + '*.QUB')
+            obs_name = uf.myglob(os.path.join(data_path, '*' + obs + '*.QUB'))
             if obs_name is None:
                 print("\033[1;33mAborted\033[0m")
                 return None
@@ -627,6 +627,94 @@ def load_omega_list(basename, disp=True):
     for i in range(len(path_list)):
         omega_list.append(load_omega(path_list[i], disp))
     return np.array(omega_list)
+
+def autosave_omega(omega, folder='auto', base_folder=omega_py_path, security=True, disp=True):
+    """Save an OMEGA object at the selected path using the pickle module, with automatic
+    configuration of the target name.
+
+    Final_path = base_folder + folder + name{_corr_therm_atm}.pkl
+
+    Parameters
+    ==========
+    omega : OMEGAdata
+        The OMEGA/MEx observation object.
+    folder : str, optional (default 'auto')
+        The subfolder to save the data.
+        | If 'auto' -> folder = 'vX.X', where X.X is the Version of the current code.
+    base_folder : str, optional (default $OMEGA_PY_PATH)
+        The base folder path.
+    security : bool, optional (default True)
+        Enable / disable checking before overwriting a file.
+        | True -> Check if the target file already exists before overwriting on it.
+                  And if is the case, you will be asked for a confirmation.
+        | False -> Didn't care about the already existing files.
+    disp : bool
+        Control the display.
+            | True -> Print the saving filename.
+            | False -> Nothing printed.
+    """
+    # Initialisation nom fichier auto
+    if omega.therm_corr and omega.atm_corr:
+        suff = '_corr_therm_atm'
+    elif omega.therm_corr:
+        suff = '_corr_therm'
+    elif omega.atm_corr:
+        suff = 'corr_atm'
+    else:
+        suff = ''
+    savname = '{name}{suff}.pkl'.format(name=omega.name, suff=suff)
+    if folder == 'auto':
+        folder = 'v' + str(omega.version)
+    # Chemin sav fichier
+    target_path = os.path.join(base_folder, folder, savname)
+    # Testing existent file
+    if security:
+        write = test_security_overwrite(target_path)
+    else:
+        write = True
+    # Sauvegarde pickle
+    if write:
+        with open(target_path, 'wb') as output:
+            pickle.dump(omega, output)
+        if disp:
+            print('\033[01;34mSaved as \033[0;03m' + target_path + '\033[0m')
+
+def autoload_omega(obs_name, folder='auto', version=Version, base_folder=omega_py_path,
+                   disp=True):
+    """Load and return a previously saved OMEGAdata object (with save_omega()).
+
+    Parameters
+    ==========
+    filename : str
+        The file path.
+    disp : bool
+        Control the display.
+            | True -> Print the loading filename.
+            | False -> Nothing printed.
+
+    Returns
+    =======
+    omega : OMEGAdata 
+        The loaded object of OMEGA/MEx observation.
+    """
+    filename = '*{name}*.pkl'.format(name=obs_name)
+    if folder == 'auto':
+        folder = 'v' + str(version)
+    filename2 = uf.myglob(os.path.join(base_folder, folder, filename))
+    if filename2 is None:
+        print('\033[1mMatching binary files:\033[0m')
+        obs_name_bin = uf.myglob(os.path.join(omega_bin_path, '*' + obs_name + '*.QUB'))
+        if obs_name_bin is None:
+            return None
+        else:
+            # TODO: optimiser pour ne pas rentrer 2 fois la réponse
+            return OMEGAdata(obs_name)
+    else:
+        with open(filename2, 'rb') as input_file:
+            omega = pickle.load(input_file)
+            if disp:
+                print('\033[03m' + filename2 + '\033[0;01;34m loaded\033[0m')
+            return omega
 
 ##----------------------------------------------------------------------------------------
 ## Correction thermique 1 - Détermitation réflectance à 5µm à partir de celle à 2.4µm
@@ -1097,7 +1185,7 @@ def test_security_overwrite(path):
         except KeyboardInterrupt:
             erase = 'n'
         if erase != 'y' :
-            print("file preserved")
+            print("\033[1mFile preserved\033[0m")
             return False
         else:
             return True
@@ -1114,7 +1202,7 @@ def corr_save_omega(obsname, folder='auto', base_folder=omega_py_path, security=
         The name of the OMEGA observation.
     folder : str, optional (default 'auto')
         The subfolder to save the data.
-        | If 'auto' -> folder = 'vX.X', where X.X is the Version of the current code.
+        | If 'auto' -> folder = 'vX.X', where X.X is the OMEGAdata version.
     base_folder : str, optional (default omega_py_path)
         The base folder path.
     security : bool, optional (default True)
@@ -1129,7 +1217,7 @@ def corr_save_omega(obsname, folder='auto', base_folder=omega_py_path, security=
         in order to reduce the size of the saved file.
     """
     if folder == 'auto':
-        folder = 'v' + str(Version)
+        folder = 'v' + str(omega.version)
     omega = OMEGAdata(obsname)
     name = omega.name
     # path synthax
