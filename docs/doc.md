@@ -37,6 +37,7 @@ Using IDL routines containing in *./omega_routines/*.
 
 `get_omega_py_path()`
 
+
 ## [`omegapy.omega_plots`](doc_omega_plots.md)
 
 Display of OMEGAdata cubes.
@@ -51,3 +52,29 @@ Display of OMEGAdata cubes.
 
 `show_ibd_v2(omega, ibd, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', cb_title = 'IBD', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True)`
 
+
+## [`omegapy.useful_functions`](doc_useful_functions.md)
+
+Some useful generic functions.
+
+`where_closer(value, array)`
+
+`where_closer_array(values, array)`
+
+`myglob(basename)`
+
+`sort_dict(dico)`
+
+`save_pickle(obj, target_path, disp=True)`
+
+`load_pickle(filename, disp=True)`
+
+`reg_lin(X, Y)`
+
+`planck(lam, T)`
+
+`fit_black_body(lam, sp, T_bounds=(0, 1e6))`
+
+`moyenne_glissante(sp, n)`
+
+`filtre_median(sp, n)`
