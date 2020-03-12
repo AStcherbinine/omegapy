@@ -40,6 +40,7 @@ export OMEGA_PY_PATH="/data/mex-omegj/data1/omega_python/omegapy/"
 # package importation
 import omegapy.omega_data as od
 import omegapy.omega_plots as op
+import omegapy.useful_functions as uf
 # OMEGA file importation (ORB0964_2)
 omega = od.OMEGAdata('0964_2')
 # Thermal correction
@@ -48,6 +49,8 @@ omega_corr_therm = od.corr_therm(omega)
 omega_corr_therm_atm = od.corr_atm(omega_corr_therm)
 # Interactive display of the observation (@ λ = 1.085 µm)
 op.show_omega_interactif_v2(omega_corr_therm_atm, lam=1.085, cmap='Greys_r', vmin=0, vmax=0.5, polar=True)
+# Search for the index of λ = 1.085 µm in the wavelength array
+i_lam = uf.where_closer(1.085, omega.lam)
 ~~~
 
 See [`docs/*.md`](docs/) or the interactive IPython help for more details.
