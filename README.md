@@ -12,7 +12,7 @@ Clone the repository and install with pip:
 ~~~bash
 git clone https://git.ias.u-psud.fr/astcherb1/omegapy
 cd omegapy
-pip install .
+pip3 install .
 ~~~
 
 ## Update
@@ -20,7 +20,7 @@ Go to the previously cloned repository, pull the last updates, and install with 
 ~~~bash
 cd omegapy
 git pull
-pip install .
+pip3 install .
 ~~~
 
 ## Configuration

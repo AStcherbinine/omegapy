@@ -14,6 +14,8 @@ Display of OMEGAdata cubes.
 
 `show_ibd_v2(omega, ibd, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', cb_title = 'IBD', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True)`
 
+`show_omega_list_v2(omega_list, lam, lat_min=-90, lat_max=90, lon_min=0, lon_max=360, pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto', data_list=None, plot=True, out=False, **kwargs)`
+
 
 ### Display cube
 
