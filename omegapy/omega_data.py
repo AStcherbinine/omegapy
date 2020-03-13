@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 12/03/2020
+## Last modified by Aurélien STCHERBININE : 13/03/2020
 
 ##----------------------------------------------------------------------------------------
 """Importation of OMEGA observations in the OMEGAdata class.
@@ -1221,7 +1221,7 @@ def corr_save_omega(obsname, folder='auto', base_folder=omega_py_path, security=
     omega = OMEGAdata(obsname)
     name = omega.name
     # path synthax
-    basename = os.join(base_folder, folder, name, '{0}.pkl')
+    basename = os.path.join(base_folder, folder, name, '{0}.pkl')
     # Testing existent file
     if os.path.exists(basename.format('_corr_therm_atm')):
         exists = True
