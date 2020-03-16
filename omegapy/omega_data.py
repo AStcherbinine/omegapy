@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 13/03/2020
+## Last modified by Aurélien STCHERBININE : 16/03/2020
 
 ##----------------------------------------------------------------------------------------
 """Importation of OMEGA observations in the OMEGAdata class.
@@ -775,16 +775,22 @@ def corr_therm_sp(omega, x, y, disp=True):
         Blam = uf.planck(lam2, T) * 1e-6    # Loi de Planck en *µm-1
         sp_simu2 = sp_simu_5m * sp_sol2 * ecl + (1-sp_simu_5m) * Blam
         return sp_simu2
-    # Fit de la température
-    T_fit = curve_fit(simu_sp_5microns, (i_lam3, i_lam4), sp_i[i_lam3:i_lam4], 
-                        bounds=(0,400))[0][0]
-    # Réflectance
-    refl = np.average(sp_simu[252:256])
-    if disp:
-        print('Temperature = {0:.3f} K   |   Reflectance = {1:.5f}'.format(T_fit, refl))
-    # Correction thermique spectre
-    Blam = uf.planck(lam*1e-6, T_fit) * 1e-6   # En W.m-2.sr-1.µm-1
-    sp_rf_corr = (sp_i - Blam) / (sp_sol*ecl - Blam)
+    try:
+        # Fit de la température
+        T_fit = curve_fit(simu_sp_5microns, (i_lam3, i_lam4), sp_i[i_lam3:i_lam4], 
+                            bounds=(0,400))[0][0]
+        # Réflectance
+        refl = np.average(sp_simu[252:256])
+        if disp:
+            print('Temperature = {0:.3f} K   |   Reflectance = {1:.5f}'.format(T_fit, refl))
+        # Correction thermique spectre
+        Blam = uf.planck(lam*1e-6, T_fit) * 1e-6   # En W.m-2.sr-1.µm-1
+        sp_rf_corr = (sp_i - Blam) / (sp_sol*ecl - Blam)
+    except ValueError:
+        # Si fit impossible (infs ou NaN dans le spectre) -> NaN partout
+        sp_rf_corr = deepcopy(sp_rf)
+        sp_rf_corr.fill(np.nan)
+        T_fit = np.nan
     return lam, sp_rf_corr, T_fit
 
 def corr_therm(omega):
@@ -867,14 +873,20 @@ def corr_therm2_sp(omega, x, y, disp=True):
         Blam = uf.planck(lam2, T) * 1e-6    # Loi de Planck en W.m-2.sr-1.µm-1
         sp_simu2 = refl * sp_sol2 * ecl + (1-refl) * Blam
         return sp_simu2
-    # Fit de la température et réflectance
-    T_fit, refl = curve_fit(simu_sp_5microns2, (i_lam3, i_lam4), sp_i[i_lam3:i_lam4], #p0=(280, 0.5),
-                            bounds=([0, 0], [400, 0.5]))[0]
-    if disp:
-        print('Temperature = {0:.3f} K   |   Reflectance = {1:.5f}'.format(T_fit, refl))
-    # Correction thermique spectre
-    Blam = uf.planck(lam*1e-6, T_fit) * 1e-6   # En W.m-2.sr-1.µm-1
-    sp_rf_corr = (sp_i - Blam) / (sp_sol*ecl - Blam)
+    try:
+        # Fit de la température et réflectance
+        T_fit, refl = curve_fit(simu_sp_5microns2, (i_lam3, i_lam4), sp_i[i_lam3:i_lam4], #p0=(280, 0.5),
+                                bounds=([0, 0], [400, 0.5]))[0]
+        if disp:
+            print('Temperature = {0:.3f} K   |   Reflectance = {1:.5f}'.format(T_fit, refl))
+        # Correction thermique spectre
+        Blam = uf.planck(lam*1e-6, T_fit) * 1e-6   # En W.m-2.sr-1.µm-1
+        sp_rf_corr = (sp_i - Blam) / (sp_sol*ecl - Blam)
+    except ValueError:
+        # Si fit impossible (infs ou NaN dans le spectre) -> NaN partout
+        sp_rf_corr = deepcopy(sp_rf)
+        sp_rf_corr.fill(np.nan)
+        T_fit = np.nan
     return lam, sp_rf_corr, T_fit
 
 def corr_therm2(omega):
@@ -1217,7 +1229,7 @@ def corr_save_omega(obsname, folder='auto', base_folder=omega_py_path, security=
         in order to reduce the size of the saved file.
     """
     if folder == 'auto':
-        folder = 'v' + str(omega.version)
+        folder = 'v' + str(Version)
     omega = OMEGAdata(obsname)
     name = omega.name
     # path synthax
