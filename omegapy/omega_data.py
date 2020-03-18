@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 16/03/2020
+## Last modified by Aurélien STCHERBININE : 18/03/2020
 
 ##----------------------------------------------------------------------------------------
 """Importation of OMEGA observations in the OMEGAdata class.
@@ -681,12 +681,19 @@ def autosave_omega(omega, folder='auto', base_folder=omega_py_path, security=Tru
 
 def autoload_omega(obs_name, folder='auto', version=Version, base_folder=omega_py_path,
                    disp=True):
-    """Load and return a previously saved OMEGAdata object (with save_omega()).
+    """Load and return a previously saved OMEGAdata object using pickle (with autosave_omega()).
 
     Parameters
     ==========
-    filename : str
-        The file path.
+    obs_name : str
+        The observation ID.
+    folder : str, optional (default 'auto')
+        The subfolder where the data is.
+        | If 'auto' -> folder = 'vX.X', where X.X is the given value of code version.
+    version : float, optional (default Version)
+        The version of the target file (if folder is 'auto').
+    base_folder : str, optional (default $OMEGA_PY_PATH)
+        The base folder path.
     disp : bool
         Control the display.
             | True -> Print the loading filename.
@@ -1355,6 +1362,59 @@ def get_omega_py_path():
         The new path of the OMEGA python-made files.
     """
     return omega_py_path
+
+##----------------------------------------------------------------------------------------
+## Update cube quality
+def update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=Version, 
+                        base_folder=omega_py_path):
+    """Update the quality attribute of previously saved OMEGAdata objects.
+
+    Parameters
+    ==========
+    obs_name : str, optional (default 'ORB*.pkl')
+        The files basename.
+    folder : str, optional (default 'auto')
+        The subfolder where the data is.
+        | If 'auto' -> folder = 'vX.X', where X.X is the given value of code version.
+    version : float, optional (default Version)
+        The version of the target file (if folder is 'auto').
+        Default is the current code version.
+    base_folder : str, optional (default $OMEGA_PY_PATH)
+        The base folder path.
+    """
+    # Initialisation
+    if obs_name[-4] != '.pkl':
+        obs_name += '.pkl'
+    if folder == 'auto':
+        folder = 'v' + str(version)
+    basename = uf.myglob(os.path.join(base_folder, folder, obs_name))
+    # Load list corrupted obs
+    OBC = readsav('../data/OMEGA_dataref/OBC_OMEGA_OCT2017.sav')
+    good_orbits_OBC = np.array(OBC['good_orbits'][0], dtype=int)
+    corrupted_orbits_csv = pd.read_csv('../data/OMEGA_dataref/corrupted_obs.csv', comment='#',
+                                        skipinitialspace=True)
+    corrupted_orbits = np.array(corrupted_orbits_csv['corrupted_obs'], dtype=str)
+    corrupted_orbits_comments = np.array(corrupted_orbits_csv['comment'], dtype=str)
+    # Loop on obs in the selected folder
+    fnames = glob.glob(basename)
+    if fnames == []:
+        print("\033[1;33mNo such file found.\033[0m")
+    else:
+        for fname in tqdm(fnames):
+            omega = load_omega(fname, disp=False)
+            omega.quality = 1
+            if (omega.npixel==128) & (omega.orbit >= 513):
+                omega.quality = 128
+                omega.add_infos = 'Corrupted 128 pixels cube'
+            if omega.orbit not in good_orbits_OBC:
+                omega.quality = 0
+                omega.add_infos = 'Corrupted orbit'
+            if omega.name in corrupted_orbits:
+                omega.quality = 0
+                i_obs = int(np.where(corrupted_orbits==omega.name)[0])
+                omega.add_infos = corrupted_orbits_comments[i_obs]
+            save_omega(omega, fname, '', '', '', '', False)
+        print('\033[1m{0} files updated\033[0m'.format(len(fnames)))
 
 ##----------------------------------------------------------------------------------------
 ## End of code
