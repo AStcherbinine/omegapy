@@ -41,6 +41,8 @@ Using IDL routines containing in *./omega_routines/*.
 
 `get_omega_py_path()`
 
+`update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=Version, base_folder=omega_py_path)`
+
 
 ### OMEGAdata class
 ~~~python
@@ -212,12 +214,19 @@ omegapy.omega_data.autosave_omega(omega, folder='auto', base_folder=omega_py_pat
 ~~~python
 omegapy.omega_data.autoload_omega(obs_name, folder='auto', version=Version, base_folder=omega_py_path,
                    disp=True):
-    Load and return a previously saved OMEGAdata object (with save_omega()).
+    Load and return a previously saved OMEGAdata object using pickle (with autosave_omega()).
 
     Parameters
     ==========
-    filename : str
-        The file path.
+    obs_name : str
+        The observation ID.
+    folder : str, optional (default 'auto')
+        The subfolder where the data is.
+        | If 'auto' -> folder = 'vX.X', where X.X is the given value of code version.
+    version : float, optional (default Version)
+        The version of the target file (if folder is 'auto').
+    base_folder : str, optional (default $OMEGA_PY_PATH)
+        The base folder path.
     disp : bool
         Control the display.
             | True -> Print the loading filename.
@@ -471,7 +480,7 @@ omegapy.omega_data.get_omega_bin_path():
 ~~~
 
 ~~~python
-def get_omega_py_path():
+omegapy.omega_data.get_omega_py_path():
     Return the vavue of the global omega_py_path variable.
 
     Returns
@@ -479,3 +488,24 @@ def get_omega_py_path():
     omega_py_path : str
         The new path of the OMEGA python-made files.
 ~~~
+
+### Update quality
+~~python
+omegapy.omega_data.update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=Version, 
+                        base_folder=omega_py_path):
+    Update the quality attribute of previously saved OMEGAdata objects.
+
+    Parameters
+    ==========
+    obs_name : str, optional (default 'ORB*.pkl')
+        The files basename.
+    folder : str, optional (default 'auto')
+        The subfolder where the data is.
+        | If 'auto' -> folder = 'vX.X', where X.X is the given value of code version.
+    version : float, optional (default Version)
+        The version of the target file (if folder is 'auto').
+        Default is the current code version.
+    base_folder : str, optional (default $OMEGA_PY_PATH)
+        The base folder path.
+~~~
+

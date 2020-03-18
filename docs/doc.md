@@ -41,6 +41,8 @@ Using IDL routines containing in *./omega_routines/*.
 
 `get_omega_py_path()`
 
+`update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=Version, base_folder=omega_py_path)`
+
 
 ## [`omegapy.omega_plots`](doc_omega_plots.md)
 
