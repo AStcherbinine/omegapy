@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 06/03/2020
+## Last modified by Aurélien STCHERBININE : 23/03/2020
 
 ##----------------------------------------------------------------------------------------
 """Display of OMEGAdata cubes.
@@ -103,13 +103,13 @@ def show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, v
     lam = omega.lam[i_lam]
     if refl:
         cube = omega.cube_rf
-        cb_title = 'Reflectance'
+        cb_title = r'Reflectance at $\lambda$' + ' = {0:.2f} µm'.format(lam)
     else:
         cube = omega.cube_i
-        cb_title = r'Radiance [W.m$^{-2}$.sr$^{-1}$.µm$^{-1}$]'
+        cb_title = (r'Radiance [W.m$^{-2}$.sr$^{-1}$.µm$^{-1}$] at $\lambda$' + 
+                    ' = {0:.2f} µm'.format(lam))
     if title == 'auto':
-        title = ('OMEGA/MEx observation {0}\n'.format(omega.name) + 
-                r'$\lambda$' + ' = {0:.2f} µm'.format(lam))
+        title = 'OMEGA/MEx observation {0}\n'.format(omega.name) 
     show_cube(cube, i_lam, cmap, vmin, vmax, cb_title, Nfig)
     plt.xlim(xlim)
     plt.ylim(ylim)
@@ -163,13 +163,13 @@ def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None
     lam = omega.lam[i_lam]
     if refl:
         cube = omega.cube_rf
-        cb_title = 'Reflectance'
+        cb_title = r'Reflectance at $\lambda$' + ' = {0:.2f} µm'.format(lam)
     else:
         cube = omega.cube_i
-        cb_title = r'Radiance [W.m$^{-2}$.sr$^{-1}$.µm$^{-1}$]'
+        cb_title = (r'Radiance [W.m$^{-2}$.sr$^{-1}$.µm$^{-1}$] at $\lambda$' + 
+                    ' = {0:.2f} µm'.format(lam))
     if title == 'auto':
-        title = ('OMEGA/MEx observation {0}\n'.format(omega.name) + 
-                r'$\lambda$' + ' = {0:.2f} µm'.format(lam))
+        title = 'OMEGA/MEx observation {0}\n'.format(omega.name) 
     fig = plt.figure(Nfig)
     if polar:
         ax = plt.axes(polar=True)
