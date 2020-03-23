@@ -23,14 +23,14 @@ from . import useful_functions as uf
 from . import omega_data as od
 from .omega_data import OMEGAdata
 
-if __name__ == '__main__':
-    # Activation of the interactive mode
-    plt.ion()
-    # De-activation of default matplotlib keybindings for keyboard arrows
-    if 'left' in mpl.rcParams['keymap.back']:
-        mpl.rcParams['keymap.back'].remove('left')
-    if 'right' in mpl.rcParams['keymap.forward']:
-        mpl.rcParams['keymap.forward'].remove('right')
+# if __name__ == '__main__':
+    # # Activation of the interactive mode
+plt.ion()
+# De-activation of default matplotlib keybindings for keyboard arrows
+if 'left' in mpl.rcParams['keymap.back']:
+    mpl.rcParams['keymap.back'].remove('left')
+if 'right' in mpl.rcParams['keymap.forward']:
+    mpl.rcParams['keymap.forward'].remove('right')
 
 # Name of the current file
 py_file = 'omega_plots.py'
