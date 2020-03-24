@@ -3,7 +3,7 @@
 
 ## useful_functions.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 12/03/2020
+## Last modified by Aurélien STCHERBININE : 24/03/2020
 
 ##-----------------------------------------------------------------------------------
 """Useful generics functions.
@@ -146,8 +146,21 @@ def filtre_median(sp, n):
     elif n < 0:
         raise ValueError('n must be >= 0')
     sp_med = deepcopy(sp)
+    for i in range(n):
+        if np.isnan(sp[i]):
+            sp_med[i] = np.nan
+        else:
+            sp_med[i] = np.nanmedian(sp_med[:2*i+1])
     for i in range(n, len(sp)-n):
-        sp_med[i] = np.median(sp_med[i-n:i+n+1])
+        if np.isnan(sp[i]):
+            sp_med[i] = np.nan
+        else:
+            sp_med[i] = np.nanmedian(sp_med[i-n:i+n+1])
+    for i in range(len(sp)-n, len(sp)):
+        if np.isnan(sp[i]):
+            sp_med[i] = np.nan
+        else:
+            sp_med[i] = np.nanmedian(sp_med[-2*(len(sp)-i):])
     return sp_med
 
 def moyenne_glissante(sp, n):
@@ -173,11 +186,20 @@ def moyenne_glissante(sp, n):
         raise ValueError('n must be >= 0')
     sp_moy = deepcopy(sp)
     for i in range(n):
-        sp_moy[i] = np.average(sp_moy[:2*i+1])
+        if np.isnan(sp[i]):
+            sp_moy[i] = np.nan
+        else:
+            sp_moy[i] = np.nanmean(sp_moy[:2*i+1])
     for i in range(n, len(sp)-n):
-        sp_moy[i] = np.average(sp_moy[i-n:i+n+1])
+        if np.isnan(sp[i]):
+            sp_moy[i] = np.nan
+        else:
+            sp_moy[i] = np.nanmean(sp_moy[i-n:i+n+1])
     for i in range(len(sp)-n, len(sp)):
-        sp_moy[i] = np.average(sp_moy[-2*(len(sp)-i):])
+        if np.isnan(sp[i]):
+            sp_moy[i] = np.nan
+        else:
+            sp_moy[i] = np.nanmean(sp_moy[-2*(len(sp)-i):])
     return sp_moy
 
 ##-----------------------------------------------------------------------------------
