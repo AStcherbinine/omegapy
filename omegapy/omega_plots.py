@@ -173,6 +173,7 @@ def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None
     if title == 'auto':
         title = 'OMEGA/MEx observation {0}\n'.format(omega.name) 
     fig = plt.figure(Nfig)
+    Nfig = fig.number   # get the actual figure number if Nfig=None
     if polar:
         ax = plt.axes(polar=True)
         plt.pcolormesh(omega.lon_grid*np.pi/180, omega.lat_grid, cube[:,:,i_lam], cmap=cmap, 
@@ -689,6 +690,7 @@ def show_ibd_v2(omega, ibd, cmap='viridis', vmin=None, vmax=None, alpha=None, ti
     if title == 'auto':
         title = ('OMEGA/MEx observation {0}'.format(omega.name))
     fig = plt.figure(Nfig)
+    Nfig = fig.number   # get the actual figure number if Nfig=None
     if polar:
         ax = plt.axes(polar=True)
         plt.pcolormesh(omega.lon_grid*np.pi/180, omega.lat_grid, ibd, cmap=cmap, 
@@ -899,6 +901,7 @@ def show_omega_list_v2(omega_list, lam, lat_min=-90, lat_max=90, lon_min=0, lon_
         if title == 'auto':
             title = 'Composite map from OMEGA/MEx observations' 
         fig = plt.figure(Nfig)
+        Nfig = fig.number   # get the actual figure number if Nfig=None
         if polar:
             ax = plt.axes(polar=True)
             plt.pcolormesh(grid_lon*np.pi/180, grid_lat, data2, cmap=cmap, 
