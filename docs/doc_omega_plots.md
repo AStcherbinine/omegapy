@@ -6,15 +6,15 @@ Display of OMEGAdata cubes.
 
 `show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, title='auto', xlim=(None, None), ylim=(None, None), Nfig=None)`
 
-`show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, alpha=None, title='auto', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True)`
+`show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, alpha=None, title='auto', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True, grid=True)`
 
 `show_omega_interactif(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, title='auto', autoyscale=True, xlim=(None, None), ylim=(None, None))`
 
-`show_omega_interactif_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, title='auto', autoyscale=True, alpha=None, lonlim=(None, None), latlim=(None, None), polar=False)`
+`show_omega_interactif_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, title='auto', autoyscale=True, alpha=None, lonlim=(None, None), latlim=(None, None), polar=False, grid=True)`
 
-`show_ibd_v2(omega, ibd, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', cb_title = 'IBD', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True)`
+`show_ibd_v2(omega, ibd, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', cb_title = 'IBD', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True, grid=True)`
 
-`show_omega_list_v2(omega_list, lam, lat_min=-90, lat_max=90, lon_min=0, lon_max=360, pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto', data_list=None, plot=True, out=False, **kwargs)`
+`show_omega_list_v2(omega_list, lam, lat_min=-90, lat_max=90, lon_min=0, lon_max=360, pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto', data_list=None, plot=True, grid=True, out=False, **kwargs)`
 
 
 ### Display cube
@@ -30,33 +30,33 @@ omegapy.omega_plots.show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_
         The OMEGA/MEx observation
     lam : float
         The selected wavelength.
-    refl : bool (default True)
+    refl : bool, optional (default True)
         True -> The reflectance is display.
         False -> The radiance is display.
-    lam_unit : str (optional, default 'm')
+    lam_unit : str, optional (default 'm')
         The unit of the `lam` parameter:
         | 'm' -> `lam` is the wavelength value (in µm).
         | else -> `lam` is the index of the wavelength in the omega.lam array (must be int).
-    cmap : str (optional, default 'Greys_r')
+    cmap : str, optional (default 'Greys_r')
         The matplotlib colormap.
-    vmin : float or None (optional, default None)
+    vmin : float or None, optional (default None)
         The lower bound of the coloscale.
-    vmax : float or None (optional, default None)
+    vmax : float or None, optional (default None)
         The upper bound of the colorscale.
-    title : str (optional, default 'auto')
+    title : str, optional (default 'auto')
         The title of the figure.
-    xlim : tuple of int or None (optional, default (None, None))
+    xlim : tuple of int or None, optional (default (None, None))
         The bounds of the x-axis of the figure.
-    ylim : tuple of int or None (optional, default (None, None))
+    ylim : tuple of int or None, optional (default (None, None))
         The bounds of the y-axis of the figure.
-    Nfig : int or str or None (optional, default None)
+    Nfig : int or str or None, optional (default None)
         The target figure ID.
 ~~~
 
 ~~~python
 omegapy.omega_plots.show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None,
                   alpha=None, title='auto', lonlim=(None, None), latlim=(None, None), Nfig=None,
-                  polar=False, cbar=True):
+                  polar=False, cbar=True, grid=True):
     Display an OMEGA/MEx observation with respect of the lat/lon coordinates of the pixels,
     and allows to use a polar projection if desired.
 
@@ -66,33 +66,35 @@ omegapy.omega_plots.show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Gre
         The OMEGA/MEx observation
     lam : float
         The selected wavelength.
-    refl : bool (default True)
+    refl : bool, optional (default True)
         True -> The reflectance is display.
         False -> The radiance is display.
-    lam_unit : str (optional, default 'm')
+    lam_unit : str, optional (default 'm')
         The unit of the `lam` parameter:
         | 'm' -> `lam` is the wavelength value (in µm).
         | else -> `lam` is the index of the wavelength in the omega.lam array (must be int).
-    cmap : str (optional, default 'Greys_r')
+    cmap : str, optional (default 'Greys_r')
         The matplotlib colormap.
-    vmin : float or None (optional, default None)
+    vmin : float or None, optional (default None)
         The lower bound of the coloscale.
-    vmax : float or None (optional, default None)
+    vmax : float or None, optional (default None)
         The upper bound of the colorscale.
-    alpha : float or None (optional, default None)
+    alpha : float or None, optional (default None)
         Opacity of the plot.
-    title : str (optional, default 'auto')
+    title : str, optional (default 'auto')
         The title of the figure.
-    lonlim : tuple of int or None (optional, default (None, None))
+    lonlim : tuple of int or None, optional (default (None, None))
         The longitude bounds of the figure.
-    latlim : tuple of int or None (optional, default (None, None))
+    latlim : tuple of int or None, optional (default (None, None))
         The latitude bounds of the y-axis of the figure.
-    Nfig : int or str or None (optional, default None)
+    Nfig : int or str or None, optional, default None)
         The target figure ID.
-    polar : bool (optional, default False)
+    polar : bool, optional (default False)
         If True -> Use a polar projection for the plot.
-    cbar : bool (optional, default True)
+    cbar : bool, optional (default True)
         If True -> Diplay the colorbar.
+    grid : bool, optional (default True)
+        Enable the display of the lat/lon grid.
 ~~~
 
 ### Display cube interactive version
@@ -111,24 +113,24 @@ omegapy.omega_plots.show_omega_interactif(omega, lam, refl=True, lam_unit='m', c
         The OMEGA/MEx observation
     lam : float
         The selected wavelength.
-    refl : bool (default True)
+    refl : bool, optional (default True)
         True -> The reflectance is display.
         False -> The radiance is display.
-    lam_unit : str (optional, default 'm')
+    lam_unit : str, optional (default 'm')
         The unit of the `lam` parameter:
         | 'm' -> `lam` is the wavelength value (in µm).
         | else -> `lam` is the index of the wavelength in the omega.lam array (must be int).
-    cmap : str (optional, default 'Greys_r')
+    cmap : str, optional (default 'Greys_r')
         The matplotlib colormap.
-    vmin : float or None (optional, default None)
+    vmin : float or None, optional (default None)
         The lower bound of the coloscale.
-    vmax : float or None (optional, default None)
+    vmax : float or None, optional (default None)
         The upper bound of the colorscale.
-    title : str (optional, default 'auto')
+    title : str, optional (default 'auto')
         The title of the figure.
-    xlim : tuple of int or None (optional, default (None, None))
+    xlim : tuple of int or None, optional (default (None, None))
         The bounds of the x-axis of the figure.
-    ylim : tuple of int or None (optional, default (None, None))
+    ylim : tuple of int or None, optional (default (None, None))
         The bounds of the y-axis of the figure.
 ~~~
 
@@ -136,7 +138,7 @@ omegapy.omega_plots.show_omega_interactif(omega, lam, refl=True, lam_unit='m', c
 omegapy.omega_plots.show_omega_interactif_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', 
                           vmin=None, vmax=None, title='auto', autoyscale=True,
                           alpha=None, lonlim=(None, None), latlim=(None, None),
-                          polar=False):
+                          polar=False, grid=True):
     Affichage interactif d'un cube de données.
     Possibilité d'afficher le spectre associé à un pixel en cliquant dessus
     (maintenir Ctrl pour supperposer plusieurs spectres), ou en se déplaçant avec les flèches.
@@ -150,32 +152,34 @@ omegapy.omega_plots.show_omega_interactif_v2(omega, lam, refl=True, lam_unit='m'
         The OMEGA/MEx observation
     lam : float
         The selected wavelength.
-    refl : bool (default True)
+    refl : bool, optional (default True)
         True -> The reflectance is display.
         False -> The radiance is display.
-    lam_unit : str (optional, default 'm')
+    lam_unit : str, optional (default 'm')
         The unit of the `lam` parameter:
         | 'm' -> `lam` is the wavelength value (in µm).
         | else -> `lam` is the index of the wavelength in the omega.lam array (must be int).
-    cmap : str (optional, default 'Greys_r')
+    cmap : str, optional (default 'Greys_r')
         The matplotlib colormap.
-    vmin : float or None (optional, default None)
+    vmin : float or None, optional (default None)
         The lower bound of the coloscale.
-    vmax : float or None (optional, default None)
+    vmax : float or None, optional (default None)
         The upper bound of the colorscale.
-    title : str (optional, default 'auto')
+    title : str, optional (default 'auto')
         The title of the figure.
-    autoyscale : bool (optional, default True)
+    autoyscale : bool, optional (default True)
         | True -> Enable the auto-scaling of the spectra y-axis.
         | False -> Force use of the (vmin, vmax) bounds for the spectra plots.
-    alpha : float or None (optional, default None)
+    alpha : float or None, optional (default None)
         Opacity of the plot.
-    lonlim : tuple of int or None (optional, default (None, None))
+    lonlim : tuple of int or None, optional (default (None, None))
         The longitude bounds of the figure.
-    latlim : tuple of int or None (optional, default (None, None))
+    latlim : tuple of int or None, optional (default (None, None))
         The latitude bounds of the y-axis of the figure.
-    polar : bool (optional, default False)
+    polar : bool, optional (default False)
         If True -> Use a polar projection for the plot.
+    grid : bool, optional (default True)
+        Enable the display of the lat/lon grid.
 ~~~
 
 ### Display derived data map from OMEGA observation (ex IBD)
@@ -183,7 +187,7 @@ omegapy.omega_plots.show_omega_interactif_v2(omega, lam, refl=True, lam_unit='m'
 ~~~python
 omegapy.omega_plots.show_ibd_v2(omega, ibd, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', 
                 cb_title = 'IBD', lonlim=(None, None), latlim=(None, None), Nfig=None, 
-                polar=False, cbar=True):
+                polar=False, cbar=True, grid=True):
     Affichage IBD avec pcolormesh.
     Display an OMEGA/MEx observation with respect of the lat/lon coordinates of the pixels,
     and allows to use a polar projection if desired.
@@ -194,28 +198,30 @@ omegapy.omega_plots.show_ibd_v2(omega, ibd, cmap='viridis', vmin=None, vmax=None
         The OMEGA/MEx observation
     ibd : 2D array
         The array of the computed IBD values from the omega observation
-    cmap : str (optional, default 'Greys_r')
+    cmap : str, optional (default 'Greys_r')
         The matplotlib colormap.
-    vmin : float or None (optional, default None)
+    vmin : float or None, optional (default None)
         The lower bound of the coloscale.
-    vmax : float or None (optional, default None)
+    vmax : float or None, optional (default None)
         The upper bound of the colorscale.
-    alpha : float or None (optional, default None)
+    alpha : float or None, optional (default None)
         Opacity of the plot.
-    title : str (optional, default 'auto')
+    title : str, optional (default 'auto')
         The title of the figure.
-    cb_title : str (optional, default 'IBD')
+    cb_title : str,  optional (default 'IBD')
         The title of the colorbar.
-    lonlim : tuple of int or None (optional, default (None, None))
+    lonlim : tuple of int or None, optional (default (None, None))
         The longitude bounds of the figure.
-    latlim : tuple of int or None (optional, default (None, None))
+    latlim : tuple of int or None, optional (default (None, None))
         The latitude bounds of the y-axis of the figure.
-    Nfig : int or str or None (optional, default None)
+    Nfig : int or str or None, optional (default None)
         The target figure ID.
-    polar : bool (optional, default False)
+    polar : bool, optional (default False)
         If True -> Use a polar projection for the plot.
-    cbar : bool (optional, default True)
+    cbar : bool, optional (default True)
         If True -> Display the colorbar.
+    grid : bool, optional (default True)
+        Enable the display of the lat/lon grid.
 ~~~
 
 ### Display composite map of several OMEGA observations, sample on a lat/lon grid
@@ -224,7 +230,7 @@ omegapy.omega_plots.show_ibd_v2(omega, ibd, cmap='viridis', vmin=None, vmax=None
 omegapy.omega_plots.show_omega_list_v2(omega_list, lam, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
                        pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, 
                        title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto',
-                       data_list=None, plot=True, out=False, **kwargs):
+                       data_list=None, plot=True, grid=True, out=False, **kwargs):
     Display an composite map from a list OMEGA/MEx observations, sampled on a new lat/lon grid.
 
     Parameters
@@ -233,40 +239,42 @@ omegapy.omega_plots.show_omega_list_v2(omega_list, lam, lat_min=-90, lat_max=90,
         The list of OMEGA/MEx observations.
     lam : float
         The selected wavelength (in µm).
-    lat_min : float (optional, default -90)
+    lat_min : float, optional (default -90)
         The minimal latitude of the grid.
-    lat_max : float (optional, default 90)
+    lat_max : float, optional (default 90)
         The maximum latitude of the grid.
-    lon_min : float (optional, default 0)
+    lon_min : float, optional (default 0)
         The minimal longitude of the grid.
-    lon_max : float (optional, default 360)
+    lon_max : float, optional (default 360)
         The maximal longitude of the grid.
-    pas_lat : float (optional, default 0.1)
+    pas_lat : float, optional (default 0.1)
         The latitude intervals of the grid.
-    pas_lon : float (optional, default 0.1)
+    pas_lon : float, optional (default 0.1)
         The longitude intervals of the grid.
-    cmap : str (optional, default 'Greys_r')
+    cmap : str, optional (default 'Greys_r')
         The matplotlib colormap.
-    vmin : float or None (optional, default None)
+    vmin : float or None, optional (default None)
         The lower bound of the coloscale.
-    vmax : float or None (optional, default None)
+    vmax : float or None, optional (default None)
         The upper bound of the colorscale.
-    title : str (optional, default 'auto')
+    title : str, optional (default 'auto')
         The title of the figure.
-    Nfig : int or str or None (optional, default None)
+    Nfig : int or str or None, optional (default None)
         The target figure ID.
-    polar : bool (optional, default False)
+    polar : bool, optional (default False)
         If True -> Use a polar projection for the plot.
-    cbar : bool (optional, default True)
+    cbar : bool, optional (default True)
         If True -> Diplay the colorbar.
-    cb_title : str (optional, default 'auto')
+    cb_title : str, optional (default 'auto')
         The title of the colorbar
-    data_list : 3D array or None (optional, default None)
+    data_list : 3D array or None, optional (default None)
         1D array of the same dimension of `omega_list` containing alternative maps (2D arrays),
         in the **same order** than the observations of `omega_list`.
-    plot : bool (optional, default True)
+    plot : bool, optional (default True)
         If True -> Diplay the final figure.
-    out : bool (optional, default False)
+    grid : bool, optional (default True)
+        Enable the display of the lat/lon grid.
+    out : bool, optional (default False)
         If True -> Return output.
     **kwargs:
         Optional arguments for the plt.pcolormesh() function.
