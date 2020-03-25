@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 24/03/2020
+## Last modified by Aurélien STCHERBININE : 25/03/2020
 
 ##----------------------------------------------------------------------------------------
 """Display of OMEGAdata cubes.
@@ -24,7 +24,7 @@ from . import omega_data as od
 from .omega_data import OMEGAdata
 
 # if __name__ == '__main__':
-    # # Activation of the interactive mode
+# Activation of the interactive mode
 plt.ion()
 # De-activation of default matplotlib keybindings for keyboard arrows
 if 'left' in mpl.rcParams['keymap.back']:
@@ -490,10 +490,11 @@ def show_omega_interactif2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r',
     cid = fig1.canvas.mpl_connect('pick_event', pick_pos)
     cid2 = fig1.canvas.mpl_connect('key_press_event', change_pos)
 
-def show_omega_interactif_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', 
-                          vmin=None, vmax=None, title='auto', autoyscale=True,
-                          alpha=None, lonlim=(None, None), latlim=(None, None),
-                          polar=False, grid=True):
+def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=None, 
+                             cmap='Greys_r', cb_title='IBD', title='auto',
+                             vmin=None, vmax=None, autoyscale=True, ylim_sp=(None, None),
+                             alpha=None, lonlim=(None, None), latlim=(None, None),
+                             polar=False, cbar=True, grid=True):
     """Affichage interactif d'un cube de données.
     Possibilité d'afficher le spectre associé à un pixel en cliquant dessus
     (maintenir Ctrl pour supperposer plusieurs spectres), ou en se déplaçant avec les flèches.
@@ -505,7 +506,7 @@ def show_omega_interactif_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r'
     ==========
     omega : OMEGAdata
         The OMEGA/MEx observation
-    lam : float
+    lam : float, optional (default 1.085)
         The selected wavelength.
     refl : bool, optional (default True)
         True -> The reflectance is display.
@@ -514,17 +515,25 @@ def show_omega_interactif_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r'
         The unit of the `lam` parameter:
         | 'm' -> `lam` is the wavelength value (in µm).
         | else -> `lam` is the index of the wavelength in the omega.lam array (must be int).
+    data : 2D array or None, optional (default None)
+        Array of high-level data (e.g. IBD map) computed from the omega observation.
     cmap : str, optional (default 'Greys_r')
         The matplotlib colormap.
+    cb_title : str,  optional (default 'IBD')
+        The title of the colorbar.
+        Note : Only for the `data` plots.
+    title : str, optional (default 'auto')
+        The title of the figure.
     vmin : float or None, optional (default None)
         The lower bound of the coloscale.
     vmax : float or None, optional (default None)
         The upper bound of the colorscale.
-    title : str, optional (default 'auto')
-        The title of the figure.
     autoyscale : bool, optional (default True)
         | True -> Enable the auto-scaling of the spectra y-axis.
         | False -> Force use of the (vmin, vmax) bounds for the spectra plots.
+    ylim_sp : tuble of float or None, optional (default (None, None))
+        If autoyscale is False, can specify the bound values for the spectrum y-axis,
+        other that (vmin, vmax).
     alpha : float or None, optional (default None)
         Opacity of the plot.
     lonlim : tuple of int or None, optional (default (None, None))
@@ -533,6 +542,8 @@ def show_omega_interactif_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r'
         The latitude bounds of the y-axis of the figure.
     polar : bool, optional (default False)
         If True -> Use a polar projection for the plot.
+    cbar : bool, optional (default True)
+        If True -> Diplay the colorbar.
     grid : bool, optional (default True)
         Enable the display of the lat/lon grid.
     """
@@ -555,9 +566,12 @@ def show_omega_interactif_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r'
     # fig1, ax1 = plt.subplots(1,1)
     fig1 = plt.figure()
     nfig = fig1.number
-    # ax1.scatter(lon, lat, c=bij, marker='s', s=1, picker=True, alpha=0)
-    show_omega_v2(omega, lam, refl, lam_unit, cmap, vmin, vmax, alpha, title, 
-                    lonlim, latlim, nfig, polar, grid)
+    if data is None:
+        show_omega_v2(omega, lam, refl, lam_unit, cmap, vmin, vmax, alpha, title, 
+                      lonlim, latlim, nfig, polar, cbar, grid)
+    else:
+        show_ibd_v2(omega, data, cmap, vmin, vmax, alpha, title, cb_title, 
+                    lonlim, latlim, nfig, polar, cbar, grid)
     ax1 = fig1.gca()
     ax1.scatter(lon, lat, c=bij, marker='s', s=1, picker=True, alpha=0)
     sc_pos = []
@@ -569,6 +583,10 @@ def show_omega_interactif_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r'
         ycoord = 0
     else:
         ycoord = deepcopy(latlim[0])
+    if ylim_sp[0] is None:
+        ylim_sp[0] = vmin
+    if ylim_sp[1] is None:
+        ylim_sp[1] = vmax
     
     #---------------------------------
     # Plot spectra fig2 function
@@ -597,7 +615,7 @@ def show_omega_interactif_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r'
             if (vmax!=None) and (ymax < vmax):
                 ymax = vmax
         else:
-            ymin, ymax = vmin, vmax
+            ymin, ymax = ylim_sp[0], ylim_sp[1]
         plt.ylim(ymin, ymax)
         fig2.canvas.draw()
         fig2.canvas.flush_events()
@@ -618,10 +636,6 @@ def show_omega_interactif_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r'
         bij_value = artist.get_array()[ind]
         xcoord = int(bij_value % 10000)
         ycoord = int(bij_value // 10000)
-        # longi, lati = artist.get_offsets()[ind]
-        # if not ctrl:        # Si Ctrl enfoncée, pas le plot précédent est conservé
-            # plt.clf()
-        # print(longi, xcoord, lati, ycoord)
         plot_sp(xcoord, ycoord, not ctrl)
 
     #---------------------------------
@@ -811,7 +825,7 @@ def check_list_data_omega(omega_list, data_list, disp=True):
     if disp:
         print("\033[01;32mCompatibility between omega_list and data_list OK\033[0m")
 
-def show_omega_list_v2(omega_list, lam, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
+def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
                        pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, 
                        title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto',
                        data_list=None, plot=True, grid=True, out=False, **kwargs):
@@ -821,7 +835,7 @@ def show_omega_list_v2(omega_list, lam, lat_min=-90, lat_max=90, lon_min=0, lon_
     ==========
     omega_list : array of OMEGAdata
         The list of OMEGA/MEx observations.
-    lam : float
+    lam : float, optional (default 1.085)
         The selected wavelength (in µm).
     lat_min : float, optional (default -90)
         The minimal latitude of the grid.
@@ -873,6 +887,8 @@ def show_omega_list_v2(omega_list, lam, lat_min=-90, lat_max=90, lon_min=0, lon_
         The new latitude grid.
     grid lon : 2D array
         The new longitude grid.
+    mask_obs : 2D array of str
+        The array indicating which observations have been used to fill each grid position.
     """
     # Sampling on same grid
     lat_array = np.arange(lat_min, lat_max+pas_lat, pas_lat)
@@ -880,6 +896,8 @@ def show_omega_list_v2(omega_list, lam, lat_min=-90, lat_max=90, lon_min=0, lon_
     Nlon, Nlat = len(lon_array)-1, len(lat_array)-1
     grid_lat, grid_lon = np.meshgrid(lat_array, lon_array)
     data, mask = np.zeros((Nlon, Nlat)), np.zeros((Nlon, Nlat))
+    mask_obs = np.ndarray((Nlon, Nlat), dtype=object)
+    mask_obs.fill('')
     if data_list is None:
         for omega in tqdm(omega_list):
             i_lam = uf.where_closer(lam, omega.lam)
@@ -887,6 +905,7 @@ def show_omega_list_v2(omega_list, lam, lat_min=-90, lat_max=90, lon_min=0, lon_
                                      lon_min, lon_max, pas_lat, pas_lon)[:2]
             data += np.nan_to_num(data0)    # Conversion NaN -> 0 pour somme des images
             mask += mask0
+            mask_obs[mask0 == 1] += (omega.name + ',')
     else:
         check_list_data_omega(omega_list, data_list, disp=True)
         for i, omega in enumerate(tqdm(omega_list)):
@@ -894,6 +913,7 @@ def show_omega_list_v2(omega_list, lam, lat_min=-90, lat_max=90, lon_min=0, lon_
                                      lon_min, lon_max, pas_lat, pas_lon)[:2]
             data += np.nan_to_num(data0)    # Conversion NaN -> 0 pour somme des images
             mask += mask0
+            mask_obs[mask0 == 1] += (omega.name + ',')
     data[mask == 0] = np.nan
     data2 = data/mask   # Normalisation
     # Affichage figure
@@ -948,7 +968,7 @@ def show_omega_list_v2(omega_list, lam, lat_min=-90, lat_max=90, lon_min=0, lon_
     # Output
     if out:
         mask2 = np.clip(mask, 0, 1)
-        return data2, mask2, grid_lat, grid_lon
+        return data2, mask2, grid_lat, grid_lon, mask_obs
 
 ##----------------------------------------------------------------------------------------
 ## End of code

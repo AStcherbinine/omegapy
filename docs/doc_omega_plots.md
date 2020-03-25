@@ -10,7 +10,7 @@ Display of OMEGAdata cubes.
 
 `show_omega_interactif(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, title='auto', autoyscale=True, xlim=(None, None), ylim=(None, None))`
 
-`show_omega_interactif_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, title='auto', autoyscale=True, alpha=None, lonlim=(None, None), latlim=(None, None), polar=False, grid=True)`
+`show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=None, cmap='Greys_r', cb_title='IBD', title='auto', vmin=None, vmax=None, autoyscale=True, ylim_sp=(None, None), alpha=None, lonlim=(None, None), latlim=(None, None), polar=False, cbar=True, grid=True)`
 
 `show_ibd_v2(omega, ibd, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', cb_title = 'IBD', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True, grid=True)`
 
@@ -135,10 +135,11 @@ omegapy.omega_plots.show_omega_interactif(omega, lam, refl=True, lam_unit='m', c
 ~~~
 
 ~~~python
-omegapy.omega_plots.show_omega_interactif_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', 
-                          vmin=None, vmax=None, title='auto', autoyscale=True,
-                          alpha=None, lonlim=(None, None), latlim=(None, None),
-                          polar=False, grid=True):
+omegapy.omega_plots.show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=None, 
+                             cmap='Greys_r', cb_title='IBD', title='auto',
+                             vmin=None, vmax=None, autoyscale=True, ylim_sp=(None, None),
+                             alpha=None, lonlim=(None, None), latlim=(None, None),
+                             polar=False, cbar=True, grid=True):
     Affichage interactif d'un cube de données.
     Possibilité d'afficher le spectre associé à un pixel en cliquant dessus
     (maintenir Ctrl pour supperposer plusieurs spectres), ou en se déplaçant avec les flèches.
@@ -150,7 +151,7 @@ omegapy.omega_plots.show_omega_interactif_v2(omega, lam, refl=True, lam_unit='m'
     ==========
     omega : OMEGAdata
         The OMEGA/MEx observation
-    lam : float
+    lam : float, optional (default 1.085)
         The selected wavelength.
     refl : bool, optional (default True)
         True -> The reflectance is display.
@@ -159,17 +160,25 @@ omegapy.omega_plots.show_omega_interactif_v2(omega, lam, refl=True, lam_unit='m'
         The unit of the `lam` parameter:
         | 'm' -> `lam` is the wavelength value (in µm).
         | else -> `lam` is the index of the wavelength in the omega.lam array (must be int).
+    data : 2D array or None, optional (default None)
+        Array of high-level data (e.g. IBD map) computed from the omega observation.
     cmap : str, optional (default 'Greys_r')
         The matplotlib colormap.
+    cb_title : str,  optional (default 'IBD')
+        The title of the colorbar.
+        Note : Only for the `data` plots.
+    title : str, optional (default 'auto')
+        The title of the figure.
     vmin : float or None, optional (default None)
         The lower bound of the coloscale.
     vmax : float or None, optional (default None)
         The upper bound of the colorscale.
-    title : str, optional (default 'auto')
-        The title of the figure.
     autoyscale : bool, optional (default True)
         | True -> Enable the auto-scaling of the spectra y-axis.
         | False -> Force use of the (vmin, vmax) bounds for the spectra plots.
+    ylim_sp : tuble of float or None, optional (default (None, None))
+        If autoyscale is False, can specify the bound values for the spectrum y-axis,
+        other that (vmin, vmax).
     alpha : float or None, optional (default None)
         Opacity of the plot.
     lonlim : tuple of int or None, optional (default (None, None))
@@ -178,6 +187,8 @@ omegapy.omega_plots.show_omega_interactif_v2(omega, lam, refl=True, lam_unit='m'
         The latitude bounds of the y-axis of the figure.
     polar : bool, optional (default False)
         If True -> Use a polar projection for the plot.
+    cbar : bool, optional (default True)
+        If True -> Diplay the colorbar.
     grid : bool, optional (default True)
         Enable the display of the lat/lon grid.
 ~~~
