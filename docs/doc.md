@@ -3,17 +3,17 @@
 ## [`omegapy.omega_data`](doc_omega_data.md)
 
 Importation of OMEGA observations in the OMEGAdata class.
-Using IDL routines containing in *./omega_routines/*.
+Using IDL routines containing in omegapy/omega_routines/*.
 
-`class OMEGAdata(obs='', empty=False, data_path=omega_bin_path)`
+`class OMEGAdata(obs='', empty=False, data_path=_omega_bin_path)`
 
 `find_cube(lat, lon, cmin=0, cmax=10000, out=False)`
 
-`autosave_omega(omega, folder='auto', base_folder=omega_py_path, security=True, disp=True)`
+`autosave_omega(omega, folder='auto', base_folder=_omega_py_path, security=True, disp=True)`
 
-`autoload_omega(obs_name, folder='auto', version=Version, base_folder=omega_py_path, disp=True)`
+`autoload_omega(obs_name, folder='auto', version=Version, base_folder=_omega_py_path, disp=True)`
 
-`save_omega(omega, savname='auto', folder='', base_folder=omega_py_path, pref ='', suff='', disp=True)`
+`save_omega(omega, savname='auto', folder='', base_folder=_omega_py_path, pref ='', suff='', disp=True)`
 
 `load_omega(filename, disp=True)`
 
@@ -29,9 +29,9 @@ Using IDL routines containing in *./omega_routines/*.
 
 `corr_atm2(omega)`
 
-`corr_save_omega(obsname, folder='auto', base_folder=omega_py_path, security=True, overwrite=True, compress=True)`
+`corr_save_omega(obsname, folder='auto', base_folder=_omega_py_path, security=True, overwrite=True, compress=True)`
 
-`corr_save_omega_list(liste_obs, folder='auto', base_folder=omega_py_path, security=True, overwrite=True, compress=True)`
+`corr_save_omega_list(liste_obs, folder='auto', base_folder=_omega_py_path, security=True, overwrite=True, compress=True)`
 
 `set_omega_bin_path(new_path)`
 
@@ -41,7 +41,7 @@ Using IDL routines containing in *./omega_routines/*.
 
 `get_omega_py_path()`
 
-`update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=Version, base_folder=omega_py_path)`
+`update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=Version, base_folder=_omega_py_path)`
 
 
 ## [`omegapy.omega_plots`](doc_omega_plots.md)

@@ -3,17 +3,17 @@
 ## `omegapy.omega_data`
 
 Importation of OMEGA observations in the OMEGAdata class.
-Using IDL routines containing in *./omega_routines/*.
+Using IDL routines containing in omegapy/omega_routines/*.
 
-`class OMEGAdata(obs='', empty=False, data_path=omega_bin_path)`
+`class OMEGAdata(obs='', empty=False, data_path=_omega_bin_path)`
 
 `find_cube(lat, lon, cmin=0, cmax=10000, out=False)`
 
-`autosave_omega(omega, folder='auto', base_folder=omega_py_path, security=True, disp=True)`
+`autosave_omega(omega, folder='auto', base_folder=_omega_py_path, security=True, disp=True)`
 
-`autoload_omega(obs_name, folder='auto', version=Version, base_folder=omega_py_path, disp=True)`
+`autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega_py_path, disp=True)`
 
-`save_omega(omega, savname='auto', folder='', base_folder=omega_py_path, pref ='', suff='', disp=True)`
+`save_omega(omega, savname='auto', folder='', base_folder=_omega_py_path, pref ='', suff='', disp=True)`
 
 `load_omega(filename, disp=True)`
 
@@ -29,9 +29,9 @@ Using IDL routines containing in *./omega_routines/*.
 
 `corr_atm2(omega)`
 
-`corr_save_omega(obsname, folder='auto', base_folder=omega_py_path, security=True, overwrite=True, compress=True)`
+`corr_save_omega(obsname, folder='auto', base_folder=_omega_py_path, security=True, overwrite=True, compress=True)`
 
-`corr_save_omega_list(liste_obs, folder='auto', base_folder=omega_py_path, security=True, overwrite=True, compress=True)`
+`corr_save_omega_list(liste_obs, folder='auto', base_folder=_omega_py_path, security=True, overwrite=True, compress=True)`
 
 `set_omega_bin_path(new_path)`
 
@@ -41,12 +41,12 @@ Using IDL routines containing in *./omega_routines/*.
 
 `get_omega_py_path()`
 
-`update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=Version, base_folder=omega_py_path)`
+`update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=_Version, base_folder=_omega_py_path)`
 
 
 ### OMEGAdata class
 ~~~python
-class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path='/data2/opt/geomeg/data/product/'):
+class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_path):
     Importation of OMEGA/MEx observation, using the readomega_vpy.pro IDL routine.
 
     Parameters
@@ -55,7 +55,7 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path='/data2/opt/ge
         The name of the OMEGA observation.
     empty : bool, optional (default False)
         If True, return an empty OMEGAdata object.
-    data_path : str, optional (default $OMEGA_BIN_PATH or '/data2/opt/geomeg/data/product/')
+    data_path : str, optional (default _omega_py_path)
         The path of the directory containing the data (.QUB) and 
         navigation (.NAV) files.
 
@@ -79,6 +79,8 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path='/data2/opt/ge
         The longitude of each pixel (deg).
     alt : 2D array
         The elevation of the pixel footprint center point (km).
+    loct : 2D array of floats
+        The array of the local time for each pixel of the observation.
     emer : 2D array
         The angle of emergent line (from the surface) (deg).
     inci : 2D array
@@ -146,7 +148,7 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path='/data2/opt/ge
     
     Methods
     =======
-    __init__(self, obs='', empty=False, data_path=omega_bin_path)
+    __init__(self, obs='', empty=False, data_path=_omega_bin_path)
     
     __copy__(self)
 
@@ -185,7 +187,7 @@ omegapy.omega_data.find_cube(lat, lon, cmin=0, cmax=10000, out=False):
 
 ### OMEGAdata files handling
 ~~~python
-omegapy.omega_data.autosave_omega(omega, folder='auto', base_folder=omega_py_path, security=True, disp=True):
+omegapy.omega_data.autosave_omega(omega, folder='auto', base_folder=_omega_py_path, security=True, disp=True):
     Save an OMEGA object at the selected path using the pickle module, with automatic
     configuration of the target name.
 
@@ -198,7 +200,7 @@ omegapy.omega_data.autosave_omega(omega, folder='auto', base_folder=omega_py_pat
     folder : str, optional (default 'auto')
         The subfolder to save the data.
         | If 'auto' -> folder = 'vX.X', where X.X is the Version of the current code.
-    base_folder : str, optional (default $OMEGA_PY_PATH)
+    base_folder : str, optional (default _omega_py_path)
         The base folder path.
     security : bool, optional (default True)
         Enable / disable checking before overwriting a file.
@@ -212,7 +214,7 @@ omegapy.omega_data.autosave_omega(omega, folder='auto', base_folder=omega_py_pat
 ~~~
 
 ~~~python
-omegapy.omega_data.autoload_omega(obs_name, folder='auto', version=Version, base_folder=omega_py_path,
+omegapy.omega_data.autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega_py_path,
                    disp=True):
     Load and return a previously saved OMEGAdata object using pickle (with autosave_omega()).
 
@@ -223,9 +225,9 @@ omegapy.omega_data.autoload_omega(obs_name, folder='auto', version=Version, base
     folder : str, optional (default 'auto')
         The subfolder where the data is.
         | If 'auto' -> folder = 'vX.X', where X.X is the given value of code version.
-    version : float, optional (default Version)
+    version : float, optional (default _Version)
         The version of the target file (if folder is 'auto').
-    base_folder : str, optional (default $OMEGA_PY_PATH)
+    base_folder : str, optional (default _omega_py_path)
         The base folder path.
     disp : bool
         Control the display.
@@ -239,7 +241,7 @@ omegapy.omega_data.autoload_omega(obs_name, folder='auto', version=Version, base
 ~~~
 
 ~~~python
-omegapy.omega_data.save_omega(omega, savname='auto', folder='', base_folder=omega_py_path,
+omegapy.omega_data.save_omega(omega, savname='auto', folder='', base_folder=_omega_py_path,
                pref ='', suff='', disp=True):
     Save an OMEGA object at the selected path using the pickle module.
 
@@ -254,7 +256,7 @@ omegapy.omega_data.save_omega(omega, savname='auto', folder='', base_folder=omeg
         | If 'auto' -> savname = 'pref_omega.name_ext.pkl'
     folder : str, optional (default '')
         The subfolder to save the data.
-    base_folder : str, optional (default omega_py_path)
+    base_folder : str, optional (default _omega_py_path)
         The base folder path.
     pref : str, optional (default '')
         The prefix of the savname.
@@ -398,7 +400,7 @@ omegapy.omega_data.corr_atm2(omega):
 Import an OMEGA/MEx observation, apply a thermal and atmospheric correction (M1) and save the OMEGAdata object at each step.
 
 ~~~
-omegapy.omega_data.corr_save_omega(obsname, folder='auto', base_folder=omega_py_path, security=True,
+omegapy.omega_data.corr_save_omega(obsname, folder='auto', base_folder=_omega_py_path, security=True,
                     overwrite=True, compress=True):
     Correction and saving of OMEGA/MEx observations.
 
@@ -409,7 +411,7 @@ omegapy.omega_data.corr_save_omega(obsname, folder='auto', base_folder=omega_py_
     folder : str, optional (default 'auto')
         The subfolder to save the data.
         | If 'auto' -> folder = 'vX.X', where X.X is the OMEGAdata version.
-    base_folder : str, optional (default omega_py_path)
+    base_folder : str, optional (default _omega_py_path)
         The base folder path.
     security : bool, optional (default True)
         Enable / disable checking before overwriting a file.
@@ -424,7 +426,7 @@ omegapy.omega_data.corr_save_omega(obsname, folder='auto', base_folder=omega_py_
 ~~~
 
 ~~~
-omegapy.omega_data.corr_save_omega_list(liste_obs, folder='auto', base_folder=omega_py_path,
+omegapy.omega_data.corr_save_omega_list(liste_obs, folder='auto', base_folder=_omega_py_path,
                          security=True, overwrite=True, compress=True):
     Correction and saving of a list of OMEGA/MEx observations.
 
@@ -435,7 +437,7 @@ omegapy.omega_data.corr_save_omega_list(liste_obs, folder='auto', base_folder=om
     folder : str, optional (default 'auto')
         The subfolder to save the data.
         | If 'auto' -> folder = 'vX.X', where X.X is the Version of the current code.
-    base_folder : str, optional (default omega_py_path)
+    base_folder : str, optional (default _omega_py_path)
         The base folder path.
     security : bool, optional (default True)
         Enable / disable checking before overwriting a file.
@@ -451,7 +453,7 @@ omegapy.omega_data.corr_save_omega_list(liste_obs, folder='auto', base_folder=om
 
 ~~~python
 omegapy.omega_data.set_omega_bin_path(new_path):
-    Set the global omega_bin_path variable to new_path.
+    Set the global private _omega_bin_path variable to new_path.
 
     Parameters
     ==========
@@ -461,7 +463,7 @@ omegapy.omega_data.set_omega_bin_path(new_path):
 
 ~~~python
 omegapy.omega_data.set_omega_py_path(new_path):
-    Set the global omega_py_path variable to new_path.
+    Set the global private _omega_py_path variable to new_path.
 
     Parameters
     ==========
@@ -471,7 +473,7 @@ omegapy.omega_data.set_omega_py_path(new_path):
 
 ~~~python
 omegapy.omega_data.get_omega_bin_path():
-    Return the vavue of the global omega_bin_path variable.
+    Return the vavue of the global private _omega_bin_path variable.
 
     Returns
     =======
@@ -481,7 +483,7 @@ omegapy.omega_data.get_omega_bin_path():
 
 ~~~python
 omegapy.omega_data.get_omega_py_path():
-    Return the vavue of the global omega_py_path variable.
+    Return the vavue of the global private _omega_py_path variable.
 
     Returns
     =======
@@ -491,8 +493,8 @@ omegapy.omega_data.get_omega_py_path():
 
 ### Update quality
 ~~python
-omegapy.omega_data.update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=Version, 
-                        base_folder=omega_py_path):
+omegapy.omega_data.update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=_Version, 
+                        base_folder=_omega_py_path):
     Update the quality attribute of previously saved OMEGAdata objects.
 
     Parameters
@@ -502,10 +504,10 @@ omegapy.omega_data.update_cube_quality(obs_name='ORB*.pkl', folder='auto', versi
     folder : str, optional (default 'auto')
         The subfolder where the data is.
         | If 'auto' -> folder = 'vX.X', where X.X is the given value of code version.
-    version : float, optional (default Version)
+    version : float, optional (default _Version)
         The version of the target file (if folder is 'auto').
         Default is the current code version.
-    base_folder : str, optional (default $OMEGA_PY_PATH)
+    base_folder : str, optional (default _omega_py_path)
         The base folder path.
 ~~~
 

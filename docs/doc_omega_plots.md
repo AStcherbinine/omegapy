@@ -14,7 +14,7 @@ Display of OMEGAdata cubes.
 
 `show_ibd_v2(omega, ibd, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', cb_title = 'IBD', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True, grid=True)`
 
-`show_omega_list_v2(omega_list, lam, lat_min=-90, lat_max=90, lon_min=0, lon_max=360, pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto', data_list=None, plot=True, grid=True, out=False, **kwargs)`
+`show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0, lon_max=360, pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto', data_list=None, plot=True, grid=True, out=False, **kwargs)`
 
 
 ### Display cube
@@ -238,7 +238,7 @@ omegapy.omega_plots.show_ibd_v2(omega, ibd, cmap='viridis', vmin=None, vmax=None
 ### Display composite map of several OMEGA observations, sample on a lat/lon grid
 
 ~~~python
-omegapy.omega_plots.show_omega_list_v2(omega_list, lam, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
+omegapy.omega_plots.show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
                        pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, 
                        title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto',
                        data_list=None, plot=True, grid=True, out=False, **kwargs):
@@ -248,7 +248,7 @@ omegapy.omega_plots.show_omega_list_v2(omega_list, lam, lat_min=-90, lat_max=90,
     ==========
     omega_list : array of OMEGAdata
         The list of OMEGA/MEx observations.
-    lam : float
+    lam : float, optional (default 1.085)
         The selected wavelength (in µm).
     lat_min : float, optional (default -90)
         The minimal latitude of the grid.
@@ -300,5 +300,7 @@ omegapy.omega_plots.show_omega_list_v2(omega_list, lam, lat_min=-90, lat_max=90,
         The new latitude grid.
     grid lon : 2D array
         The new longitude grid.
+    mask_obs : 2D array of str
+        The array indicating which observations have been used to fill each grid position.
 ~~~
 
