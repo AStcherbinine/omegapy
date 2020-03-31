@@ -679,7 +679,7 @@ def autosave_omega(omega, folder='auto', base_folder=_omega_py_path, security=Tr
     folder : str, optional (default 'auto')
         The subfolder to save the data.
         | If 'auto' -> folder = 'vX.X', where X.X is the Version of the current code.
-    base_folder : str, optional (default $OMEGA_PY_PATH)
+    base_folder : str, optional (defaul _omega_py_path)
         The base folder path.
     security : bool, optional (default True)
         Enable / disable checking before overwriting a file.
@@ -730,7 +730,7 @@ def autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega
         | If 'auto' -> folder = 'vX.X', where X.X is the given value of code version.
     version : float, optional (default _Version)
         The version of the target file (if folder is 'auto').
-    base_folder : str, optional (default $OMEGA_PY_PATH)
+    base_folder : str, optional (default _omega_py_path)
         The base folder path.
     disp : bool
         Control the display.
@@ -1417,7 +1417,7 @@ def update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=_Version,
     version : float, optional (default _Version)
         The version of the target file (if folder is 'auto').
         Default is the current code version.
-    base_folder : str, optional (default $OMEGA_PY_PATH)
+    base_folder : str, optional (default _omega_py_path)
         The base folder path.
     """
     # Initialisation
