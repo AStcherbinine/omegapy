@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 25/03/2020
+## Last modified by Aurélien STCHERBININE : 03/04/2020
 
 ##----------------------------------------------------------------------------------------
 """Display of OMEGAdata cubes.
@@ -583,6 +583,7 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
         ycoord = 0
     else:
         ycoord = deepcopy(latlim[0])
+    ylim_sp = np.array(ylim_sp)
     if ylim_sp[0] is None:
         ylim_sp[0] = vmin
     if ylim_sp[1] is None:
