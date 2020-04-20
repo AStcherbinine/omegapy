@@ -1,6 +1,6 @@
 ;SOFT09
 ;+ calculs fin + solarlongi
-pro readomega_vpy, nomfic0, ldat, jdat, wvl, ic, specmars, latitude, longitude, emergence, incidence, altitude, solarlongi, ut_time, geocube
+pro readomega_vpy, nomfic0, ldat, jdat, wvl, ic, specmars, latitude, longitude, emergence, incidence, altitude, solarlongi, ut_time, geocube, temperature, saturation_c, saturation_vis
 
 dirsoft = ''
 
@@ -400,6 +400,18 @@ atmorap=fltarr(256)
 openr,2,'atmorap.dat'
 readf,2,atmorap
 close,2
+
+
+;saturation
+summation=info(3)
+;voie C :
+;saturation_c=reform(idat(*,39,*))/summation 
+saturation_c=reform(idat(*,39,*)) & saturation_c(*,*)=0.
+for i=0,(size(saturation_c))(1)-1 do saturation_c(i,*)=(reform(sdat0(39,*))-reform(idat(i,39,*)))/summation ;42?
+;voie visible :
+saturation_vis=reform(idat(*,299,*))/summation 
+;temperature voie C
+temperature=reform(sdat1(0,2,*))*0.001
 
 
 fin:

@@ -41,6 +41,10 @@ Using IDL routines containing in omegapy/omega_routines/*.
 
 `get_omega_py_path()`
 
+`get_names(omega_list)`
+
+`get_ls(omega_list)`
+
 `update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=_Version, base_folder=_omega_py_path)`
 
 
@@ -97,6 +101,19 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_pat
         The longitude grid of the observation (from the edge of the pixels).
     surf_temp : 2D array
         The retrieved surface temperature of each pixel (from the thermal correction).
+    sensor_temp_c : 1D array
+        The temperature of the sensor for each line of the (for the C-channel).
+    saturation_c : 2D array
+        Information about the saturation of the C-channel.
+    saturation_vis : 2D array
+        Information about the saturation of the Vis-channel.
+    summation : int
+        The downtrack summing.
+    bits_per_data : int
+        The compression rate in bits per data.
+    data_quality : int
+        Information about the data quality, from 0 to 5 depending on missing lines and
+        compression errors. (See SOFT09_readme.txt for more details.)
     lrec : int
         The number of bytes in each physical record in the data product file.
     nrec : int
@@ -111,6 +128,10 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_pat
         Number of parameters describing the geometry of the observation.
     point_mode : str
         The pointing mode of the instrument.
+    target : str
+        The name of the target of the observation ('MARS', 'PHOBOS' or 'DEIMOS') .
+    mode_channel : int
+        Information about the presence of each channel.
     orient : array
         The vector orientation of the spacecraft.
     subsol_lat : float
@@ -490,6 +511,37 @@ omegapy.omega_data.get_omega_py_path():
     omega_py_path : str
         The new path of the OMEGA python-made files.
 ~~~
+
+~~~python
+omegapy.omega_data.get_names(omega_list):
+    Return the array of the observation ID of each OMEGA/MEx observation in omega_list.
+
+    Parameters
+    ==========
+    omega_list : array of OMEGAdata
+        The input array of OMEGA observations.
+    
+    Returns
+    =======
+    names : ndarray
+        The array of the omega_list observations ID.
+~~~
+
+~~~python
+omegapy.omega_data.get_ls(omega_list):
+    """Return the array of the Solar longitude of each OMEGA/MEx observation in omega_list.
+
+    Parameters
+    ==========
+    omega_list : array of OMEGAdata
+        The input array of OMEGA observations.
+    
+    Returns
+    =======
+    ls : ndarray
+        The array of the omega_list Ls.
+~~~
+
 
 ### Update quality
 ~~python

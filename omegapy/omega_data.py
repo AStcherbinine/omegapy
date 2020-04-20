@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 31/03/2020
+## Last modified by Aurélien STCHERBININE : 20/04/2020
 
 ##----------------------------------------------------------------------------------------
 """Importation of OMEGA observations in the OMEGAdata class.
@@ -31,7 +31,7 @@ from . import useful_functions as uf
 
 # Name of the current file
 _py_file = 'omega_data.py'
-_Version = 1.3
+_Version = 1.4
 
 # Path of the package files
 package_path = os.path.abspath(os.path.dirname(__file__))
@@ -100,6 +100,19 @@ class OMEGAdata:
         The longitude grid of the observation (from the edge of the pixels).
     surf_temp : 2D array
         The retrieved surface temperature of each pixel (from the thermal correction).
+    sensor_temp_c : 1D array
+        The temperature of the sensor for each line of the (for the C-channel).
+    saturation_c : 2D array
+        Information about the saturation of the C-channel.
+    saturation_vis : 2D array
+        Information about the saturation of the Vis-channel.
+    summation : int
+        The downtrack summing.
+    bits_per_data : int
+        The compression rate in bits per data.
+    data_quality : int
+        Information about the data quality, from 0 to 5 depending on missing lines and
+        compression errors. (See SOFT09_readme.txt for more details.)
     lrec : int
         The number of bytes in each physical record in the data product file.
     nrec : int
@@ -114,6 +127,10 @@ class OMEGAdata:
         Number of parameters describing the geometry of the observation.
     point_mode : str
         The pointing mode of the instrument.
+    target : str
+        The name of the target of the observation ('MARS', 'PHOBOS' or 'DEIMOS') .
+    mode_channel : int
+        Information about the presence of each channel.
     orient : array
         The vector orientation of the spacecraft.
     subsol_lat : float
@@ -182,7 +199,14 @@ class OMEGAdata:
                        'L' : np.arange(137, 256)}
             self.lon_grid = np.array([[]])
             self.lat_grid = np.array([[]])
+            self.sensor_temp_c = np.array([])
+            self.saturation_c = np.array([[]])
+            self.saturation_vis = np.array([[]])
             self.surf_temp = np.array([[]])
+            self.summation = None
+            self.bits_per_data = None
+            self.data_quality = None
+            self.mode_channel = None
             # Nav
             self.lrec = None
             self.nrec = None
@@ -199,6 +223,7 @@ class OMEGAdata:
             self.min_lon = None
             self.max_lon = None
             self.slant = None
+            self.target = None
 
         else:
             idl = pidly.IDL()
@@ -209,7 +234,8 @@ class OMEGAdata:
                 return None
             nomfic0 = obs_name[obs_name.rfind('/')+1:-4]    # Récupération nom + décodage UTF-8
             idl("readomega_vpy, '{0}', ldat, jdat, wvl, ic, specmars, ".format(nomfic0)
-                + "latitude, longitude, emergence, incidence, altitude, solarlongi, ut_time, geocube")
+                + "latitude, longitude, emergence, incidence, altitude, solarlongi, ut_time, "
+                + "geocube, temperature, saturation_c, saturation_vis")
 
             print("\n\033[01;34mComputing data extraction and correction...\033[0m", end=' ')
             # Extract values from the idl session
@@ -220,7 +246,8 @@ class OMEGAdata:
             ic = data_dict['ic']
             specmars = data_dict['specmars']
             infos_dict = idl.ev_list(['latitude', 'longitude', 'emergence', 'incidence',
-                                    'altitude', 'solarlongi', 'ut_time', 'geocube'], use_cache=True)
+                                    'altitude', 'solarlongi', 'ut_time', 'geocube',
+                                    'temperature', 'saturation_c', 'saturation_vis'], use_cache=True)
             lat = infos_dict['latitude']
             lon = infos_dict['longitude']
             alt = infos_dict['altitude']
@@ -229,6 +256,9 @@ class OMEGAdata:
             ls = infos_dict['solarlongi']
             utc = infos_dict['ut_time']
             geocube = infos_dict['geocube']
+            temperature = infos_dict['temperature']
+            saturation_c = infos_dict['saturation_c']
+            saturation_vis = infos_dict['saturation_vis']
             # Close the idl session
             idl.close()
             # Correction of OMEGA data (same as clean_spec.pro)
@@ -287,28 +317,48 @@ class OMEGAdata:
             self.lam_ma = lam_mask
             self.lat_grid = lat_grid
             self.lon_grid = lon_grid
+            self.sensor_temp_c = temperature.astype(np.float64)
+            self.saturation_c = saturation_c.astype(np.float64)
+            self.saturation_vis = saturation_vis.astype(np.float64)
             #--------------------------
-            # Data from the .NAV file
+            # Data from the .QUB header
             #--------------------------
-            nav = _read_header(obs_name[:-4] + '.NAV')
-            npixel, npara, nscan = np.array(nav['CORE_ITEMS'][1:-1].split(','), dtype=np.int64)
-            self.lrec = np.int64(nav['RECORD_BYTES'])
-            self.nrec = np.int64(nav['LABEL_RECORDS'])
-            self.sol_dist_au = np.float64(nav['SOLAR_DISTANCE']) / 14960e4
-            npixel, npara, nscan = np.array(nav['CORE_ITEMS'][1:-1].split(','), dtype=np.int64)
+            hd_qub = _read_header(obs_name[:-4] + '.QUB')
+            self.summation = np.int64(hd_qub['DOWNTRACK_SUMMING'])
+            self.bits_per_data = np.float64(hd_qub['INST_CMPRS_RATE'])
+            self.data_quality = np.int64(hd_qub['DATA_QUALITY_ID'])
+            mode_channel_tmp = hd_qub['COMMAND_DESC'][34:36]
+            if mode_channel_tmp == 'EF':
+                self.mode_channel = 1
+            elif mode_channel_tmp == '80':
+                self.mode_channel = 2
+            elif mode_channel_tmp == 'C7':
+                self.mode_channel = 3
+            else:
+                self.mode_channel = mode_channel_tmp
+            #--------------------------
+            # Data from the .NAV header
+            #--------------------------
+            hd_nav = _read_header(obs_name[:-4] + '.NAV')
+            npixel, npara, nscan = np.array(hd_nav['CORE_ITEMS'][1:-1].split(','), dtype=np.int64)
+            self.lrec = np.int64(hd_nav['RECORD_BYTES'])
+            self.nrec = np.int64(hd_nav['LABEL_RECORDS'])
+            self.sol_dist_au = np.float64(hd_nav['SOLAR_DISTANCE']) / 14960e4
+            npixel, npara, nscan = np.array(hd_nav['CORE_ITEMS'][1:-1].split(','), dtype=np.int64)
             self.npixel = npixel
             self.npara = npara
             self.nscan = nscan
-            self.point_mode = nav['SPACECRAFT_POINTING_MODE'][1:-1]
-            self.orient = np.array(nav['SPACECRAFT_ORIENTATION'][1:-1].split(','), dtype=np.int64)
-            # self.ls = np.float64(nav['SOLAR_LONGITUDE'])
-            self.subsol_lon = np.float64(nav['SUB_SOLAR_LONGITUDE'])
-            self.subsol_lat = np.float64(nav['SUB_SOLAR_LATITUDE'])
-            self.min_lat = np.float64(nav['MINIMUM_LATITUDE'])
-            self.max_lat = np.float64(nav['MAXIMUM_LATITUDE'])
-            self.min_lon = np.float64(nav['WESTERNMOST_LONGITUDE'])
-            self.max_lon = np.float64(nav['EASTERNMOST_LONGITUDE'])
-            self.slant = np.float64(nav['SLANT_DISTANCE'])
+            self.point_mode = hd_nav['SPACECRAFT_POINTING_MODE'][1:-1]
+            self.orient = np.array(hd_nav['SPACECRAFT_ORIENTATION'][1:-1].split(','), dtype=np.int64)
+            # self.ls = np.float64(hd_nav['SOLAR_LONGITUDE'])
+            self.subsol_lon = np.float64(hd_nav['SUB_SOLAR_LONGITUDE'])
+            self.subsol_lat = np.float64(hd_nav['SUB_SOLAR_LATITUDE'])
+            self.min_lat = np.float64(hd_nav['MINIMUM_LATITUDE'])
+            self.max_lat = np.float64(hd_nav['MAXIMUM_LATITUDE'])
+            self.min_lon = np.float64(hd_nav['WESTERNMOST_LONGITUDE'])
+            self.max_lon = np.float64(hd_nav['EASTERNMOST_LONGITUDE'])
+            self.slant = np.float64(hd_nav['SLANT_DISTANCE'])
+            self.target = hd_nav['TARGET_NAME']
             #--------------------------
             temp_init = np.zeros(self.lat.shape)
             temp_init[:] = np.nan
@@ -360,7 +410,14 @@ class OMEGAdata:
         new_omega.lam_ma = self.lam_ma
         new_omega.lon_grid = self.lon_grid
         new_omega.lat_grid = self.lat_grid
+        new_omega.sensor_temp_c = self.sensor_temp_c
+        new_omega.saturation_c = self.saturation_c
+        new_omega.saturation_vis = self.saturation_vis
         new_omega.surf_temp = self.surf_temp
+        new_omega.summation = self.summation
+        new_omega.bits_per_data = self.bits_per_data
+        new_omega.data_quality = self.data_quality
+        new_omega.mode_channel = self.mode_channel
         # Nav
         new_omega.lrec = self.lrec
         new_omega.nrec = self.nrec
@@ -377,6 +434,7 @@ class OMEGAdata:
         new_omega.min_lon = self.min_lon
         new_omega.max_lon = self.max_lon
         new_omega.slant = self.slant
+        new_omega.target = self.target
         # Infos
         new_omega.quality = self.quality
         new_omega.therm_corr = self.therm_corr
@@ -409,7 +467,14 @@ class OMEGAdata:
         new_omega.lam_ma = deepcopy(self.lam_ma, memo)
         new_omega.lon_grid = deepcopy(self.lon_grid, memo)
         new_omega.lat_grid = deepcopy(self.lat_grid, memo)
+        new_omega.sensor_temp_c = deepcopy(self.sensor_temp_c, memo)
+        new_omega.saturation_c = deepcopy(self.saturation_c, memo)
+        new_omega.saturation_vis = deepcopy(self.saturation_vis, memo)
         new_omega.surf_temp = deepcopy(self.surf_temp, memo)
+        new_omega.summation = deepcopy(self.summation, memo)
+        new_omega.bits_per_data = deepcopy(self.bits_per_data, memo)
+        new_omega.data_quality = deepcopy(self.data_quality, memo)
+        new_omega.mode_channel = deepcopy(self.mode_channel, memo)
         # Nav
         new_omega.lrec = deepcopy(self.lrec, memo)
         new_omega.nrec = deepcopy(self.nrec, memo)
@@ -426,6 +491,7 @@ class OMEGAdata:
         new_omega.min_lon = deepcopy(self.min_lon, memo)
         new_omega.max_lon = deepcopy(self.max_lon, memo)
         new_omega.slant = deepcopy(self.slant, memo)
+        new_omega.target = deepcopy(self.target, memo)
         # Infos
         new_omega.quality = deepcopy(self.quality, memo)
         new_omega.therm_corr = deepcopy(self.therm_corr, memo)
@@ -507,6 +573,8 @@ def _read_header(filename):
         elif 'SPACECRACRAFT_POINTING_MODE' in keys:
             header_dict['SPACECRAFT_POINTING_MODE'] = deepcopy(header_dict['SPACECRACRAFT_POINTING_MODE'])
             del header_dict['SPACECRACRAFT_POINTING_MODE']
+        else:
+            header_dict['SPACECRAFT_POINTING_MODE'] = '"N/A"'
     if header_dict['SPACECRAFT_POINTING_MODE'] == '"UNK"':
         header_dict['SPACECRAFT_POINTING_MODE'] = '"UNKNOWN"'
     # Sortie
@@ -679,7 +747,7 @@ def autosave_omega(omega, folder='auto', base_folder=_omega_py_path, security=Tr
     folder : str, optional (default 'auto')
         The subfolder to save the data.
         | If 'auto' -> folder = 'vX.X', where X.X is the Version of the current code.
-    base_folder : str, optional (defaul _omega_py_path)
+    base_folder : str, optional (default _omega_py_path)
         The base folder path.
     security : bool, optional (default True)
         Enable / disable checking before overwriting a file.
@@ -1400,6 +1468,42 @@ def get_omega_py_path():
         The new path of the OMEGA python-made files.
     """
     return deepcopy(_omega_py_path)
+
+def get_names(omega_list):
+    """Return the array of the observation ID of each OMEGA/MEx observation in omega_list.
+
+    Parameters
+    ==========
+    omega_list : array of OMEGAdata
+        The input array of OMEGA observations.
+    
+    Returns
+    =======
+    names : ndarray
+        The array of the omega_list observations ID.
+    """
+    names = []
+    for omega in omega_list:
+        names.append(omega.name)
+    return names
+
+def get_ls(omega_list):
+    """Return the array of the Solar longitude of each OMEGA/MEx observation in omega_list.
+
+    Parameters
+    ==========
+    omega_list : array of OMEGAdata
+        The input array of OMEGA observations.
+    
+    Returns
+    =======
+    ls : ndarray
+        The array of the omega_list Ls.
+    """
+    ls = []
+    for omega in omega_list:
+        ls.append(omega.ls)
+    return ls
 
 ##----------------------------------------------------------------------------------------
 ## Update cube quality
