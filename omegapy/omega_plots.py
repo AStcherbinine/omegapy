@@ -865,7 +865,7 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
     cbar : bool, optional (default True)
         If True -> Diplay the colorbar.
     cb_title : str, optional (default 'auto')
-        The title of the colorbar
+        The title of the colorbar.
     data_list : 3D array or None, optional (default None)
         1D array of the same dimension of `omega_list` containing alternative maps (2D arrays),
         in the **same order** than the observations of `omega_list`.
