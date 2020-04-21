@@ -8,7 +8,7 @@ Some useful generic functions.
 
 `where_closer_array(values, array)`
 
-`myglob(basename)`
+`myglob(basename, exclude=[])`
 
 `sort_dict(dico)`
 
@@ -66,7 +66,7 @@ omegapy.useful_functions.where_closer_array(values, array):
 
 ### File search
 ~~~python
-omegapy.useful_functions.myglob(basename):
+omegapy.useful_functions.myglob(basename, exclude=[]):
     Return the absolute path according to the input basename.
     If mulitple files corresponds to the basename, the user will be asked
     to choose one.
@@ -81,6 +81,8 @@ omegapy.useful_functions.myglob(basename):
     ==========
     basename : str
         The basename of the target file.
+    exclude : list or np.ndarray of str, optional (default [])
+        List of sub-strings to exclude from the results.
 
     Returns
     =======

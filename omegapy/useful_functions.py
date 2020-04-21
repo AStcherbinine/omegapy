@@ -3,7 +3,7 @@
 
 ## useful_functions.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 24/03/2020
+## Last modified by Aurélien STCHERBININE : 21/04/2020
 
 ##-----------------------------------------------------------------------------------
 """Useful generics functions.
@@ -248,7 +248,7 @@ def where_closer_array(values, array):
 
 ##-----------------------------------------------------------------------------------
 ## Recherche nom fichier
-def myglob(basename):
+def myglob(basename, exclude=[]):
     """Return the absolute path according to the input basename.
     If mulitple files corresponds to the basename, the user will be asked
     to choose one.
@@ -263,6 +263,8 @@ def myglob(basename):
     ==========
     basename : str
         The basename of the target file.
+    exclude : list or np.ndarray of str, optional (default [])
+        List of sub-strings to exclude from the results.
 
     Returns
     =======
@@ -270,6 +272,19 @@ def myglob(basename):
         The absolute path of the selected file.
     """
     fnames = glob.glob(basename)
+    if not isinstance(exclude, (list, np.ndarray)):
+        raise ValueError("exclude parameter must be a list or numpy.ndarray")
+    if len(exclude) > 0:
+        fnames2 = []
+        for name in fnames:
+            test = True
+            for excl in exclude:
+                if excl in name:
+                    test = False
+                    continue
+            if test:
+                fnames2.append(name)
+        fnames = fnames2
     fnames.sort()
     if fnames == []:
         # raise ValueError("No such file found.")
