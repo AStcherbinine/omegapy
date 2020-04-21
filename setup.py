@@ -11,7 +11,7 @@ package_data = {
 
 setuptools.setup(
     name='omegapy',
-    version='1.4',
+    version='1.4.1',
     author='Aurélien Stcherbinine',
     author_email='aurelien.stcherbinine@ias.u-psud.fr',
     description='Python tools for OMEGA/MEx observations analysis',
