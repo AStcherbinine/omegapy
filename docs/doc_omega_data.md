@@ -11,7 +11,7 @@ Using IDL routines containing in omegapy/omega_routines/*.
 
 `autosave_omega(omega, folder='auto', base_folder=_omega_py_path, security=True, disp=True)`
 
-`autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega_py_path, disp=True)`
+`autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega_py_path, therm_corr=None, atm_corr=None, disp=True)`
 
 `save_omega(omega, savname='auto', folder='', base_folder=_omega_py_path, pref ='', suff='', disp=True)`
 
@@ -236,7 +236,7 @@ omegapy.omega_data.autosave_omega(omega, folder='auto', base_folder=_omega_py_pa
 
 ~~~python
 omegapy.omega_data.autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega_py_path,
-                   disp=True):
+                   therm_corr=None, atm_corr=None, disp=True):
     Load and return a previously saved OMEGAdata object using pickle (with autosave_omega()).
 
     Parameters
@@ -250,6 +250,14 @@ omegapy.omega_data.autoload_omega(obs_name, folder='auto', version=_Version, bas
         The version of the target file (if folder is 'auto').
     base_folder : str, optional (default _omega_py_path)
         The base folder path.
+    therm_corr : bool or None, optional (default None)
+        | True -> Only results with thermal correction.
+        | False -> Only results without thermal correction.
+        | None -> Both with and without thermal correction.
+    atm_corr : bool or None, optional (default None)
+        | True -> Only results with atmospheric correction.
+        | False -> Only results without atmospheric correction.
+        | None -> Both with and without atmospheric correction.
     disp : bool
         Control the display.
             | True -> Print the loading filename.

@@ -11,7 +11,7 @@ Using IDL routines containing in omegapy/omega_routines/*.
 
 `autosave_omega(omega, folder='auto', base_folder=_omega_py_path, security=True, disp=True)`
 
-`autoload_omega(obs_name, folder='auto', version=Version, base_folder=_omega_py_path, disp=True)`
+`autoload_omega(obs_name, folder='auto', version=Version, base_folder=_omega_py_path, therm_corr=None, atm_corr=None, disp=True)`
 
 `save_omega(omega, savname='auto', folder='', base_folder=_omega_py_path, pref ='', suff='', disp=True)`
 
@@ -73,7 +73,7 @@ Some useful generic functions.
 
 `where_closer_array(values, array)`
 
-`myglob(basename)`
+`myglob(basename, exclude=[])`
 
 `sort_dict(dico)`
 

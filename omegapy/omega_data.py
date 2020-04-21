@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 20/04/2020
+## Last modified by Aurélien STCHERBININE : 21/04/2020
 
 ##----------------------------------------------------------------------------------------
 """Importation of OMEGA observations in the OMEGAdata class.
@@ -786,7 +786,7 @@ def autosave_omega(omega, folder='auto', base_folder=_omega_py_path, security=Tr
             print('\033[01;34mSaved as \033[0;03m' + target_path + '\033[0m')
 
 def autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega_py_path,
-                   disp=True):
+                   therm_corr=None, atm_corr=None, disp=True):
     """Load and return a previously saved OMEGAdata object using pickle (with autosave_omega()).
 
     Parameters
@@ -800,6 +800,14 @@ def autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega
         The version of the target file (if folder is 'auto').
     base_folder : str, optional (default _omega_py_path)
         The base folder path.
+    therm_corr : bool or None, optional (default None)
+        | True -> Only results with thermal correction.
+        | False -> Only results without thermal correction.
+        | None -> Both with and without thermal correction.
+    atm_corr : bool or None, optional (default None)
+        | True -> Only results with atmospheric correction.
+        | False -> Only results without atmospheric correction.
+        | None -> Both with and without atmospheric correction.
     disp : bool
         Control the display.
             | True -> Print the loading filename.
@@ -810,18 +818,30 @@ def autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega
     omega : OMEGAdata 
         The loaded object of OMEGA/MEx observation.
     """
-    filename = '*{name}*.pkl'.format(name=obs_name)
+    ext = ''
+    excl = []
+    if therm_corr:
+        ext += '_therm'
+    elif therm_corr == False:
+        excl.append('therm')
+    if atm_corr:
+        ext += '_atm'
+    elif atm_corr == False:
+        excl.append('atm')
+    filename = '*{name}*{corr_ext}*.pkl'.format(name=obs_name, corr_ext=ext)
     if folder == 'auto':
         folder = 'v' + str(version)
-    filename2 = uf.myglob(os.path.join(base_folder, folder, filename))
+    filename2 = uf.myglob(os.path.join(base_folder, folder, filename), exclude=excl)
     if filename2 is None:
-        print('\033[1mMatching binary files:\033[0m')
-        obs_name_bin = uf.myglob(os.path.join(_omega_bin_path, '*' + obs_name + '*.QUB'))
-        if obs_name_bin is None:
-            return None
+        if (therm_corr in [None, False]) and (atm_corr in [None, False]):
+            obs_name_bin = glob.glob(os.path.join(_omega_bin_path, '*' + obs_name + '*.QUB'))
+            if len(obs_name_bin) == 0 :
+                return None
+            else:
+                print('\033[1mMatching binary files:\033[0m')
+                return OMEGAdata(obs_name)
         else:
-            # TODO: optimiser pour ne pas rentrer 2 fois la réponse
-            return OMEGAdata(obs_name)
+            return None
     else:
         with open(filename2, 'rb') as input_file:
             omega = pickle.load(input_file)
