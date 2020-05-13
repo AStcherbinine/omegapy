@@ -3,7 +3,7 @@
 
 ## useful_functions.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 21/04/2020
+## Last modified by Aurélien STCHERBININE : 24/04/2020
 
 ##-----------------------------------------------------------------------------------
 """Useful generics functions.
@@ -387,6 +387,38 @@ def load_pickle(filename, disp=True):
         if disp:
             print('\033[03m' + filename2 + '\033[0;01;34m loaded\033[0m')
         return obj
+
+##-----------------------------------------------------------------------------------
+## Test existence avant sauvegarde
+def test_security_overwrite(path):
+    """Test if a file already exists, and if yes ask the user if he wants to
+    ovewrite it or not.
+
+    Parameters
+    ==========
+    path : str
+        The target file path.
+
+    Returns
+    =======
+    overwrite : bool
+        | True -> No existent file, or overwriting allowed.
+        | False -> Existent file, no overwriting.
+    """
+    erase = 'n'
+    if glob.glob(path) != []:
+        try:
+            erase = input('Do you really want to erase and replace \033[3m' + path +
+                        '\033[0m ? (y/N) ')
+        except KeyboardInterrupt:
+            erase = 'n'
+        if erase != 'y' :
+            print("\033[1mFile preserved\033[0m")
+            return False
+        else:
+            return True
+    else:
+        return True
 
 ##-----------------------------------------------------------------------------------
 ## End of code

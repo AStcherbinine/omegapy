@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 03/04/2020
+## Last modified by Aurélien STCHERBININE : 12/05/2020
 
 ##----------------------------------------------------------------------------------------
 """Display of OMEGAdata cubes.
@@ -18,6 +18,8 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button, RadioButtons
 from copy import deepcopy
 from tqdm import tqdm
+import datetime
+import os
 # Local
 from . import useful_functions as uf
 from . import omega_data as od
@@ -33,7 +35,7 @@ if 'right' in mpl.rcParams['keymap.forward']:
     mpl.rcParams['keymap.forward'].remove('right')
 
 # Name of the current file
-py_file = 'omega_plots.py'
+_py_file = 'omega_plots.py'
 
 ##----------------------------------------------------------------------------------------
 ## Affichage cube
@@ -826,10 +828,33 @@ def check_list_data_omega(omega_list, data_list, disp=True):
     if disp:
         print("\033[01;32mCompatibility between omega_list and data_list OK\033[0m")
 
+def check_list_mask_omega(omega_list, mask_list, disp=True):
+    """Check the compatibility between mask_list and the list of OMEGA/MEx observations.
+    Raise ValueError if uncompatibility.
+
+    Parameters
+    ==========
+    omega_list : array of OMEGAdata
+        List of OMEGA/MEx observations.
+    mask_list : 3D array
+        List of masks to remove the corrupted pixels of each OMEGA/MEx observation.
+    disp : bool, optional (default True)
+        Enable the display of the result of the test.
+    """
+    if len(omega_list) != len(mask_list):
+        raise ValueError("omega_list and mask_list must have the same size")
+    else:
+        for i in range(len(omega_list)):
+            if omega_list[i].lat.shape != mask_list[i].shape:
+                raise ValueError("The shapes of items {0} of omega_list and mask_list does not match.".format(i))
+    if disp:
+        print("\033[01;32mCompatibility between omega_list and mask_list OK\033[0m")
+
 def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
                        pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, 
                        title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto',
-                       data_list=None, plot=True, grid=True, out=False, **kwargs):
+                       data_list=None, mask_list=None, plot=True, grid=True, out=False, 
+                       negatives_longitudes=False, **kwargs):
     """Display an composite map from a list OMEGA/MEx observations, sampled on a new lat/lon grid.
 
     Parameters
@@ -869,12 +894,21 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
     data_list : 3D array or None, optional (default None)
         1D array of the same dimension of `omega_list` containing alternative maps (2D arrays),
         in the **same order** than the observations of `omega_list`.
+    mask_list : 3D array
+        1D array of the same dimension of `omega_list` containing the masks to remove the
+        corrupted pixels of each observaiton, in the **same order** than the observations of 
+        `omega_list`.
+        Each mask is a 2D array, filled with 1 for good pixels and NaN for bad ones.
     plot : bool, optional (default True)
         If True -> Diplay the final figure.
     grid : bool, optional (default True)
         Enable the display of the lat/lon grid.
     out : bool, optional (default False)
         If True -> Return output.
+    negatives_longitudes : bool, optional (default False)
+        Argument for non-polar plots.
+        | True -> longitudes between 0° and 360°.
+        | False -> longitudus between -180° and 180°.
     **kwargs:
         Optional arguments for the plt.pcolormesh() function.
 
@@ -899,10 +933,16 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
     data, mask = np.zeros((Nlon, Nlat)), np.zeros((Nlon, Nlat))
     mask_obs = np.ndarray((Nlon, Nlat), dtype=object)
     mask_obs.fill('')
+    if not (mask_list is None):
+        check_list_mask_omega(omega_list, mask_list, disp=True)
     if data_list is None:
-        for omega in tqdm(omega_list):
+        for i, omega in enumerate(tqdm(omega_list)):
             i_lam = uf.where_closer(lam, omega.lam)
-            data0, mask0 = proj_grid(omega, omega.cube_rf[:,:,i_lam], lat_min, lat_max,
+            if mask_list is None:
+                data_tmp = omega.cube_rf[:,:,i_lam]     # Reflectance without mask
+            else:
+                data_tmp = omega.cube_rf[:,:,i_lam] * mask_list[i]  # Reflectance with mask
+            data0, mask0 = proj_grid(omega, data_tmp, lat_min, lat_max,
                                      lon_min, lon_max, pas_lat, pas_lon)[:2]
             data += np.nan_to_num(data0)    # Conversion NaN -> 0 pour somme des images
             mask += mask0
@@ -910,7 +950,11 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
     else:
         check_list_data_omega(omega_list, data_list, disp=True)
         for i, omega in enumerate(tqdm(omega_list)):
-            data0, mask0 = proj_grid(omega, data_list[i], lat_min, lat_max,
+            if mask_list is None:
+                data_tmp = data_list[i]     # Data without mask
+            else:
+                data_tmp = data_list[i] * mask_list[i]  # Data with mask
+            data0, mask0 = proj_grid(omega, data_tmp, lat_min, lat_max,
                                      lon_min, lon_max, pas_lat, pas_lon)[:2]
             data += np.nan_to_num(data0)    # Conversion NaN -> 0 pour somme des images
             mask += mask0
@@ -930,15 +974,29 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
             ax.set_yticklabels([])  # remove the latitude values in the plot
             ax.set_theta_offset(-np.pi/2)   # longitude origin at the bottom
             plt.xlim(0, 2*np.pi)
-            if (lat_max == 90) & (lat_min >= 0):
+            if np.abs(lat_max) >= np.abs(lat_min):
                 latlim = (lat_max, lat_min)
             else:
                 latlim = (lat_min, lat_max)
             plt.ylim(latlim)
         else:
-            plt.pcolormesh(grid_lon, grid_lat, data2, cmap=cmap, vmin=vmin, 
-                        vmax=vmax, **kwargs)
+            if negatives_longitudes and (lon_max > 180):
+                n_neg_lon = np.sum(grid_lon[:,0] > 180) # nb of negative longitudes (>180°)
+                i_lon180 = np.where(grid_lon[:,0] > 180)[0][0] # 1st index of lon > 180°
+                grid_lon_nl = deepcopy(grid_lon)        # new longitude grid [-180°, 180°]
+                grid_lon_nl[:n_neg_lon] = grid_lon[i_lon180-1:-1] - 360
+                grid_lon_nl[n_neg_lon:] = grid_lon[:i_lon180]
+                data2_nl = deepcopy(data2)      # new data array
+                data2_nl[:n_neg_lon] = data2[i_lon180-1:]
+                data2_nl[n_neg_lon:] = data2[:i_lon180-1]
+                plt.pcolormesh(grid_lon_nl, grid_lat, data2_nl, cmap=cmap, vmin=vmin, 
+                               vmax=vmax, **kwargs)
+                lon_min, lon_max = grid_lon_nl[[0,-1], 0]   # new longitude bounds
+            else:
+                plt.pcolormesh(grid_lon, grid_lat, data2, cmap=cmap, vmin=vmin, 
+                               vmax=vmax, **kwargs)
             plt.gca().axis('equal')
+            plt.gca().set_adjustable('box')
             plt.xlabel('Longitude [°]')
             plt.ylabel('Latitude [°]')
             plt.xlim(lon_min, lon_max)
@@ -970,6 +1028,221 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
     if out:
         mask2 = np.clip(mask, 0, 1)
         return data2, mask2, grid_lat, grid_lon, mask_obs
+
+##----------------------------------------------------------------------------------------
+## Sauvegarde résultats
+def save_map_omega_list(omega_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
+                        pas_lat=0.1, pas_lon=0.1, lam=1.085, data_list=None, data_desc='', 
+                        mask_list=None, sav_filename='auto', 
+                        base_folder='../data/OMEGA/sav_map_list_v2/', ext=''):
+    """Save the output of the omega_plots.show_omega_list_v2() function with the requested
+    parameters as a dictionary.
+
+    Parameters
+    ==========
+    omega_list : array of OMEGAdata
+        The list of OMEGA/MEx observations.
+    lat_min : float, optional (default -90)
+        The minimal latitude of the grid.
+    lat_max : float, optional (default 90)
+        The maximum latitude of the grid.
+    lon_min : float, optional (default 0)
+        The minimal longitude of the grid.
+    lon_max : float, optional (default 360)
+        The maximal longitude of the grid.
+    pas_lat : float, optional (default 0.1)
+        The latitude intervals of the grid.
+    pas_lon : float, optional (default 0.1)
+        The longitude intervals of the grid.
+    lam : float, optional (default 1.085)
+        The selected wavelength (in µm).
+    data_list : 3D array or None, optional (default None)
+        1D array of the same dimension of `omega_list` containing alternative maps (2D arrays),
+        in the **same order** than the observations of `omega_list`.
+    data_desc : str, optional (default '')
+        Description of the data contained in data_list (if used).
+    mask_list : 3D array
+        1D array of the same dimension of `omega_list` containing the masks to remove the
+        corrupted pixels of each observaiton, in the **same order** than the observations of 
+        `omega_list`.
+        Each mask is a 2D array, filled with 1 for good pixels and NaN for bad ones.
+    sav_filename : str, optional (default 'auto')
+        The saving file name.
+        | If 'auto' -> Automatically generated.
+    base_folder : str, optional (default '../data/OMEGA/sav_map_list_v2/')
+        The base folder to save the data.
+    ext : str, optional (default '')
+        Extension to add at the end of the filename (useful in case of automatic generation).
+    """
+    # Initialization filename
+    if sav_filename == 'auto':
+        sav_filename = ('res_show_omega_list_v2__lat{0:0>2d}-{1:0>2d}_pas{2:0}_'
+                        + 'lon{3:0>3d}-{4:0>3d}_pas{5:0}__{6:s}.pkl').format(
+                            lat_min, lat_max, pas_lat, lon_min, lon_max, pas_lon, ext)
+    sav_filename2 = os.path.join(base_folder, sav_filename)
+    if data_list is None:
+        data_desc = 'Reflectance at λ = {0:0} µm'.format(lam)
+    elif data_desc == '':
+        data_desc = 'unknown input data'
+    # Compute the data sampling
+    data, mask, grid_lat, grid_lon, mask_obs = show_omega_list_v2(omega_list,
+                lam, lat_min, lat_max, lon_min, lon_max, pas_lat, pas_lon,
+                data_list=data_list, mask_list=mask_list, plot=False, out=True)
+    # Sav file
+    input_params = {
+        'omega_list' : od.get_names(omega_list),
+        'lat_min' : lat_min,
+        'lat_max' : lat_max,
+        'lon_min' : lon_min,
+        'lon_max' : lon_max,
+        'pas_lat' : pas_lat,
+        'pas_lon' : pas_lon,
+        'data'    : data_desc,
+        'filename': sav_filename,
+        'datetime': datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}
+    save_file = {
+        'data' : data,
+        'mask' : mask,
+        'grid_lat' : grid_lat,
+        'grid_lon' : grid_lon,
+        'mask_obs' : mask_obs,
+        'infos' : input_params
+                }
+    uf.save_pickle(save_file, sav_filename2, True)
+    
+def load_map_omega_list(filename):
+    """Load and return the result of omega_plots.show_omega_list_v2() previously saved
+    with save_map_omega_list().
+
+    Parameters
+    ==========
+    filename : str
+        The file path.
+
+    Returns
+    =======
+    data : 2D array
+        The omega reflectance at lam, sampled on the new lat/lon grid.
+    mask : 2D array
+        The array indicating where the new grid has been filled by the OMEGA data.
+    grid lat : 2D array
+        The new latitude grid.
+    grid lon : 2D array
+        The new longitude grid.
+    mask_obs : 2D array of str
+        The array indicating which observations have been used to fill each grid position.
+    infos : dict
+        The informations about the computation of the data.
+    """
+    loaded_dict = uf.load_pickle(filename, True)
+    data, mask, grid_lat, grid_lon, mask_obs, infos = loaded_dict.values()
+    return data, mask, grid_lat, grid_lon, mask_obs, infos
+
+def show_omega_list_v2_man(data, grid_lat, grid_lon, infos, cmap='Greys_r', vmin=None, vmax=None, 
+                           title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto',
+                           grid=True, negatives_longitudes=False, **kwargs):
+    """Display an composite map from a list OMEGA/MEx observations, previously sampled on 
+    a new lat/lon grid with show_omega_list_v2() and saved with save_map_omega_list().
+
+    Parameters
+    ==========
+    data : 2D array
+        The omega reflectance at lam, sampled on the new lat/lon grid.
+    grid lat : 2D array
+        The new latitude grid.
+    grid lon : 2D array
+        The new longitude grid.
+    infos : dict
+        The informations about the computation of the data.
+    cmap : str, optional (default 'Greys_r')
+        The matplotlib colormap.
+    vmin : float or None, optional (default None)
+        The lower bound of the coloscale.
+    vmax : float or None, optional (default None)
+        The upper bound of the colorscale.
+    title : str, optional (default 'auto')
+        The title of the figure.
+    Nfig : int or str or None, optional (default None)
+        The target figure ID.
+    polar : bool, optional (default False)
+        If True -> Use a polar projection for the plot.
+    cbar : bool, optional (default True)
+        If True -> Diplay the colorbar.
+    cb_title : str, optional (default 'auto')
+        The title of the colorbar.
+    grid : bool, optional (default True)
+        Enable the display of the lat/lon grid.
+    negatives_longitudes : bool, optional (default False)
+        Argument for non-polar plots.
+        | True -> longitudes between 0° and 360°.
+        | False -> longitudus between -180° and 180°.
+    **kwargs:
+        Optional arguments for the plt.pcolormesh() function.
+    """
+    lat_min, lat_max = infos['lat_min'], infos['lat_max']
+    lon_min, lon_max = infos['lon_min'], infos['lon_max']
+    if title == 'auto':
+        title = 'Composite map from OMEGA/MEx observations' 
+    fig = plt.figure(Nfig)
+    Nfig = fig.number   # get the actual figure number if Nfig=None
+    if polar:
+        ax = plt.axes(polar=True)
+        plt.pcolormesh(grid_lon*np.pi/180, grid_lat, data, cmap=cmap, 
+                    vmin=vmin, vmax=vmax, **kwargs)
+        ax.set_yticklabels([])  # remove the latitude values in the plot
+        ax.set_theta_offset(-np.pi/2)   # longitude origin at the bottom
+        plt.xlim(0, 2*np.pi)
+        # if (lat_max == 90) & (lat_min >= 0):
+        if np.abs(lat_max) >= np.abs(lat_min):
+            latlim = (lat_max, lat_min)
+        else:
+            latlim = (lat_min, lat_max)
+        plt.ylim(latlim)
+    else:
+        if negatives_longitudes and (lon_max > 180):
+            n_neg_lon = np.sum(grid_lon[:,0] > 180) # nb of negative longitudes (>180°)
+            i_lon180 = np.where(grid_lon[:,0] > 180)[0][0] # 1st index of lon > 180°
+            grid_lon_nl = deepcopy(grid_lon)        # new longitude grid [-180°, 180°]
+            grid_lon_nl[:n_neg_lon] = grid_lon[i_lon180-1:-1] - 360
+            grid_lon_nl[n_neg_lon:] = grid_lon[:i_lon180]
+            data_nl = deepcopy(data)      # new data array
+            data_nl[:n_neg_lon] = data[i_lon180-1:]
+            data_nl[n_neg_lon:] = data[:i_lon180-1]
+            plt.pcolormesh(grid_lon_nl, grid_lat, data_nl, cmap=cmap, vmin=vmin, 
+                           vmax=vmax, **kwargs)
+            lon_min, lon_max = grid_lon_nl[[0,-1], 0]   # new longitude bounds
+        else:
+            plt.pcolormesh(grid_lon, grid_lat, data, cmap=cmap, vmin=vmin, 
+                           vmax=vmax, **kwargs)
+        plt.gca().axis('equal')
+        plt.gca().set_adjustable('box')
+        plt.xlabel('Longitude [°]')
+        plt.ylabel('Latitude [°]')
+        plt.xlim(lon_min, lon_max)
+        plt.ylim(lat_min, lat_max)
+    if cbar:
+        if cb_title == 'auto':
+            cb_title = infos['data']
+        cb = plt.colorbar()
+        cb.set_label(cb_title)
+    if grid:
+        ax = plt.figure(Nfig).get_axes()[0]
+        lonlim = ax.get_xlim()
+        latlim = ax.get_ylim()
+        lon_sgn = np.sign(lonlim[1] - lonlim[0])
+        lat_sgn = np.sign(latlim[1] - latlim[0])
+        lon_grid = np.arange(np.round(lonlim[0]/10)*10, np.round(lonlim[1]/10)*10+lon_sgn, 
+                    10 * lon_sgn)   # 10° grid in longitude
+        lat_grid = np.arange(np.round(latlim[0]/10)*10, np.round(latlim[1]/10)*10+lat_sgn, 
+                    10 * lat_sgn)   # 10° grid in latitude
+        plt.grid()
+        if polar:
+            ax.set_rticks(lat_grid)
+        else:
+            ax.set_xticks(lon_grid)
+            ax.set_yticks(lat_grid)
+    plt.title(title)
+    plt.tight_layout()
 
 ##----------------------------------------------------------------------------------------
 ## End of code

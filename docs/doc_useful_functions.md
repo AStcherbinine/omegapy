@@ -16,6 +16,8 @@ Some useful generic functions.
 
 `load_pickle(filename, disp=True)`
 
+`test_security_overwrite(path)`
+
 `reg_lin(X, Y)`
 
 `planck(lam, T)`
@@ -140,6 +142,23 @@ omegapy.useful_functions.load_pickle(filename, disp=True):
     =======
     obj : Object
         The loaded object.
+~~~
+
+~~~python
+omegapy.useful_functions.test_security_overwrite(path):
+    Test if a file already exists, and if yes ask the user if he wants to
+    ovewrite it or not.
+
+    Parameters
+    ==========
+    path : str
+        The target file path.
+
+    Returns
+    =======
+    overwrite : bool
+        | True -> No existent file, or overwriting allowed.
+        | False -> Existent file, no overwriting.
 ~~~
 
 ### Curve fitting

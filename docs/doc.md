@@ -21,7 +21,7 @@ Using IDL routines containing in omegapy/omega_routines/*.
 
 `import_list_obs_csv(filename)`
 
-`corr_therm(omega)`
+`corr_therm(omega, npool=1)`
 
 `corr_therm2(omega)`
 
@@ -29,9 +29,9 @@ Using IDL routines containing in omegapy/omega_routines/*.
 
 `corr_atm2(omega)`
 
-`corr_save_omega(obsname, folder='auto', base_folder=_omega_py_path, security=True, overwrite=True, compress=True)`
+`corr_save_omega(obsname, folder='auto', base_folder=_omega_py_path, security=True, overwrite=True, compress=True, npool=1)`
 
-`corr_save_omega_list(liste_obs, folder='auto', base_folder=_omega_py_path, security=True, overwrite=True, compress=True)`
+`corr_save_omega_list(liste_obs, folder='auto', base_folder=_omega_py_path, security=True, overwrite=True, compress=True, npool=1)`
 
 `set_omega_bin_path(new_path)`
 
@@ -46,6 +46,12 @@ Using IDL routines containing in omegapy/omega_routines/*.
 `get_ls(omega_list)`
 
 `update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=Version, base_folder=_omega_py_path)`
+
+`test_cube(obs)`
+
+`compute_list_good_observations(savfilename='liste_good_obs.csv', folder='../data/OMEGA/liste_obs', security=True)`
+
+`utc_to_my(dt)`
 
 
 ## [`omegapy.omega_plots`](doc_omega_plots.md)
@@ -62,7 +68,13 @@ Display of OMEGAdata cubes.
 
 `show_ibd_v2(omega, ibd, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', cb_title = 'IBD', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True)`
 
-`show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0, lon_max=360, pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto', data_list=None, plot=True, grid=True, out=False, **kwargs)`
+`show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0, lon_max=360, pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto', data_list=None, mask_list=None, plot=True, grid=True, out=False, negatives_longitudes=False, **kwargs)`
+
+`save_map_omega_list(omega_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=360, pas_lat=0.1, pas_lon=0.1, lam=1.085, data_list=None, data_desc='', mask_list=None, sav_filename='auto', base_folder='../data/OMEGA/sav_map_list_v2/', ext='')`
+
+`load_map_omega_list(filename)`
+
+`show_omega_list_v2_man(data, grid_lat, grid_lon, infos, cmap='Greys_r', vmin=None, vmax=None, title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto', grid=True, negatives_longitudes=False, **kwargs)`
 
 
 ## [`omegapy.useful_functions`](doc_useful_functions.md)
@@ -80,6 +92,8 @@ Some useful generic functions.
 `save_pickle(obj, target_path, disp=True)`
 
 `load_pickle(filename, disp=True)`
+
+`test_security_overwrite(path)`
 
 `reg_lin(X, Y)`
 

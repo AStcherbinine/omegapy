@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 21/04/2020
+## Last modified by Aurélien STCHERBININE : 13/05/2020
 
 ##----------------------------------------------------------------------------------------
 """Importation of OMEGA observations in the OMEGAdata class.
@@ -21,11 +21,13 @@ import scipy.constants as const
 from scipy.optimize import curve_fit
 from scipy.optimize import minimize
 from scipy.io import readsav
-from datetime import datetime
+import datetime
 import pickle
 import os
 import glob
 import pandas as pd
+import multiprocessing as mp
+import itertools
 # Local
 from . import useful_functions as uf
 
@@ -191,7 +193,7 @@ class OMEGAdata:
             self.emer = np.array([[]])
             self.inci = np.array([[]])
             self.specmars = np.array([])
-            self.utc = datetime.now()
+            self.utc = datetime.datetime.now()
             self.orbit = None
             self.surf_temp = np.array([[]])
             self.ic = {'V' : np.arange(265, 333),
@@ -281,7 +283,7 @@ class OMEGAdata:
             cube_rf2 = np.moveaxis(cube_rf, [0,1,2], [0,2,1])
             # Observation UTC date & time
             Y, M, D, h, m, s = np.average(utc[:,:6], axis=0).astype(np.int64)
-            utc_dt = datetime(Y, M, D, h, m, s)
+            utc_dt = datetime.datetime(Y, M, D, h, m, s)
             # Longitude pixels grid
             ny, nx = lon.shape
             lon_px = np.moveaxis(geocube[:,13:17,:], [0,1,2], [0,2,1]) * 1e-4
@@ -775,7 +777,7 @@ def autosave_omega(omega, folder='auto', base_folder=_omega_py_path, security=Tr
     target_path = os.path.join(base_folder, folder, savname)
     # Testing existent file
     if security:
-        write = test_security_overwrite(target_path)
+        write = uf.test_security_overwrite(target_path)
     else:
         write = True
     # Sauvegarde pickle
@@ -852,39 +854,44 @@ def autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega
 ##----------------------------------------------------------------------------------------
 ## Correction thermique 1 - Détermitation réflectance à 5µm à partir de celle à 2.4µm
 ## puis CN -- Méthode historique (Calvin & Erard 1997)
-def corr_therm_sp(omega, x, y, disp=True):
+_omega_tmp = None
+def _corr_therm_sp(args):
     """Remove the thermal component in an OMEGA spectrum, using the historical method
     based on the reflectance determination using reference spectra from Calvin & Erard (1997).
+    
+    Important note : this function is dedicated to internal use in the corr_therm() function,
+        as it use non-local objects related to the multiprocessing.
 
     Parameters
     ==========
-    omega : OMEGAdata
-        The OMEGA observation data.
-    x : int
-        The x-coordinate of the pixel.
-    y : int
-        The y-coordinate of the pixel.
-    disp : bool, optional (default True)
-        If True display the fitted temperature/reflectance in the console.
+    args : tuple of 3 elements
+      | x : int
+      |     The x-coordinate of the pixel.
+      | y : int
+      |     The y-coordinate of the pixel.
+      | disp : bool, optional (default True)
+      |     If True display the fitted temperature/reflectance in the console.
 
     Returns
     =======
-    lam : 1D array
-        The wavelength array (in µm).
     sp_rf_corr : 1D array
         The reflectance spectrum, corrected from the thermal component.
     T_fit : float
         The retrieved surface temperature (in K).
+    x : int
+        The x-coordinate of the pixel.
+    y : int
+        The y-coordinate of the pixel.
     """
-    # Test correction
-    if omega.therm_corr:
-        print("\033[1;33mThermal correction already applied\033[0m")
-        return omega.lam, omega.sp_rf[y, x]
+    # Extraction arguments
+    x, y, disp = args
     # Extraction données
+    global _omega_tmp
+    omega = _omega_tmp
     lam = omega.lam
+    sp_sol = omega.specmars
     sp_rf = omega.cube_rf[y, x]
     sp_i = omega.cube_i[y, x]
-    sp_sol = omega.specmars
     ecl = np.cos(omega.inci[y, x] * np.pi/180)
     # spectels #97-#112 des spectres de ref <-> 2.3-2.5µm
     fref = os.path.join(package_path, 'OMEGA_dataref/refclair_sombr_omega_CL.dat') # from Erard and Calvin (1997)
@@ -924,15 +931,21 @@ def corr_therm_sp(omega, x, y, disp=True):
         sp_rf_corr = deepcopy(sp_rf)
         sp_rf_corr.fill(np.nan)
         T_fit = np.nan
-    return lam, sp_rf_corr, T_fit
+    # Output
+    return sp_rf_corr, T_fit, x, y
 
-def corr_therm(omega):
+def corr_therm(omega, npool=1):
     """Remove the thermal component in the OMEGA hyperspectral cube.
+    
+    Parallelization is implemented using the multiprocessing module. The number of
+    process to run is controlled by the npool argument.
 
     Parameters
     ==========
     omega : OMEGAdata
         The OMEGA observation data.
+    npool : int, optional (default 1)
+        Number of parallelized worker process to use.
 
     Returns
     =======
@@ -945,19 +958,34 @@ def corr_therm(omega):
         print("\033[1;33mThermal correction already applied\033[0m")
         return deepcopy(omega)
     # Initialisation
-    omega2 = deepcopy(omega)
+    global _omega_tmp
+    _omega_tmp = deepcopy(omega)
     omega_corr = deepcopy(omega)
-    ny, nx, nlam = omega2.cube_i.shape
-    # Correction spectres
-    for x in tqdm(range(nx)):
-        for y in tqdm(range(ny)):
-            sp_rf_corr, surf_temp = corr_therm_sp(omega2, x, y, disp=False)[1:]
-            omega_corr.cube_rf[y,x] = sp_rf_corr
-            omega_corr.surf_temp[y,x] = surf_temp
-    # Sortie
+    ny, nx, nlam = omega.cube_i.shape
+    rf_corr = np.zeros((ny,nx,nlam), dtype=np.float64)
+    surf_temp = np.zeros((ny,nx), dtype=np.float64)
+    # Itérateur
+    it = [(x, y, False) for x, y in itertools.product(range(nx), range(ny))]
+    # Correction thermique
+    # chunksize = len(it) // npool    # Approx size of each process
+    chunksize = 1
+    # pool = mp.Pool(npool)
+    with mp.Pool(npool) as pool:
+        for res in tqdm(pool.imap_unordered(_corr_therm_sp, it, chunksize), total=len(it)):
+            sp_rf_corr, T_fit, x, y = res
+            rf_corr[y,x] = sp_rf_corr
+            surf_temp[y,x] = T_fit
+        pool.close()
+    _omega_tmp = None
+    omega_corr.cube_rf = rf_corr
+    omega_corr.surf_temp = surf_temp
+    # Update infos
     omega_corr.therm_corr = True
-    omega_corr.therm_corr_infos['datetime'] = datetime.now()
+    omega_corr.therm_corr_infos['datetime'] = datetime.datetime.now()
     omega_corr.therm_corr_infos['method'] = '(M1) Calvin & Erard'
+    # Sortie
+    # tfin = time.time()
+    # print('Duration : {0:.0f} min {1:.2f} sec'.format((tfin-tini)//60, (tfin-tini)%60))
     return omega_corr
     
 ##----------------------------------------------------------------------------------------
@@ -1053,7 +1081,7 @@ def corr_therm2(omega):
             omega_corr.surf_temp[y,x] = surf_temp
     # Sortie
     omega_corr.therm_corr = True
-    omega_corr.therm_corr_infos['datetime'] = datetime.now()
+    omega_corr.therm_corr_infos['datetime'] = datetime.datetime.now()
     omega_corr.therm_corr_infos['method'] = '(M2) Simultaneous refl & temp'
     return omega_corr
 
@@ -1127,7 +1155,7 @@ def corr_atm(omega):
             omega_corr.cube_rf[y,x] = sp_rf_corr
     # Sortie
     omega_corr.atm_corr = True
-    omega_corr.atm_corr_infos['datetime'] = datetime.now()
+    omega_corr.atm_corr_infos['datetime'] = datetime.datetime.now()
     omega_corr.atm_corr_infos['method'] = 'M1 : same reflectance level at 1.93μm and 2.01μm'
     return omega_corr
     
@@ -1213,7 +1241,7 @@ def corr_atm2(omega):
             omega_corr.cube_rf[y,x] = cube_rf[y,x] * tr_atm**(-expo)
     # Sortie
     omega_corr.atm_corr = True
-    omega_corr.atm_corr_infos['datetime'] = datetime.now()
+    omega_corr.atm_corr_infos['datetime'] = datetime.datetime.now()
     omega_corr.atm_corr_infos['method'] = 'M2 : flattest specra between 1.97µm and 2.00µm'
     return omega_corr
     
@@ -1273,73 +1301,13 @@ def corr_mode_128(omega):
     return omega_corr
     
 ##----------------------------------------------------------------------------------------
-## Correction cube OMEGA
-def corr_omega(omega):
-    """Remove the thermal and atmospheric component in the OMEGA hyperspectral cube.
-
-    Parameters
-    ==========
-    omega : OMEGAdata
-        The OMEGA observation data.
-
-    Returns
-    =======
-    omega_corr : OMEGAdata
-        The input OMEGA observation, where the reflectance is corrected from
-        the thermal and atmospheric component.
-    """
-    # Initialisation
-    omega2 = deepcopy(omega)
-    omega_corr = deepcopy(omega)
-    ny, nx, nlam = omega2.cube_i.shape
-    # Correction spectres
-    for x in tqdm(range(nx)):
-        for y in tqdm(range(ny)):
-            # Correction thermique
-            lam, sp_rf_corr = corr_therm_sp(omega2, x, y, disp=False)
-            # Correction atmosphérique
-            # sp_rf_corr2 = corr_atm_sp()
-            omega_corr.cube_rf[y,x] = sp_rf_corr
-    # Sortie
-    omega_corr.therm_corr = True
-    omega_corr.atm_corr = True
-    return omega_corr
-
-##----------------------------------------------------------------------------------------
-## Sauvegarde
-def test_security_overwrite(path):
-    """Test if a file already exists, and if yes ask the user if he wants to
-    ovewrite it or not.
-
-    Parameters
-    ==========
-    path : str
-        The target file path.
-
-    Returns
-    =======
-    overwrite : bool
-        | True -> No existent file, or overwriting allowed.
-        | False -> Existent file, no overwriting.
-    """
-    erase = 'n'
-    if glob.glob(path) != []:
-        try:
-            erase = input('Do you really want to erase and replace `' + path +
-                        '` ? (y/N) ')
-        except KeyboardInterrupt:
-            erase = 'n'
-        if erase != 'y' :
-            print("\033[1mFile preserved\033[0m")
-            return False
-        else:
-            return True
-    else:
-        return True
-
+## Correction & sauvegarde
 def corr_save_omega(obsname, folder='auto', base_folder=_omega_py_path, security=True,
-                    overwrite=True, compress=True):
+                    overwrite=True, compress=True, npool=1):
     """Correction and saving of OMEGA/MEx observations.
+    
+    Parallelization is implemented using the multiprocessing module. The number of
+    process to run is controlled by the npool argument.
 
     Parameters
     ==========
@@ -1360,6 +1328,8 @@ def corr_save_omega(obsname, folder='auto', base_folder=_omega_py_path, security
     compress : bool, optional (default True)
         If True, the radiance cube after correction is removed (i.e. set to None)
         in order to reduce the size of the saved file.
+    npool : int, optional (default 1)
+        Number of parallelized worker process to use.
     """
     if folder == 'auto':
         folder = 'v' + str(_Version)
@@ -1373,11 +1343,11 @@ def corr_save_omega(obsname, folder='auto', base_folder=_omega_py_path, security
     else:
         exists = False
     if security:
-        overwrite = test_security_overwrite(basename.format('*'))
+        overwrite = uf.test_security_overwrite(basename.format('*'))
     if (not exists) or (exists and overwrite):
         save_omega(omega, folder=folder, base_folder=base_folder)
         print('\n\033[01mThermal correction\033[0m')
-        omega_corr = corr_therm(omega)
+        omega_corr = corr_therm(omega, npool)
         if compress:
             omega_corr.cube_i = None
         save_omega(omega_corr, folder=folder, base_folder=base_folder, suff='corr_therm')
@@ -1388,8 +1358,11 @@ def corr_save_omega(obsname, folder='auto', base_folder=_omega_py_path, security
         print('\n\033[01;34mExistent files preserved for {0} - v{1}\033[0m\n'.format(name, _Version))
 
 def corr_save_omega_list(liste_obs, folder='auto', base_folder=_omega_py_path,
-                         security=True, overwrite=True, compress=True):
+                         security=True, overwrite=True, compress=True, npool=1):
     """Correction and saving of a list of OMEGA/MEx observations.
+    
+    Parallelization is implemented using the multiprocessing module. The number of
+    process to run is controlled by the npool argument.
 
     Parameters
     ==========
@@ -1410,13 +1383,15 @@ def corr_save_omega_list(liste_obs, folder='auto', base_folder=_omega_py_path,
     compress : bool, optional (default True)
         If True, the radiance cube after correction is removed (i.e. set to None)
         in order to reduce the size of the saved file.
+    npool : int, optional (default 1)
+        Number of parallelized worker process to use.
     """
     N = len(liste_obs)
     if folder == 'auto':
         folder = 'v' + str(_Version)
     for i, obsname in enumerate(liste_obs):
         print('\n\033[01mComputing observation {0} / {1} : {2}\033[0m\n'.format(i+1, N, obsname))
-        corr_save_omega(obsname, folder, base_folder, security, overwrite, compress)
+        corr_save_omega(obsname, folder, base_folder, security, overwrite, compress, npool)
     print("\n\033[01;32m Done\033[0m\n")
 
 ##----------------------------------------------------------------------------------------
@@ -1577,6 +1552,241 @@ def update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=_Version,
                 omega.add_infos = corrupted_orbits_comments[i_obs]
             save_omega(omega, fname, '', '', '', '', False)
         print('\033[1m{0} files updated\033[0m'.format(len(fnames)))
+
+##----------------------------------------------------------------------------------------
+## Importation liste OMEGAdata avec filtrage automatisé
+def load_omega_list2(liste_obs, therm_corr=True, atm_corr=True, **kwargs):
+    """Load a list of saved OMEGAdata objects, using load_omega().
+
+    Parameters
+    ==========
+    liste_obs : array of str
+        List of OMEGA/MEx observations ID.
+    therm_corr : bool or None, optional (default None)
+        | True -> Only results with thermal correction.
+        | False -> Only results without thermal correction.
+        | None -> Both with and without thermal correction.
+    atm_corr : bool or None, optional (default None)
+        | True -> Only results with atmospheric correction.
+        | False -> Only results without atmospheric correction.
+        | None -> Both with and without atmospheric correction.
+    **kwargs:
+        Optional arguments for autoload_omega().
+
+    Returns
+    =======
+    omega_list : list of OMEGAdata objects
+        The list of loaded objects of OMEGA/MEx observation.
+    """
+    omega_list = []
+    Nabs = 0
+    OBC = readsav('../data/OMEGA_dataref/OBC_OMEGA_OCT2017.sav')
+    good_orbits_OBC = np.array(OBC['good_orbits'][0], dtype=int)
+    for i, obsname in enumerate(tqdm(liste_obs)):
+        omega = autoload_omega(obsname, therm_corr=therm_corr, atm_corr=atm_corr, disp=False,
+                               **kwargs)
+        if omega is None:
+            Nabs += 1
+            continue
+        if not omega.orbit in good_orbits_OBC:
+            continue
+        if omega.quality == 0:
+            continue
+        if omega.target != 'MARS':
+            continue
+        if omega.mode_channel != 1:
+            continue
+        if omega.data_quality == 0:
+            continue
+        if omega.point_mode == 'N/A':
+            continue
+        if (int(omega.name[-1]) == 0) and (omega.npixel == 64) and (omega.bits_per_data == 1):
+            continue
+        # if omega.npixel == 16:
+            # continue
+        omega_list.append(omega)
+    Ntot = len(liste_obs)
+    Nacc = len(omega_list)
+    Nrej = Ntot - Nacc - Nabs
+    print('\n\033[1m{0} observations in list_obs\n'.format(Ntot) +
+          '{0} loaded, {1} rejected, {2} not found\033[0m\n'.format(Nacc, Nrej, Nabs))
+    return omega_list
+
+def test_cube(obs):
+    """Test the quality of an OMEGA/MEx observation from the header informations
+    witout open it.
+
+    Parameters
+    ==========
+    obs : str
+        The name of the OMEGA observation.
+
+    Returns
+    =======
+    test_quality : bool
+        | True -> Accepted observation.
+        | False -> Rejected observation.
+    """
+    # Recherhe nom de fichier
+    data_path = _omega_bin_path
+    obs_name = uf.myglob(os.path.join(data_path, '*' + obs + '*.QUB'))
+    if obs_name is None:
+        print("\033[1;33mAborted\033[0m")
+        return False
+    nomfic0 = obs_name[obs_name.rfind('/')+1:-4]    # Récupération nom
+    numCube = int(nomfic0[-1])
+    # Lecture header fichier .QUB
+    hd_qub = _read_header(obs_name[:-4] + '.QUB')
+    summation = np.int64(hd_qub['DOWNTRACK_SUMMING'])
+    bits_per_data = np.float64(hd_qub['INST_CMPRS_RATE'])
+    data_quality = np.int64(hd_qub['DATA_QUALITY_ID'])
+    mode_channel_tmp = hd_qub['COMMAND_DESC'][34:36]
+    if mode_channel_tmp == 'EF':
+        mode_channel = 1
+    elif mode_channel_tmp == '80':
+        mode_channel = 2
+    elif mode_channel_tmp == 'C7':
+        mode_channel = 3
+    else:
+        mode_channel = mode_channel_tmp
+    # Lecture header fichier .NAV
+    if glob.glob(obs_name[:-4] + '.NAV') == []:
+        return False    # Pas de fichier .NAV
+    hd_nav = _read_header(obs_name[:-4] + '.NAV')
+    npixel, npara, nscan = np.array(hd_nav['CORE_ITEMS'][1:-1].split(','), dtype=np.int64)
+    point_mode = hd_nav['SPACECRAFT_POINTING_MODE'][1:-1]
+    target = hd_nav['TARGET_NAME']
+    # Test si cube OK
+    if target != 'MARS':
+        return False
+    elif mode_channel != 1:
+        return False
+    elif data_quality == 0:
+        return False
+    elif point_mode == 'N/A':
+        return False
+    elif (numCube == 0) and (npixel == 64) and (bits_per_data == 1):
+        return False
+    else:
+        return True
+
+##----------------------------------------------------------------------------------------
+## List available good observations & generate csv file
+def compute_list_good_observations(savfilename='liste_good_obs.csv', 
+                                   folder='../data/OMEGA/liste_obs', security=True):
+    """Scan the available OMEGA/MEx data cubes and list the observations considered as 
+    good quality.
+    The results are saved in the specified csv file.
+
+    Parameters
+    ==========
+    savfilename : str
+        The name of the csv file to save the data.
+    folder : str
+        The name of the folder where the saved file will be located.
+        Final saved file path = folder + savfilename
+    security : bool, optional (default True)
+        Enable / disable checking before overwriting a file.
+        | True -> Check if the target file already exists before overwriting on it.
+                  And if is the case, you will be asked for a confirmation.
+        | False -> Didn't care about the already existing files.
+    """
+    # Test existence fichier de sauvegarde
+    sav_file_path = os.path.join(folder, savfilename)
+    if security:
+        test_overwrite = uf.test_security_overwrite(sav_file_path)
+        if not test_overwrite:
+            return None
+    # Liste observations disponibles
+    bin_obs_list = glob.glob(os.path.join(_omega_bin_path, 'ORB*.QUB'))
+    bin_obs_list.sort()
+    # Initialisation
+    gobs = open(sav_file_path, 'w', encoding='utf-8')
+    gobs.write('obsname, Ls [°], lat_min [°], lat_max [°], lon_min [°], lon_max [°], '
+               + 'UTC date/time, Npixel, Nscan\n')
+    Nacc = 0
+    # Test qualité de chaque observation
+    for obs_name in tqdm(bin_obs_list):
+        nomfic0 = obs_name[obs_name.rfind('/')+1:-4]    # Récupération nom
+        numCube = nomfic0[-1]
+        # Lecture header fichier .QUB
+        hd_qub = _read_header(obs_name[:-4] + '.QUB')
+        summation = np.int64(hd_qub['DOWNTRACK_SUMMING'])
+        bits_per_data = np.float64(hd_qub['INST_CMPRS_RATE'])
+        data_quality = np.int64(hd_qub['DATA_QUALITY_ID'])
+        mode_channel_tmp = hd_qub['COMMAND_DESC'][34:36]
+        if mode_channel_tmp == 'EF':
+            mode_channel = 1
+        elif mode_channel_tmp == '80':
+            mode_channel = 2
+        elif mode_channel_tmp == 'C7':
+            mode_channel = 3
+        else:
+            mode_channel = mode_channel_tmp
+        # Lecture header fichier .NAV
+        if glob.glob(obs_name[:-4] + '.NAV') == []:
+            continue
+        hd_nav = _read_header(obs_name[:-4] + '.NAV')
+        npixel, npara, nscan = np.array(hd_nav['CORE_ITEMS'][1:-1].split(','), dtype=np.int64)
+        point_mode = hd_nav['SPACECRAFT_POINTING_MODE'][1:-1]
+        target = hd_nav['TARGET_NAME']
+        test = True
+        # Test si cube OK
+        if target != 'MARS':
+            continue
+        elif mode_channel != 1:
+            continue
+        elif data_quality == 0:
+            continue
+        elif point_mode == 'N/A':
+            continue
+        elif (numCube == '0') and (npixel == 64) and (bits_per_data == 1):
+            continue
+        else:
+            # Si OK -> sauvegarde des infos dans le fichier
+            gobs.write(('{obsname:s}, {ls:s}, {lat_min:s}, {lat_max:s}, {lon_min:s},'
+                    +'{lon_max:s}, {utc:s}, {npixel:d}, {nscan:d}\n').format(obsname = nomfic0, 
+                                    ls = hd_nav['SOLAR_LONGITUDE'],
+                                    lat_min = hd_nav['MINIMUM_LATITUDE'],
+                                    lat_max = hd_nav['MAXIMUM_LATITUDE'],
+                                    lon_min = hd_nav['WESTERNMOST_LONGITUDE'],
+                                    lon_max = hd_nav['EASTERNMOST_LONGITUDE'],
+                                    utc = hd_nav['START_TIME'][:16],
+                                    npixel = npixel,
+                                    nscan = nscan))
+            Nacc += 1
+    gobs.close()
+    # Résultats
+    Ntot = len(bin_obs_list)
+    Nrej = Ntot - Nacc
+    print('\n\033[1m{0} observations found\n'.format(Ntot) +
+            '{0} accepted, {1} rejected\033[0m'.format(Nacc, Nrej))
+    print('\n\033[01;34mResults saved in \033[0;03m' + sav_file_path + '\033[0m')
+
+##----------------------------------------------------------------------------------------
+## UTC to MY
+def utc_to_my(dt):
+    """Convert a UTC datetime to the corresponding Martian Year (MY).
+    
+    Martian Years are numbered according to the calendar proposed by R. Todd Clancy 
+    (Clancy et al., Journal of Geophys. Res 105, p 9553, 2000): Martian Year 1 begins 
+    (at a time such that Ls=0) on April 11th, 1955.
+
+    Parameters
+    ==========
+    dt : datetime.datetime
+        The UTC datetime object.
+
+    Returns
+    =======
+    my : int
+        The corresponding Martian Year.
+    """
+    datetime_my1 = datetime.datetime(1955, 4, 11)   # Start MY 1
+    my_sol_duration = 668.6     # Nb of Martian sols during a MY
+    sol_sec_duration = 88775.245    # Duration of a sol in seconds
+    my = int( (dt - datetime_my1).total_seconds() // (my_sol_duration * sol_sec_duration)) + 1
+    return my
 
 ##----------------------------------------------------------------------------------------
 ## End of code
