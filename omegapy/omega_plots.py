@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 12/05/2020
+## Last modified by Aurélien STCHERBININE : 19/05/2020
 
 ##----------------------------------------------------------------------------------------
 """Display of OMEGAdata cubes.
@@ -173,7 +173,7 @@ def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None
         cb_title = (r'Radiance [W.m$^{-2}$.sr$^{-1}$.µm$^{-1}$] at $\lambda$' + 
                     ' = {0:.2f} µm'.format(lam))
     if title == 'auto':
-        title = 'OMEGA/MEx observation {0}\n'.format(omega.name) 
+        title = 'OMEGA/MEx observation {0}'.format(omega.name) 
     fig = plt.figure(Nfig)
     Nfig = fig.number   # get the actual figure number if Nfig=None
     if polar:
