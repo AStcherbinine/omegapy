@@ -1,4 +1,4 @@
-# OMEGA-Py documentation - v1.2
+# OMEGA-Py documentation - v2.0
 
 ## `omegapy.omega_plots`
 
@@ -6,13 +6,13 @@ Display of OMEGAdata cubes.
 
 `show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, title='auto', xlim=(None, None), ylim=(None, None), Nfig=None)`
 
-`show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, alpha=None, title='auto', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True, grid=True)`
+`show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, alpha=None, title='auto', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto')`
 
 `show_omega_interactif(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, title='auto', autoyscale=True, xlim=(None, None), ylim=(None, None))`
 
-`show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=None, cmap='Greys_r', cb_title='IBD', title='auto', vmin=None, vmax=None, autoyscale=True, ylim_sp=(None, None), alpha=None, lonlim=(None, None), latlim=(None, None), polar=False, cbar=True, grid=True)`
+`show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=None, cmap='Greys_r', cb_title='data', title='auto', vmin=None, vmax=None, autoyscale=True, ylim_sp=(None, None), alpha=None, lonlim=(None, None), latlim=(None, None), polar=False, cbar=True, grid=True, mask=None, lam_mask=None, negatives_longitudes='auto')`
 
-`show_ibd_v2(omega, ibd, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', cb_title = 'IBD', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True, grid=True)`
+`show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', cb_title = 'data', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto')`
 
 `show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0, lon_max=360, pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto', data_list=None, mask_list=None, plot=True, grid=True, out=False, negatives_longitudes=False, **kwargs)`
 
@@ -21,6 +21,8 @@ Display of OMEGAdata cubes.
 `load_map_omega_list(filename)`
 
 `show_omega_list_v2_man(data, grid_lat, grid_lon, infos, cmap='Greys_r', vmin=None, vmax=None, title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto', grid=True, negatives_longitudes=False, **kwargs)`
+
+`plot_psp(sp1_id, *args, sp2_id=(None, None), Nfig=None, sp_dict=picked_spectra, **kwargs)`
 
 
 ### Display cube
@@ -62,7 +64,7 @@ omegapy.omega_plots.show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_
 ~~~python
 omegapy.omega_plots.show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None,
                   alpha=None, title='auto', lonlim=(None, None), latlim=(None, None), Nfig=None,
-                  polar=False, cbar=True, grid=True):
+                  polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto'):
     Display an OMEGA/MEx observation with respect of the lat/lon coordinates of the pixels,
     and allows to use a polar projection if desired.
 
@@ -101,6 +103,16 @@ omegapy.omega_plots.show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Gre
         If True -> Diplay the colorbar.
     grid : bool, optional (default True)
         Enable the display of the lat/lon grid.
+    mask : 2D array or None, optional (default None)
+        The array that identify the bad/corrupted pixels to remove.
+        If None, all the pixels are conserved.
+        | 1 -> Good pixel
+        | NaN -> Bad pixel
+    negatives_longitudes : str or bool, optional (default 'auto')
+        Argument for non-polar plots.
+        | True -> longitudes between 0° and 360°.
+        | False -> longitudus between -180° and 180°.
+        | 'auto' -> automatic detection of the best case.
 ~~~
 
 ### Display cube interactive version
@@ -142,13 +154,15 @@ omegapy.omega_plots.show_omega_interactif(omega, lam, refl=True, lam_unit='m', c
 
 ~~~python
 omegapy.omega_plots.show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=None, 
-                             cmap='Greys_r', cb_title='IBD', title='auto',
+                             cmap='Greys_r', cb_title='data', title='auto',
                              vmin=None, vmax=None, autoyscale=True, ylim_sp=(None, None),
                              alpha=None, lonlim=(None, None), latlim=(None, None),
-                             polar=False, cbar=True, grid=True):
+                             polar=False, cbar=True, grid=True, mask=None, lam_mask=None,
+                             negatives_longitudes='auto'):
     Affichage interactif d'un cube de données.
     Possibilité d'afficher le spectre associé à un pixel en cliquant dessus
     (maintenir Ctrl pour supperposer plusieurs spectres), ou en se déplaçant avec les flèches.
+    Les spectres affichés sont stockés dans le dictionnaire `picked_spectra[nfig]`.
 
     Display an OMEGA/MEx observation with respect of the lat/lon coordinates of the pixels,
     and allows to use a polar projection if desired.
@@ -170,7 +184,7 @@ omegapy.omega_plots.show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_un
         Array of high-level data (e.g. IBD map) computed from the omega observation.
     cmap : str, optional (default 'Greys_r')
         The matplotlib colormap.
-    cb_title : str,  optional (default 'IBD')
+    cb_title : str,  optional (default 'data')
         The title of the colorbar.
         Note : Only for the `data` plots.
     title : str, optional (default 'auto')
@@ -197,15 +211,30 @@ omegapy.omega_plots.show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_un
         If True -> Diplay the colorbar.
     grid : bool, optional (default True)
         Enable the display of the lat/lon grid.
+    mask : 2D array or None, optional (default None)
+        The array that identify the bad/corrupted pixels to remove.
+        If None, all the pixels are conserved.
+        | 1 -> Good pixel
+        | NaN -> Bad pixel
+    lam_mask : 1D array or None, optional (default None)
+        The array that identify the bad/corrupted spectels to remove.
+        If None, all the spectels are conserved.
+        | True -> Good spectel
+        | False -> Bad spectel
+    negatives_longitudes : str or bool, optional (default 'auto')
+        Argument for non-polar plots.
+        | True -> longitudes between 0° and 360°.
+        | False -> longitudus between -180° and 180°.
+        | 'auto' -> automatic detection of the best case.
 ~~~
 
-### Display derived data map from OMEGA observation (ex IBD)
+### Display derived high-level data map from OMEGA observation
 
 ~~~python
-omegapy.omega_plots.show_ibd_v2(omega, ibd, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', 
+omegapy.omega_plots.show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', 
                 cb_title = 'IBD', lonlim=(None, None), latlim=(None, None), Nfig=None, 
-                polar=False, cbar=True, grid=True):
-    Affichage IBD avec pcolormesh.
+                polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto'):
+    Affichage données haut-niveau avec pcolormesh.
     Display an OMEGA/MEx observation with respect of the lat/lon coordinates of the pixels,
     and allows to use a polar projection if desired.
 
@@ -213,8 +242,8 @@ omegapy.omega_plots.show_ibd_v2(omega, ibd, cmap='viridis', vmin=None, vmax=None
     ==========
     omega : OMEGAdata
         The OMEGA/MEx observation
-    ibd : 2D array
-        The array of the computed IBD values from the omega observation
+    data : 2D array
+        The array of the computed data values from the omega observation
     cmap : str, optional (default 'Greys_r')
         The matplotlib colormap.
     vmin : float or None, optional (default None)
@@ -225,7 +254,7 @@ omegapy.omega_plots.show_ibd_v2(omega, ibd, cmap='viridis', vmin=None, vmax=None
         Opacity of the plot.
     title : str, optional (default 'auto')
         The title of the figure.
-    cb_title : str,  optional (default 'IBD')
+    cb_title : str,  optional (default 'data')
         The title of the colorbar.
     lonlim : tuple of int or None, optional (default (None, None))
         The longitude bounds of the figure.
@@ -239,6 +268,16 @@ omegapy.omega_plots.show_ibd_v2(omega, ibd, cmap='viridis', vmin=None, vmax=None
         If True -> Display the colorbar.
     grid : bool, optional (default True)
         Enable the display of the lat/lon grid.
+    mask : 2D array or None, optional (default None)
+        The array that identify the bad/corrupted pixels to remove.
+        If None, all the pixels are conserved.
+        | 1 -> Good pixel
+        | NaN -> Bad pixel
+    negatives_longitudes : str or bool, optional (default 'auto')
+        Argument for non-polar plots.
+        | True -> longitudes between 0° and 360°.
+        | False -> longitudus between -180° and 180°.
+        | 'auto' -> automatic detection of the best case.
 ~~~
 
 ### Display composite map of several OMEGA observations, sample on a lat/lon grid
@@ -433,4 +472,29 @@ omegapy.omega_plots.show_omega_list_v2_man(data, grid_lat, grid_lon, infos, cmap
         | False -> longitudus between -180° and 180°.
     **kwargs:
         Optional arguments for the plt.pcolormesh() function.
+~~~
+
+### Plot previously picked spectra from interactive plots
+~~~python
+omegapy.omega_plots.plot_psp(sp1_id, *args, sp2_id=(None, None), Nfig=None, sp_dict=picked_spectra, **kwargs):
+    Plot previously picked spectra from interactive plots.
+    If two spectra id are given, the ration sp1/sp2 is showed.
+
+    Parameters
+    ==========
+    sp1_id : tuple of int (nfig, sp_nb)
+        nfig : The figure number of the selected spectra.
+        sp_nb : The number of the spectra in this figure (starting at 1).
+    *args : 
+        Optional arguments for the plt.plot() function.
+    sp2_id : tuple of int (nfig, sp_nb), optional (default (None, None))
+        nfig : The figure number of the selected spectra.
+        sp_nb : The number of the spectra in this figure (starting at 1).
+    Nfig : int or str or None, optional (default None)
+        The target figure ID.
+    sp_dict : dict, optional (default picked_spectra)
+        The dictionary containing the picked spectra from interactive figures.
+        Default is the current one.
+    **kwargs:
+        Optional arguments for the plt.plot() function.
 ~~~

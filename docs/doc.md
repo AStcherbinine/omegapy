@@ -1,23 +1,24 @@
-# OMEGA-Py documentation - v1.2
+# OMEGA-Py documentation - v2.0
 
 ## [`omegapy.omega_data`](doc_omega_data.md)
 
-Importation of OMEGA observations in the OMEGAdata class.
-Using IDL routines containing in omegapy/omega_routines/*.
+Importation and correction of OMEGA/MEx observations from binaries files.
 
-`class OMEGAdata(obs='', empty=False, data_path=_omega_bin_path)`
+`class OMEGAdata(obs='', empty=False, data_path=_omega_bin_path, corrV=True, corrL=True)`
 
-`find_cube(lat, lon, cmin=0, cmax=10000, out=False)`
+`find_cube(lon0, lat0, cmin=0, cmax=10000, out=False)`
 
 `autosave_omega(omega, folder='auto', base_folder=_omega_py_path, security=True, disp=True)`
 
-`autoload_omega(obs_name, folder='auto', version=Version, base_folder=_omega_py_path, therm_corr=None, atm_corr=None, disp=True)`
+`autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega_py_path, therm_corr=None, atm_corr=None, disp=True)`
 
 `save_omega(omega, savname='auto', folder='', base_folder=_omega_py_path, pref ='', suff='', disp=True)`
 
 `load_omega(filename, disp=True)`
 
 `load_omega_list(basename, disp=True)`
+
+`load_omega_list2(liste_obs, therm_corr=True, atm_corr=True, **kwargs)`
 
 `import_list_obs_csv(filename)`
 
@@ -45,13 +46,17 @@ Using IDL routines containing in omegapy/omega_routines/*.
 
 `get_ls(omega_list)`
 
-`update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=Version, base_folder=_omega_py_path)`
+`update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=_Version, base_folder=_omega_py_path)`
 
 `test_cube(obs)`
 
 `compute_list_good_observations(savfilename='liste_good_obs.csv', folder='../data/OMEGA/liste_obs', security=True)`
 
 `utc_to_my(dt)`
+
+`shared_lam(lam_list)`
+
+`shared_lam_omegalist(omega_list)`
 
 
 ## [`omegapy.omega_plots`](doc_omega_plots.md)
@@ -60,13 +65,13 @@ Display of OMEGAdata cubes.
 
 `show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, title='auto', xlim=(None, None), ylim=(None, None), Nfig=None)`
 
-`show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, alpha=None, title='auto', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True)`
+`show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, alpha=None, title='auto', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto')`
 
 `show_omega_interactif(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, title='auto', autoyscale=True, xlim=(None, None), ylim=(None, None))`
 
-`show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=None, cmap='Greys_r', cb_title='IBD', title='auto', vmin=None, vmax=None, autoyscale=True, ylim_sp=(None, None), alpha=None, lonlim=(None, None), latlim=(None, None), polar=False, cbar=True, grid=True)`
+`show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=None, cmap='Greys_r', cb_title='data', title='auto', vmin=None, vmax=None, autoyscale=True, ylim_sp=(None, None), alpha=None, lonlim=(None, None), latlim=(None, None), polar=False, cbar=True, grid=True, mask=None, lam_mask=None, negatives_longitudes='auto')`
 
-`show_ibd_v2(omega, ibd, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', cb_title = 'IBD', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True)`
+`show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', cb_title = 'data', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto')`
 
 `show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0, lon_max=360, pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto', data_list=None, mask_list=None, plot=True, grid=True, out=False, negatives_longitudes=False, **kwargs)`
 
@@ -75,6 +80,8 @@ Display of OMEGAdata cubes.
 `load_map_omega_list(filename)`
 
 `show_omega_list_v2_man(data, grid_lat, grid_lon, infos, cmap='Greys_r', vmin=None, vmax=None, title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto', grid=True, negatives_longitudes=False, **kwargs)`
+
+`plot_psp(sp1_id, *args, sp2_id=(None, None), Nfig=None, sp_dict=picked_spectra, **kwargs)`
 
 
 ## [`omegapy.useful_functions`](doc_useful_functions.md)

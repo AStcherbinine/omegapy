@@ -1,13 +1,12 @@
-# OMEGA-Py documentation - v1.2
+# OMEGA-Py documentation - v2.0
 
 ## `omegapy.omega_data`
 
-Importation of OMEGA observations in the OMEGAdata class.
-Using IDL routines containing in omegapy/omega_routines/*.
+Importation and correction of OMEGA/MEx observations from binaries files.
 
-`class OMEGAdata(obs='', empty=False, data_path=_omega_bin_path)`
+`class OMEGAdata(obs='', empty=False, data_path=_omega_bin_path, corrV=True, corrL=True)`
 
-`find_cube(lat, lon, cmin=0, cmax=10000, out=False)`
+`find_cube(lon0, lat0, cmin=0, cmax=10000, out=False)`
 
 `autosave_omega(omega, folder='auto', base_folder=_omega_py_path, security=True, disp=True)`
 
@@ -55,11 +54,15 @@ Using IDL routines containing in omegapy/omega_routines/*.
 
 `utc_to_my(dt)`
 
+`shared_lam(lam_list)`
+
+`shared_lam_omegalist(omega_list)`
+
 
 ### OMEGAdata class
 ~~~python
-class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_path):
-    Importation of OMEGA/MEx observation, using the readomega_vpy.pro IDL routine.
+class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_path, corrV=True, corrL=True):
+    Importation of OMEGA/MEx observation.
 
     Parameters
     ==========
@@ -70,6 +73,10 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_pat
     data_path : str, optional (default _omega_py_path)
         The path of the directory containing the data (.QUB) and 
         navigation (.NAV) files.
+    corrV : bool, optional (default True)
+        If True, compute the correction on the visible channel (Vis).
+    corrL : bool, optional (default True)
+        If True, compute the correction on the long-IR channel (L).
 
     Attributes
     ==========
@@ -93,6 +100,8 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_pat
         The elevation of the pixel footprint center point (km).
     loct : 2D array of floats
         The array of the local time for each pixel of the observation.
+    my : int
+        The Martian Year number at the time of the observation.
     emer : 2D array
         The angle of emergent line (from the surface) (deg).
     inci : 2D array
@@ -117,7 +126,7 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_pat
         Information about the saturation of the Vis-channel.
     summation : int
         The downtrack summing.
-    bits_per_data : int
+    bits_per_data : float
         The compression rate in bits per data.
     data_quality : int
         Information about the data quality, from 0 to 5 depending on missing lines and
@@ -190,16 +199,16 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_pat
 
 ### Observation search
 ~~~python
-omegapy.omega_data.find_cube(lat, lon, cmin=0, cmax=10000, out=False):
+omegapy.omega_data.find_cube(lon0, lat0, cmin=0, cmax=10000, out=False):
     Display the available OMEGA/MEx cubes with observations of the target
-    latitude and longitude, using the IDL procedure `findcub.pro`.
+    latitude and longitude, Python translation of the IDL procedure `findcub.pro`.
 
     Parameters
     ==========
-    lat : float
-        The target latitude (in degrees).
-    lon : float
+    lon0 : float
         The target longitude (in degrees).
+    lat0 : float
+        The target latitude (in degrees).
     cmin : float, optional (default 0)
         The minimum orbit number.
     cmax : float, optional (default 10000)
@@ -211,7 +220,7 @@ omegapy.omega_data.find_cube(lat, lon, cmin=0, cmax=10000, out=False):
     =======
     cub_list : array-like
         List of matching observations.
-        Format : (orbit, x, y, dmin, altMEx, inci, emer, phas, Ls)
+        Format : (orbit, x, y, dmin, altMEx, inci, emer, phas, loct, Ls, MY)
 ~~~
 
 ### OMEGAdata files handling
@@ -677,4 +686,38 @@ omegapy.omega_data.utc_to_my(dt):
     =======
     my : int
         The corresponding Martian Year.
+~~~
+
+### Shared wavelength array between different observations
+~~~python
+omegapy.omega_data.shared_lam(lam_list):
+    Return a list of wavelength shared by all the input wavelength arrays.
+
+    Parameters
+    ==========
+    lam_list : list of 1D np.array
+        The list of wavelength array.
+
+    Returns
+    =======
+    lam2 : 1D np.array
+        The wavelength array that contains only wavelength shared by all the arrays of
+        lam_list.
+~~~
+
+~~~python
+omegapy.omega_data.shared_lam_omegalist(omega_list):
+    Return a list of wavelength shared by all the wavelength arrays of the input
+    OMEGA/MEx observations.
+
+    Parameters
+    ==========
+    omega_list : list of OMEGAdata
+        The list of OMEGA/MEx observations.
+
+    Returns
+    =======
+    lam2 : 1D np.array
+        The wavelength array that contains only wavelength shared by all the arrays of
+        lam_list.
 ~~~

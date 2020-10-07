@@ -3,7 +3,7 @@
 
 ## useful_functions.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 24/04/2020
+## Last modified by Aurélien STCHERBININE : 06/10/2020
 
 ##-----------------------------------------------------------------------------------
 """Useful generics functions.
@@ -20,7 +20,6 @@ import pickle
 import datetime
 import scipy.constants as const
 import glob
-
 
 ##-----------------------------------------------------------------------------------
 ## Ajustement
@@ -41,7 +40,7 @@ def f_lin(x, a, b):
     """
     return a*x + b
 
-def reg_lin(X, Y):
+def reg_lin(X, Y, **kwargs):
     """Renvoie le résultat de la régression linéaire ( f(x) = a*x + b ) sur les valeurs 
     en entrée.
     
@@ -51,6 +50,8 @@ def reg_lin(X, Y):
         The X-values.
     Y : ndarray
         The Y-values.
+    **kwargs
+        Optional keyword arguments to pass to the scipy.optimize.curve_fit function.
 
     Returns
     =======
@@ -59,7 +60,7 @@ def reg_lin(X, Y):
     b : float
         Origin ordinate of the fitted line.
     """
-    a, b = curve_fit(f_lin, X, Y)[0]
+    a, b = curve_fit(f_lin, X, Y, **kwargs)[0]
     return a, b
 
 def planck(lam, T):
@@ -121,6 +122,24 @@ def degre2(x, a, b, c):
         y = a*x**2 + b*x + c
     """
     return a*x*x + b*x + c
+
+def degre3(x, a, b, c, d):
+    """Polynôme d'ordre 3.
+
+    Parameters
+    ==========
+    x : array-like or float
+    a : float
+    b : float
+    c : float
+    d : float
+
+    Returns
+    =======
+    y : float
+        y = a*x**3 + b*x**2 + c*x + d
+    """
+    return a*x*x*x + b*x*x + c*x + d
 
 ##-----------------------------------------------------------------------------------
 ## Filtrage

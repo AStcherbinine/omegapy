@@ -6,12 +6,12 @@ with open('requirements.txt', 'r') as f:
     requirements = f.read().strip('\n').split('\n')
 
 package_data = {
-    '': ['OMEGA_dataref/*', 'omega_routines/*'],
+    '': ['OMEGA_dataref/*', 'res_findcube/*'],
     }
 
 setuptools.setup(
     name='omegapy',
-    version='1.4.2',
+    version='2.0',
     author='Aurélien Stcherbinine',
     author_email='aurelien.stcherbinine@ias.u-psud.fr',
     description='Python tools for OMEGA/MEx observations analysis',
