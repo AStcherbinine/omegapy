@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 07/10/2020
+## Last modified by Aurélien STCHERBININE : 08/10/2020
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -415,7 +415,7 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True):
         jdat /= summation
     # Correction linéarité voie C
     linearC = np.loadtxt(os.path.join(package_path, 'OMEGA_dataref', 'linearC.dat'))
-    jdat[:, 0:128, :] = linearC[(jdat[:, 0:128, :] + 0.5).astype(int)]
+    jdat[:, 0:128, :] = linearC[np.clip((jdat[:, 0:128, :] + 0.5).astype(int), None, 4095)]
     # Correspondance longueur d'onde
     wvl = np.loadtxt(os.path.join(package_path, 'OMEGA_dataref', 'lambda_0403.dat'))
     # Importation fichiers
