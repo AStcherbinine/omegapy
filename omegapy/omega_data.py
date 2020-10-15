@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 08/10/2020
+## Last modified by Aurélien STCHERBININE : 15/10/2020
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -1326,7 +1326,7 @@ def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False):
             y1 = np.sin(lon1*trans) * np.cos(lat1*trans)
             z1 = np.sin(lat1*trans)
             ps = x0*x1 + y0*y1 + z0*z1
-            if np.max(pi) < 0.85:
+            if np.max(ps) < 0.85:
                 continue
             lon2 = lon1 - lon0
             i1 = np.where(lon2 < -180)[0]
@@ -1335,7 +1335,7 @@ def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False):
             i2 = np.where(lon2 > 180)[0]
             if len(i2) > 0:
                 lon2[i2] -= 360
-            if testin(0, lat0, lon2, lat11):
+            if testin(0, lat0, lon2, lat1):
                 nomc.append(nomcube)
                 nhits += 1
     cubindex.close()
