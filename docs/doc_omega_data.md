@@ -4,7 +4,7 @@
 
 Importation and correction of OMEGA/MEx observations from binaries files.
 
-`class OMEGAdata(obs='', empty=False, data_path=_omega_bin_path, corrV=True, corrL=True)`
+`class OMEGAdata(obs='', empty=False, data_path=_omega_bin_path, corrV=True, corrL=True, disp=True)`
 
 `find_cube(lon0, lat0, cmin=0, cmax=10000, out=False)`
 
@@ -61,7 +61,7 @@ Importation and correction of OMEGA/MEx observations from binaries files.
 
 ### OMEGAdata class
 ~~~python
-class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_path, corrV=True, corrL=True):
+class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_path, corrV=True, corrL=True, disp=True):
     Importation of OMEGA/MEx observation.
 
     Parameters
@@ -77,6 +77,10 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_pat
         If True, compute the correction on the visible channel (Vis).
     corrL : bool, optional (default True)
         If True, compute the correction on the long-IR channel (L).
+    disp : bool, optional (default True)
+        Enable or disable the display of informations during the file reading.
+        | True -> Enable display.
+
 
     Attributes
     ==========
@@ -178,8 +182,8 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_pat
         | False -> No atmospheric correction.
     atm_corr_infos : dict
         Information about the atmospheric correction (date, method).
-    version : float
-        The version of the omegapy.omega_data.py file used.
+    version : int
+        The major release version of the omegapy.omega_data.py file used.
     add_infos : str
         Additional informations about the observation.
         Show in the OMEGAdata representation.
@@ -237,7 +241,7 @@ omegapy.omega_data.autosave_omega(omega, folder='auto', base_folder=_omega_py_pa
         The OMEGA/MEx observation object.
     folder : str, optional (default 'auto')
         The subfolder to save the data.
-        | If 'auto' -> folder = 'vX.X', where X.X is the Version of the current code.
+        | If 'auto' -> folder = 'vX', where X is the major release version of the used code.
     base_folder : str, optional (default _omega_py_path)
         The base folder path.
     security : bool, optional (default True)
@@ -262,7 +266,7 @@ omegapy.omega_data.autoload_omega(obs_name, folder='auto', version=_Version, bas
         The observation ID.
     folder : str, optional (default 'auto')
         The subfolder where the data is.
-        | If 'auto' -> folder = 'vX.X', where X.X is the given value of code version.
+        | If 'auto' -> folder = 'vX', where X is the major release version of the used code.
     version : float, optional (default _Version)
         The version of the target file (if folder is 'auto').
     base_folder : str, optional (default _omega_py_path)
@@ -489,7 +493,7 @@ omegapy.omega_data.corr_save_omega(obsname, folder='auto', base_folder=_omega_py
         The name of the OMEGA observation.
     folder : str, optional (default 'auto')
         The subfolder to save the data.
-        | If 'auto' -> folder = 'vX.X', where X.X is the OMEGAdata version.
+        | If 'auto' -> folder = 'vX.X', where X.X is the given value of code version.
     base_folder : str, optional (default _omega_py_path)
         The base folder path.
     security : bool, optional (default True)

@@ -1522,7 +1522,7 @@ def autosave_omega(omega, folder='auto', base_folder=_omega_py_path, security=Tr
         The OMEGA/MEx observation object.
     folder : str, optional (default 'auto')
         The subfolder to save the data.
-        | If 'auto' -> folder = 'vX.X', where X.X is the Version of the current code.
+        | If 'auto' -> folder = 'vX', where X is the major release version of the used code.
     base_folder : str, optional (default _omega_py_path)
         The base folder path.
     security : bool, optional (default True)
@@ -1546,7 +1546,7 @@ def autosave_omega(omega, folder='auto', base_folder=_omega_py_path, security=Tr
         suff = ''
     savname = '{name}{suff}.pkl'.format(name=omega.name, suff=suff)
     if folder == 'auto':
-        folder = 'v' + str(omega.version)
+        folder = 'v' + str(int(omega.version))
     # Chemin sav fichier
     target_path = os.path.join(base_folder, folder, savname)
     # Testing existent file

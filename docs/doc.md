@@ -4,7 +4,7 @@
 
 Importation and correction of OMEGA/MEx observations from binaries files.
 
-`class OMEGAdata(obs='', empty=False, data_path=_omega_bin_path, corrV=True, corrL=True)`
+`class OMEGAdata(obs='', empty=False, data_path=_omega_bin_path, corrV=True, corrL=True, disp=True)`
 
 `find_cube(lon0, lat0, cmin=0, cmax=10000, out=False)`
 
@@ -73,9 +73,9 @@ Display of OMEGAdata cubes.
 
 `show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', cb_title = 'data', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto')`
 
-`show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0, lon_max=360, pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto', data_list=None, mask_list=None, plot=True, grid=True, out=False, negatives_longitudes=False, **kwargs)`
+`show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0, lon_max=360, pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto', data_list=None, mask_list=None, negative_values=False, plot=True, grid=True, out=False, negatives_longitudes=False, **kwargs)`
 
-`save_map_omega_list(omega_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=360, pas_lat=0.1, pas_lon=0.1, lam=1.085, data_list=None, data_desc='', mask_list=None, sav_filename='auto', base_folder='../data/OMEGA/sav_map_list_v2/', ext='')`
+`save_map_omega_list(omega_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=360, pas_lat=0.1, pas_lon=0.1, lam=1.085, data_list=None, data_desc='', mask_list=None, negative_values=False, sav_filename='auto', ext='', base_folder='../data/OMEGA/sav_map_list_v2/', sub_folder='')`
 
 `load_map_omega_list(filename)`
 
