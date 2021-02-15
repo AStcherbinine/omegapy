@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 07/10/2020
+## Last modified by Aurélien STCHERBININE : 15/02/2021
 
 ##----------------------------------------------------------------------------------------
 """Display of OMEGAdata cubes.
@@ -846,7 +846,7 @@ def show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, 
 ##----------------------------------------------------------------------------------------
 ## Projection grille
 def proj_grid(omega, data, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
-              pas_lat=0.1, pas_lon=0.1):
+              pas_lat=0.1, pas_lon=0.1, negative_values=False):
     """Sample the data from the input OMEGA/MEx observation on a given lat/lon grid.
 
     Parameters
@@ -868,6 +868,8 @@ def proj_grid(omega, data, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
         The latitude intervals of the grid.
     pas_lon : float, optional (default 0.1)
         The longitude intervals of the grid.
+    negative_values : bool, optional (default False)
+        Set if the negative values are considered as relevant data or not.
 
     Returns
     =======
@@ -897,9 +899,15 @@ def proj_grid(omega, data, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
             i_lon = int(longi/pas_lon - lon_min/pas_lon)
             j_lat = int(lati/pas_lat - lat_min/pas_lat)
             data_tmp = data[i,j]
-            if (not np.isnan(data_tmp)) & (data_tmp > 0):   # Filtrage régions sans données
-                grid_data[i_lon,j_lat] += data_tmp
-                mask[i_lon,j_lat] += 1
+            # if (not np.isnan(data_tmp)) & (data_tmp > 0):   # Filtrage régions sans données
+            if negative_values:
+                if (not np.isnan(data_tmp)) & (not np.isinf(data_tmp)):   # Filtrage régions sans données
+                    grid_data[i_lon,j_lat] += data_tmp
+                    mask[i_lon,j_lat] += 1
+            else:   # negative values = No data
+                if (not np.isnan(data_tmp)) & (data_tmp > 0) & (not np.isinf(data_tmp)):   # Filtrage régions sans données
+                    grid_data[i_lon,j_lat] += data_tmp
+                    mask[i_lon,j_lat] += 1
     grid_data[grid_data==0] = np.nan
     grid_data2 = grid_data / mask       # Normalisation
     mask2 = np.clip(mask, 0, 1)
@@ -952,8 +960,8 @@ def check_list_mask_omega(omega_list, mask_list, disp=True):
 def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
                        pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, 
                        title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto',
-                       data_list=None, mask_list=None, plot=True, grid=True, out=False, 
-                       negatives_longitudes=False, **kwargs):
+                       data_list=None, mask_list=None, negative_values=False, plot=True, 
+                       grid=True, out=False, negatives_longitudes=False, **kwargs):
     """Display an composite map from a list OMEGA/MEx observations, sampled on a new lat/lon grid.
 
     Parameters
@@ -998,6 +1006,8 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
         corrupted pixels of each observaiton, in the **same order** than the observations of 
         `omega_list`.
         Each mask is a 2D array, filled with 1 for good pixels and NaN for bad ones.
+    negative_values : bool, optional (default False)
+        Set if the negative values are considered as relevant data or not.
     plot : bool, optional (default True)
         If True -> Diplay the final figure.
     grid : bool, optional (default True)
@@ -1042,7 +1052,7 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
             else:
                 data_tmp = omega.cube_rf[:,:,i_lam] * mask_list[i]  # Reflectance with mask
             data0, mask0 = proj_grid(omega, data_tmp, lat_min, lat_max,
-                                     lon_min, lon_max, pas_lat, pas_lon)[:2]
+                                     lon_min, lon_max, pas_lat, pas_lon, negative_values)[:2]
             data += np.nan_to_num(data0)    # Conversion NaN -> 0 pour somme des images
             mask += mask0
             mask_obs[mask0 == 1] += (omega.name + ',')
@@ -1054,7 +1064,7 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
             else:
                 data_tmp = data_list[i] * mask_list[i]  # Data with mask
             data0, mask0 = proj_grid(omega, data_tmp, lat_min, lat_max,
-                                     lon_min, lon_max, pas_lat, pas_lon)[:2]
+                                     lon_min, lon_max, pas_lat, pas_lon, negative_values)[:2]
             data += np.nan_to_num(data0)    # Conversion NaN -> 0 pour somme des images
             mask += mask0
             mask_obs[mask0 == 1] += (omega.name + ',')
@@ -1136,7 +1146,7 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
 ## Sauvegarde résultats
 def save_map_omega_list(omega_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
                         pas_lat=0.1, pas_lon=0.1, lam=1.085, data_list=None, data_desc='', 
-                        mask_list=None, sav_filename='auto', ext='',
+                        mask_list=None, negative_values=False, sav_filename='auto', ext='',
                         base_folder='../data/OMEGA/sav_map_list_v2/', sub_folder=''):
     """Save the output of the omega_plots.show_omega_list_v2() function with the requested
     parameters as a dictionary.
@@ -1169,6 +1179,8 @@ def save_map_omega_list(omega_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=
         corrupted pixels of each observaiton, in the **same order** than the observations of 
         `omega_list`.
         Each mask is a 2D array, filled with 1 for good pixels and NaN for bad ones.
+    negative_values : bool, optional (default False)
+        Set if the negative values are considered as relevant data or not.
     sav_filename : str, optional (default 'auto')
         The saving file name.
         | If 'auto' -> Automatically generated.
@@ -1193,7 +1205,8 @@ def save_map_omega_list(omega_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=
     # Compute the data sampling
     data, mask, grid_lat, grid_lon, mask_obs = show_omega_list_v2(omega_list,
                 lam, lat_min, lat_max, lon_min, lon_max, pas_lat, pas_lon,
-                data_list=data_list, mask_list=mask_list, plot=False, out=True)
+                data_list=data_list, mask_list=mask_list, negative_values=negative_values,
+                plot=False, out=True)
     # Sav file
     input_params = {
         'omega_list' : od.get_names(omega_list),

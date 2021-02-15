@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 15/10/2020
+## Last modified by Aurélien STCHERBININE : 15/02/2021
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -34,7 +34,7 @@ from . import useful_functions as uf
 
 # Name of the current file
 _py_file = 'omega_data.py'
-_Version = 2.0
+_Version = 2.1
 
 # Path of the package files
 package_path = os.path.abspath(os.path.dirname(__file__))
@@ -263,7 +263,7 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True):
     Parameters
     ==========
     cube_id : str
-        The observation ID (format XXXX_X).
+        The observation ID (format ORBXXXX_X).
     disp : bool, optional (default True)
         Enable or disable the display of informations during the file reading.
         | True -> Enable display.
@@ -285,7 +285,8 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True):
     nomfic0 = cube_id + '.QUB'
     nomfic = os.path.join(_omega_bin_path, nomfic0)
     nomgeo = os.path.join(_omega_bin_path, nomgeo0)
-    print('\n\033[1mComputing OMEGA observation {0:s}\033[0m'.format(cube_id))
+    if disp:
+        print('\n\033[1mComputing OMEGA observation {0:s}\033[0m'.format(cube_id))
     # Orbit number in base 10
     orbnum = int.from_bytes(str.encode(nomfic0[3]), byteorder='big') - 48
     if orbnum > 9:
@@ -730,6 +731,9 @@ class OMEGAdata:
         If True, compute the correction on the visible channel (Vis).
     corrL : bool, optional (default True)
         If True, compute the correction on the long-IR channel (L).
+    disp : bool, optional (default True)
+        Enable or disable the display of informations during the file reading.
+        | True -> Enable display.
 
     Attributes
     ==========
@@ -831,16 +835,16 @@ class OMEGAdata:
         | False -> No atmospheric correction.
     atm_corr_infos : dict
         Information about the atmospheric correction (date, method).
-    version : float
-        The version of the omegapy.omega_data.py file used.
+    version : int
+        The major release version of the omegapy.omega_data.py file used.
     add_infos : str
         Additional informations about the observation.
         Show in the OMEGAdata representation.
     """
 
-    def __init__(self, obs='', empty=False, data_path=_omega_bin_path, corrV=True, corrL=True):
+    def __init__(self, obs='', empty=False, data_path=_omega_bin_path, corrV=True, corrL=True, disp=True):
         # Infos
-        self.version = _Version
+        self.version = int(_Version)
         self.therm_corr = False
         self.atm_corr = False
         self.therm_corr_infos = {'datetime': None, 'method': None}
@@ -903,9 +907,10 @@ class OMEGAdata:
                 print("\033[1;33mAborted\033[0m")
                 return None
             nomfic0 = obs_name[obs_name.rfind('/')+1:-4]    # Récupération nom + décodage UTF-8
-            data_dict, geom_dict = _readomega(nomfic0, disp=True, corrV=corrV, corrL=corrL)
+            data_dict, geom_dict = _readomega(nomfic0, disp=disp, corrV=corrV, corrL=corrL)
 
-            print("\n\033[01;34mComputing data extraction and correction...\033[0m", end=' ')
+            if disp:
+                print("\n\033[01;34mComputing data extraction and correction...\033[0m", end=' ')
             # Extract values
             ldat = data_dict['ldat']
             jdat = data_dict['jdat']
@@ -1046,7 +1051,8 @@ class OMEGAdata:
                 self.add_infos = corrupted_orbits_comments[i_obs]
             #--------------------------
             # End of data extraction & correction
-            print("\033[01;32m[done]\033[0m")
+            if disp:
+                print("\033[01;32m[done]\033[0m")
 
 
     def __copy__(self):
@@ -1565,7 +1571,7 @@ def autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega
         The observation ID.
     folder : str, optional (default 'auto')
         The subfolder where the data is.
-        | If 'auto' -> folder = 'vX.X', where X.X is the given value of code version.
+        | If 'auto' -> folder = 'vX', where X is the major release version of the used code.
     version : float, optional (default _Version)
         The version of the target file (if folder is 'auto').
     base_folder : str, optional (default _omega_py_path)
@@ -1600,7 +1606,7 @@ def autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega
         excl.append('atm')
     filename = '*{name}*{corr_ext}*.pkl'.format(name=obs_name, corr_ext=ext)
     if folder == 'auto':
-        folder = 'v' + str(version)
+        folder = 'v' + str(int(version))
     filename2 = uf.myglob(os.path.join(base_folder, folder, filename), exclude=excl)
     if filename2 is None:
         if (therm_corr in [None, False]) and (atm_corr in [None, False]):
@@ -2083,7 +2089,7 @@ def corr_save_omega(obsname, folder='auto', base_folder=_omega_py_path, security
         The name of the OMEGA observation.
     folder : str, optional (default 'auto')
         The subfolder to save the data.
-        | If 'auto' -> folder = 'vX.X', where X.X is the OMEGAdata version.
+        | If 'auto' -> folder = 'vX', where X is the major release version of the used code.
     base_folder : str, optional (default _omega_py_path)
         The base folder path.
     security : bool, optional (default True)
@@ -2100,7 +2106,7 @@ def corr_save_omega(obsname, folder='auto', base_folder=_omega_py_path, security
         Number of parallelized worker process to use.
     """
     if folder == 'auto':
-        folder = 'v' + str(_Version)
+        folder = 'v' + str(int(_Version))
     omega = OMEGAdata(obsname)
     name = omega.name
     # path synthax
@@ -2138,7 +2144,7 @@ def corr_save_omega_list(liste_obs, folder='auto', base_folder=_omega_py_path,
         The list of the name of the OMEGA observations.
     folder : str, optional (default 'auto')
         The subfolder to save the data.
-        | If 'auto' -> folder = 'vX.X', where X.X is the Version of the current code.
+        | If 'auto' -> folder = 'vX', where X is the major release version of the used code.
     base_folder : str, optional (default _omega_py_path)
         The base folder path.
     security : bool, optional (default True)
@@ -2156,7 +2162,7 @@ def corr_save_omega_list(liste_obs, folder='auto', base_folder=_omega_py_path,
     """
     N = len(liste_obs)
     if folder == 'auto':
-        folder = 'v' + str(_Version)
+        folder = 'v' + str(int(_Version))
     for i, obsname in enumerate(liste_obs):
         print('\n\033[01mComputing observation {0} / {1} : {2}\033[0m\n'.format(i+1, N, obsname))
         corr_save_omega(obsname, folder, base_folder, security, overwrite, compress, npool)
@@ -2280,7 +2286,7 @@ def update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=_Version,
         The files basename.
     folder : str, optional (default 'auto')
         The subfolder where the data is.
-        | If 'auto' -> folder = 'vX.X', where X.X is the given value of code version.
+        | If 'auto' -> folder = 'vX', where X is the major release version of the used code.
     version : float, optional (default _Version)
         The version of the target file (if folder is 'auto').
         Default is the current code version.
@@ -2291,7 +2297,7 @@ def update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=_Version,
     if obs_name[-4] != '.pkl':
         obs_name += '.pkl'
     if folder == 'auto':
-        folder = 'v' + str(version)
+        folder = 'v' + str(int(version))
     basename = uf.myglob(os.path.join(base_folder, folder, obs_name))
     # Load list corrupted obs
     OBC = readsav(os.path.join(package_path, 'OMEGA_dataref', 'OBC_OMEGA_OCT2017.sav'))

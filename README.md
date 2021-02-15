@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-2.0-blue)
+![version](https://img.shields.io/badge/version-2.1-blue)
 ![pythonversion](https://img.shields.io/badge/Python-3.7-blue)
 
 # OMEGA-Py : Python tools for OMEGA data
@@ -57,4 +57,4 @@ See [`docs/*.md`](docs/) or the interactive IPython help for more details.
 ## Credits
 Developped at the Institut d'Astrophysique Spatiale (IAS), Université Paris-Saclay, Orsay, France  
 
-© Aurélien Stcherbinine (2020)
+© Aurélien Stcherbinine (2020–2021)

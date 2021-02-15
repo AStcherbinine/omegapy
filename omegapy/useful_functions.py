@@ -3,7 +3,7 @@
 
 ## useful_functions.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 06/10/2020
+## Last modified by Aurélien STCHERBININE : 15/02/2021
 
 ##-----------------------------------------------------------------------------------
 """Useful generics functions.
@@ -239,7 +239,7 @@ def where_closer(value, array):
         The index of the closer value to value in array.
     """
     array2 = np.abs(array - value)
-    i_closer = np.where(array2 == array2.min())[0][0]
+    i_closer = np.where(array2 == np.nanmin(array2))[0][0]
     return i_closer
 
 def where_closer_array(values, array):
