@@ -3,7 +3,7 @@
 
 # OMEGA-Py : Python tools for OMEGA data
 
-Importation and display of OMEGA/MEx observations in Python 3, based on IDL routines developped in the IAS planetary team.
+Importation and display of OMEGA/MEx observations in Python 3, based on IDL *SOFT10* routines developped in the IAS planetary team.
 
 ## Installation
 Clone the repository and install with pip:
@@ -60,4 +60,4 @@ Developped at the Institut d'Astrophysique Spatiale (IAS), Université Paris-Sac
 © Aurélien Stcherbinine (2020–2021)
 
 ## Licence
-This package is released under a MIT open source licence. See [`LICENSE`](LICENSE) for more details.
+This package is released under a MIT open source license. See [`LICENSE`](LICENSE) for more details.
