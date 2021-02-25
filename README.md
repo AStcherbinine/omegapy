@@ -59,5 +59,5 @@ Developped at the Institut d'Astrophysique Spatiale (IAS), Université Paris-Sac
 
 © Aurélien Stcherbinine (2020–2021)
 
-## Licence
+## License
 This package is released under a MIT open source license. See [`LICENSE`](LICENSE) for more details.
