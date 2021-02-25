@@ -58,3 +58,6 @@ See [`docs/*.md`](docs/) or the interactive IPython help for more details.
 Developped at the Institut d'Astrophysique Spatiale (IAS), Université Paris-Saclay, Orsay, France  
 
 © Aurélien Stcherbinine (2020–2021)
+
+## Licence
+This package is released under a MIT open source licence. See [`LICENSE`](LICENSE) for more details.
