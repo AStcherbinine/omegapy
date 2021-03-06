@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 15/02/2021
+## Last modified by Aurélien STCHERBININE : 06/03/2021
 
 ##----------------------------------------------------------------------------------------
 """Display of OMEGAdata cubes.
@@ -124,7 +124,8 @@ def show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, v
 
 def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None,
                   alpha=None, title='auto', lonlim=(None, None), latlim=(None, None), Nfig=None,
-                  polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto'):
+                  polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto',
+                  **kwargs):
     """Display an OMEGA/MEx observation with respect of the lat/lon coordinates of the pixels,
     and allows to use a polar projection if desired.
 
@@ -173,6 +174,8 @@ def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None
         | True -> longitudes between 0° and 360°.
         | False -> longitudus between -180° and 180°.
         | 'auto' -> automatic detection of the best case.
+    **kwargs:
+        Optional arguments for the plt.pcolormesh() function.
     """
     if ((lam_unit == 'm') or isinstance(lam, float)) and (lam < 10):
         i_lam = uf.where_closer(lam, omega.lam)
@@ -200,7 +203,7 @@ def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None
     if polar:
         ax = plt.axes(polar=True)
         plt.pcolormesh(omega.lon_grid*np.pi/180, omega.lat_grid, cube_map, cmap=cmap, 
-                       alpha=alpha, vmin=vmin, vmax=vmax)
+                       alpha=alpha, vmin=vmin, vmax=vmax, **kwargs)
         ax.set_yticklabels([])  # remove the latitude values in the plot
         if latlim[0] is None:
             if np.max(omega.lat) > 0:
@@ -219,7 +222,7 @@ def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None
         if negatives_longitudes:
             lon_grid2[lon_grid2 > 180] -= 360
         plt.pcolormesh(lon_grid2, omega.lat_grid, cube_map, cmap=cmap, alpha=alpha,
-                       vmin=vmin, vmax=vmax)
+                       vmin=vmin, vmax=vmax, **kwargs)
         plt.gca().axis('equal')
         plt.xlim(lonlim)
         plt.ylim(latlim)
@@ -528,7 +531,7 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
                              vmin=None, vmax=None, autoyscale=True, ylim_sp=(None, None),
                              alpha=None, lonlim=(None, None), latlim=(None, None),
                              polar=False, cbar=True, grid=True, mask=None, lam_mask=None,
-                             negatives_longitudes='auto'):
+                             negatives_longitudes='auto', **kwargs):
     """Affichage interactif d'un cube de données.
     Possibilité d'afficher le spectre associé à un pixel en cliquant dessus
     (maintenir Ctrl pour supperposer plusieurs spectres), ou en se déplaçant avec les flèches.
@@ -596,6 +599,8 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
         | True -> longitudes between 0° and 360°.
         | False -> longitudus between -180° and 180°.
         | 'auto' -> automatic detection of the best case.
+    **kwargs:
+        Optional arguments for the plt.pcolormesh() function.
     """
     # Initialisation
     if refl:
@@ -632,10 +637,12 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
     nfig = fig1.number
     if data is None:
         show_omega_v2(omega, lam, refl, lam_unit, cmap, vmin, vmax, alpha, title, 
-                      lonlim, latlim, nfig, polar, cbar, grid, mask, negatives_longitudes)
+                      lonlim, latlim, nfig, polar, cbar, grid, mask, negatives_longitudes, 
+                      **kwargs)
     else:
         show_data_v2(omega, data, cmap, vmin, vmax, alpha, title, cb_title, 
-                    lonlim, latlim, nfig, polar, cbar, grid, mask, negatives_longitudes)
+                     lonlim, latlim, nfig, polar, cbar, grid, mask, negatives_longitudes,
+                     **kwargs)
     ax1 = fig1.gca()
     ax1.scatter(lon, lat, c=bij, marker='s', s=1, picker=True, alpha=0)
     sc_pos = []
@@ -736,7 +743,8 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
 ## Affichage données haut-niveau
 def show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', 
                 cb_title = 'data', lonlim=(None, None), latlim=(None, None), Nfig=None, 
-                polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto'):
+                polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto',
+                **kwargs):
     """Affichage données haut-niveau avec pcolormesh.
     Display an OMEGA/MEx observation with respect of the lat/lon coordinates of the pixels,
     and allows to use a polar projection if desired.
@@ -781,6 +789,8 @@ def show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, 
         | True -> longitudes between 0° and 360°.
         | False -> longitudus between -180° and 180°.
         | 'auto' -> automatic detection of the best case.
+    **kwargs:
+        Optional arguments for the plt.pcolormesh() function.
     """
     if isinstance(negatives_longitudes, str):
         mask_lat = (np.abs(omega.lat) < 85)
@@ -795,7 +805,7 @@ def show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, 
     if polar:
         ax = plt.axes(polar=True)
         plt.pcolormesh(omega.lon_grid*np.pi/180, omega.lat_grid, data, cmap=cmap, 
-                       alpha=alpha, vmin=vmin, vmax=vmax)
+                       alpha=alpha, vmin=vmin, vmax=vmax, **kwargs)
         ax.set_yticklabels([])  # remove the latitude values in the plot
         if latlim[0] is None:
             if np.max(omega.lat) > 0:
@@ -814,7 +824,7 @@ def show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, 
         if negatives_longitudes:
             lon_grid2[lon_grid2 > 180] -= 360
         plt.pcolormesh(lon_grid2, omega.lat_grid, data, cmap=cmap, alpha=alpha,
-                       vmin=vmin, vmax=vmax)
+                       vmin=vmin, vmax=vmax, **kwargs)
         plt.gca().axis('equal')
         plt.xlim(lonlim)
         plt.ylim(latlim)

@@ -1,4 +1,4 @@
-# OMEGA-Py documentation - v2.0
+# OMEGA-Py documentation - v2.2
 
 ## `omegapy.useful_functions`
 

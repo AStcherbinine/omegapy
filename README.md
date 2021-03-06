@@ -1,5 +1,5 @@
-![version](https://img.shields.io/badge/version-2.1-blue)
-![pythonversion](https://img.shields.io/badge/Python-3.7-blue)
+![version](https://img.shields.io/badge/version-2.2-blue)
+![pythonversion](https://img.shields.io/badge/Python-3.7+-blue)
 
 # OMEGA-Py : Python tools for OMEGA data
 
@@ -34,7 +34,7 @@ export OMEGA_PY_PATH="/data/mex-omegj/data1/omega_python/omegapy/"
 ~~~
 *Adapt the path if needed, here is the default configuration for internal IAS use on the server.*
 
-## Usage
+## Basic usage
 ~~~python
 # package importation
 import omegapy.omega_data as od

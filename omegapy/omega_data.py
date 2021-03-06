@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 15/02/2021
+## Last modified by Aurélien STCHERBININE : 06/03/2021
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -34,7 +34,7 @@ from . import useful_functions as uf
 
 # Name of the current file
 _py_file = 'omega_data.py'
-_Version = 2.1
+_Version = 2.2
 
 # Path of the package files
 package_path = os.path.abspath(os.path.dirname(__file__))
@@ -687,6 +687,8 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True):
     saturation_vis = idat[:, 299, :] / summation
     # Temperature voie C
     temperature = sdat1[0, 2, :] * 0.001
+    # Temperature voie L
+    # temperature = sdat1[1, 2, :] * 0.001
 
     #--------------------------
     # Output data
@@ -947,7 +949,7 @@ class OMEGAdata:
             cube_i2 = np.swapaxes(cube_i, 1, 2)
             cube_rf2 = np.swapaxes(cube_rf, 1, 2)
             # Observation UTC date & time
-            Y, M, D, h, m, s = np.average(utc[:,:6], axis=0).astype(np.int64)
+            Y, M, D, h, m, s = np.median(utc[:,:6], axis=0).astype(np.int64)
             utc_dt = datetime.datetime(Y, M, D, h, m, s)
             # Longitude pixels grid
             ny, nx = lon.shape
@@ -1194,6 +1196,44 @@ class OMEGAdata:
         \033[3m{7}\033[0m""".format(self.name, self.version, self.ls, self.my, self.data_quality, 
                                     self.therm_corr, self.atm_corr, self.add_infos)
         return description
+    
+    def get_header_qub(self, data_path=_omega_bin_path):
+        """Return the data from the header of the .QUB file, as a dictionary.
+
+        See the OMEGA ECAID for informations about the header entries.
+        
+        Parameters
+        ==========
+        data_path : str, optional (default _omega_py_path)
+            The path of the directory containing the data (.QUB) files.
+
+        Returns
+        =======
+        hd_qub : dict
+            Dictionary containing the data from the ORBXXXX_X.QUB file.
+        """
+        qub_path = os.path.join(data_path, self.name+'.QUB')
+        hd_qub = _read_header(qub_path)
+        return hd_qub
+
+    def get_header_nav(self, data_path=_omega_bin_path):
+        """Return the data from the header of the .NAV file, as a dictionary.
+
+        See the OMEGA ECAID for informations about the header entries.
+        
+        Parameters
+        ==========
+        data_path : str, optional (default _omega_py_path)
+            The path of the directory containing the navigation (.NAV) files.
+
+        Returns
+        =======
+        hd_nav : dict
+            Dictionary containing the data from the ORBXXXX_X.NAV file.
+        """
+        nav_path = os.path.join(data_path, self.name+'.NAV')
+        hd_nav = _read_header(nav_path)
+        return hd_nav
 
 ##-----------------------------------------------------------------------------------
 ## Recherche observation
@@ -1401,12 +1441,20 @@ def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False):
         phas = geocube[i0, 10, j0] * 1e-4
         slant = geocube[i0, 11, j0] * 1e-3
         alt = geocube[i0, 12, j0] * 1e-3
-        Y, M, D, h, m, s = geocube[:6, 1, j0]
-        utc_dt = datetime.datetime(Y, M, D, h, m, s)
+        possible_geom_corruption = False
+        try:
+            Y, M, D, h, m, s = geocube[:6, 1, j0]
+            utc_dt = datetime.datetime(Y, M, D, h, m, s)
+        except:     # Possible corruption of some geometry lines
+            Y, M, D, h, m, s = np.median(geocube[:6, 1, :], axis=1).astype(np.int64)
+            utc_dt = datetime.datetime(Y, M, D, h, m, s)
+            possible_geom_corruption = True
         my = _utc_to_my(utc_dt)
         loct = _compute_local_time(longa, sslong)[i0, j0]
         obs_output = '{0:9s}{1:6d}{2:6d}{3:8.2f}{4:9.1f}{5:8.2f}{6:8.2f}{7:8.2f}{8:8.2f}{9:8.2f}{10:4d}'.format(
                         nomc[n], i0, j0, distmin, slant, inci, emer, phas, loct, solong, my)
+        if possible_geom_corruption:
+            obs_output = '\033[3m' + obs_output + '\033[0m'
         print(obs_output)
 
         with open(path_cubliste, 'a') as f_cublist:
@@ -1606,7 +1654,8 @@ def autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega
         excl.append('atm')
     filename = '*{name}*{corr_ext}*.pkl'.format(name=obs_name, corr_ext=ext)
     if folder == 'auto':
-        folder = 'v' + str(int(version))
+        Mversion = int(version)
+        folder = 'v' + str(Mversion)
     filename2 = uf.myglob(os.path.join(base_folder, folder, filename), exclude=excl)
     if filename2 is None:
         if (therm_corr in [None, False]) and (atm_corr in [None, False]):

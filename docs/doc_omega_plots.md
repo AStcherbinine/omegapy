@@ -1,4 +1,4 @@
-# OMEGA-Py documentation - v2.0
+# OMEGA-Py documentation - v2.2
 
 ## `omegapy.omega_plots`
 
@@ -6,13 +6,13 @@ Display of OMEGAdata cubes.
 
 `show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, title='auto', xlim=(None, None), ylim=(None, None), Nfig=None)`
 
-`show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, alpha=None, title='auto', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto')`
+`show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, alpha=None, title='auto', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto', **kwargs)`
 
 `show_omega_interactif(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, title='auto', autoyscale=True, xlim=(None, None), ylim=(None, None))`
 
-`show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=None, cmap='Greys_r', cb_title='data', title='auto', vmin=None, vmax=None, autoyscale=True, ylim_sp=(None, None), alpha=None, lonlim=(None, None), latlim=(None, None), polar=False, cbar=True, grid=True, mask=None, lam_mask=None, negatives_longitudes='auto')`
+`show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=None, cmap='Greys_r', cb_title='data', title='auto', vmin=None, vmax=None, autoyscale=True, ylim_sp=(None, None), alpha=None, lonlim=(None, None), latlim=(None, None), polar=False, cbar=True, grid=True, mask=None, lam_mask=None, negatives_longitudes='auto', **kwargs)`
 
-`show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', cb_title = 'data', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto')`
+`show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', cb_title = 'data', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto', **kwargs)`
 
 `show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0, lon_max=360, pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto', data_list=None, mask_list=None, negative_values=False, plot=True, grid=True, out=False, negatives_longitudes=False, **kwargs)`
 
@@ -64,7 +64,8 @@ omegapy.omega_plots.show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_
 ~~~python
 omegapy.omega_plots.show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None,
                   alpha=None, title='auto', lonlim=(None, None), latlim=(None, None), Nfig=None,
-                  polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto'):
+                  polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto',
+                  **kwargs):
     Display an OMEGA/MEx observation with respect of the lat/lon coordinates of the pixels,
     and allows to use a polar projection if desired.
 
@@ -113,6 +114,8 @@ omegapy.omega_plots.show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Gre
         | True -> longitudes between 0° and 360°.
         | False -> longitudus between -180° and 180°.
         | 'auto' -> automatic detection of the best case.
+    **kwargs:
+        Optional arguments for the plt.pcolormesh() function.
 ~~~
 
 ### Display cube interactive version
@@ -158,7 +161,7 @@ omegapy.omega_plots.show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_un
                              vmin=None, vmax=None, autoyscale=True, ylim_sp=(None, None),
                              alpha=None, lonlim=(None, None), latlim=(None, None),
                              polar=False, cbar=True, grid=True, mask=None, lam_mask=None,
-                             negatives_longitudes='auto'):
+                             negatives_longitudes='auto', **kwargs):
     Affichage interactif d'un cube de données.
     Possibilité d'afficher le spectre associé à un pixel en cliquant dessus
     (maintenir Ctrl pour supperposer plusieurs spectres), ou en se déplaçant avec les flèches.
@@ -226,6 +229,8 @@ omegapy.omega_plots.show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_un
         | True -> longitudes between 0° and 360°.
         | False -> longitudus between -180° and 180°.
         | 'auto' -> automatic detection of the best case.
+    **kwargs:
+        Optional arguments for the plt.pcolormesh() function.
 ~~~
 
 ### Display derived high-level data map from OMEGA observation
@@ -233,7 +238,8 @@ omegapy.omega_plots.show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_un
 ~~~python
 omegapy.omega_plots.show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', 
                 cb_title = 'IBD', lonlim=(None, None), latlim=(None, None), Nfig=None, 
-                polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto'):
+                polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto',
+                **kwargs):
     Affichage données haut-niveau avec pcolormesh.
     Display an OMEGA/MEx observation with respect of the lat/lon coordinates of the pixels,
     and allows to use a polar projection if desired.
@@ -278,6 +284,8 @@ omegapy.omega_plots.show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=No
         | True -> longitudes between 0° and 360°.
         | False -> longitudus between -180° and 180°.
         | 'auto' -> automatic detection of the best case.
+    **kwargs:
+        Optional arguments for the plt.pcolormesh() function.
 ~~~
 
 ### Display composite map of several OMEGA observations, sample on a lat/lon grid

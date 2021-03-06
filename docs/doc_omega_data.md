@@ -1,10 +1,14 @@
-# OMEGA-Py documentation - v2.0
+# OMEGA-Py documentation - v2.2
 
 ## `omegapy.omega_data`
 
 Importation and correction of OMEGA/MEx observations from binaries files.
 
 `class OMEGAdata(obs='', empty=False, data_path=_omega_bin_path, corrV=True, corrL=True, disp=True)`
+
+`OMEGAdata.get_header_qub(data_path=_omega_bin_path)`
+
+`OMEGAdata.get_header_nav(data_path=_omega_bin_path)`
 
 `find_cube(lon0, lat0, cmin=0, cmax=10000, out=False)`
 
@@ -199,6 +203,36 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_pat
     __eq__(self, other)
 
     __repr__(self)
+
+    get_header_qub(self, data_path=_omega_bin_path)
+        Return the data from the header of the .QUB file, as a dictionary.
+
+        See the OMEGA ECAID for informations about the header entries.
+        
+        Parameters
+        ==========
+        data_path : str, optional (default _omega_py_path)
+            The path of the directory containing the data (.QUB) files.
+
+        Returns
+        =======
+        hd_qub : dict
+            Dictionary containing the data from the ORBXXXX_X.QUB file.
+
+    get_header_nav(self, data_path=_omega_bin_path)
+        Return the data from the header of the .NAV file, as a dictionary.
+
+        See the OMEGA ECAID for informations about the header entries.
+        
+        Parameters
+        ==========
+        data_path : str, optional (default _omega_py_path)
+            The path of the directory containing the navigation (.NAV) files.
+
+        Returns
+        =======
+        hd_nav : dict
+            Dictionary containing the data from the ORBXXXX_X.NAV file.
 ~~~
 
 ### Observation search
