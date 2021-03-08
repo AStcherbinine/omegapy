@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 06/03/2021
+## Last modified by Aurélien STCHERBININE : 08/03/2021
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -854,6 +854,12 @@ class OMEGAdata:
         self.quality = 1
         self.add_infos = ''
 
+        if not empty:
+            obs_name = uf.myglob(os.path.join(data_path, '*' + obs + '*.QUB'))
+            if obs_name is None:
+                print("\033[1;33mAborted\033[0m")
+                empty = True
+
         if empty:
             # Data
             self.name = ''
@@ -869,7 +875,7 @@ class OMEGAdata:
             self.inci = np.array([[]])
             self.specmars = np.array([])
             self.utc = datetime.datetime.now()
-            self.my = _utc_to_my(self.utc)
+            self.my = np.nan
             self.orbit = None
             self.surf_temp = np.array([[]])
             self.ic = {'V' : np.arange(265, 333),
@@ -904,10 +910,10 @@ class OMEGAdata:
             self.target = None
 
         else:
-            obs_name = uf.myglob(os.path.join(data_path, '*' + obs + '*.QUB'))
-            if obs_name is None:
-                print("\033[1;33mAborted\033[0m")
-                return None
+            # obs_name = uf.myglob(os.path.join(data_path, '*' + obs + '*.QUB'))
+            # if obs_name is None:
+                # print("\033[1;33mAborted\033[0m")
+                # return None
             nomfic0 = obs_name[obs_name.rfind('/')+1:-4]    # Récupération nom + décodage UTF-8
             data_dict, geom_dict = _readomega(nomfic0, disp=disp, corrV=corrV, corrL=corrL)
 
@@ -1187,7 +1193,7 @@ class OMEGAdata:
         description = """
         OMEGA/MEx observation {0} – (v{1})
 
-        Ls = {2:.1f}° – MY {3:d}
+        Ls = {2:.1f}° – MY {3:.0f}
         
         Cube quality : {4}
         Thermal correction : {5}
