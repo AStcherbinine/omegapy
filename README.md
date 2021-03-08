@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-2.2-blue)
+![version](https://img.shields.io/badge/version-2.2.1-blue)
 ![pythonversion](https://img.shields.io/badge/Python-3.7+-blue)
 
 # OMEGA-Py : Python tools for OMEGA data
