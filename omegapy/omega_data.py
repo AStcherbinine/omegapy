@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 08/03/2021
+## Last modified by Aurélien STCHERBININE : 12/03/2021
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -281,10 +281,10 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True):
          'temperature, 'saturation_C', 'saturation_vis', 'lat_grid', 'lon_grid'}
     """
     # Filename
-    nomgeo0 = cube_id + '.NAV'
-    nomfic0 = cube_id + '.QUB'
-    nomfic = os.path.join(_omega_bin_path, nomfic0)
-    nomgeo = os.path.join(_omega_bin_path, nomgeo0)
+    nomgeo0 = cube_id + '.[Nn][Aa][Vv]'
+    nomfic0 = cube_id + '.[Qq][Uu][Bb]'
+    nomfic = glob.glob(os.path.join(_omega_bin_path, nomfic0))[0]
+    nomgeo = glob.glob(os.path.join(_omega_bin_path, nomgeo0))[0]
     if disp:
         print('\n\033[1mComputing OMEGA observation {0:s}\033[0m'.format(cube_id))
     # Orbit number in base 10
@@ -855,7 +855,7 @@ class OMEGAdata:
         self.add_infos = ''
 
         if not empty:
-            obs_name = uf.myglob(os.path.join(data_path, '*' + obs + '*.QUB'))
+            obs_name = uf.myglob(os.path.join(data_path, '*' + obs + '*.[Qq][Uu][Bb]'))
             if obs_name is None:
                 print("\033[1;33mAborted\033[0m")
                 empty = True
@@ -995,7 +995,7 @@ class OMEGAdata:
             #--------------------------
             # Data from the .QUB header
             #--------------------------
-            hd_qub = _read_header(obs_name[:-4] + '.QUB')
+            hd_qub = _read_header(glob.glob(obs_name[:-4] + '.[Qq][Uu][Bb]')[0])
             self.summation = np.int64(hd_qub['DOWNTRACK_SUMMING'])
             self.bits_per_data = np.float64(hd_qub['INST_CMPRS_RATE'])
             self.data_quality = np.int64(hd_qub['DATA_QUALITY_ID'])
@@ -1011,7 +1011,7 @@ class OMEGAdata:
             #--------------------------
             # Data from the .NAV header
             #--------------------------
-            hd_nav = _read_header(obs_name[:-4] + '.NAV')
+            hd_nav = _read_header(glob.glob(obs_name[:-4] + '.[Nn][Aa][Vv]')[0])
             npixel, npara, nscan = np.array(hd_nav['CORE_ITEMS'][1:-1].split(','), dtype=np.int64)
             self.lrec = np.int64(hd_nav['RECORD_BYTES'])
             self.nrec = np.int64(hd_nav['LABEL_RECORDS'])
@@ -1218,7 +1218,7 @@ class OMEGAdata:
         hd_qub : dict
             Dictionary containing the data from the ORBXXXX_X.QUB file.
         """
-        qub_path = os.path.join(data_path, self.name+'.QUB')
+        qub_path = glob.glob(os.path.join(data_path, self.name+'.[Qq][Uu][Bb]'))[0]
         hd_qub = _read_header(qub_path)
         return hd_qub
 
@@ -1237,7 +1237,7 @@ class OMEGAdata:
         hd_nav : dict
             Dictionary containing the data from the ORBXXXX_X.NAV file.
         """
-        nav_path = os.path.join(data_path, self.name+'.NAV')
+        nav_path = glob.glob(os.path.join(data_path, self.name+'.[Nn][Aa][Vv]'))[0]
         hd_nav = _read_header(nav_path)
         return hd_nav
 
@@ -1395,7 +1395,7 @@ def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False):
     print('{0:^10s} {1:^6s}{2:^6s}{3:^8s}{4:^9s}{5:^7s}{6:^8s}{7:^8s}{8:^8s}{9:^8s}{10:^4s}'.format(
             'orbit', 'x', 'y', 'dmin', 'altMEx', 'inci', 'emer', 'phas', 'loct', 'Ls', 'MY'))
     for n in range(nhits):
-        testfile = os.path.join(_omega_bin_path, nomc[n]+'.NAV')
+        testfile = os.path.join(glob.glob(_omega_bin_path, nomc[n]+'.[Nn][Aa][Vv]')[0])
         if os.path.exists(testfile) == False:
             print('{0:8s}{1:s}'.format(nomc[n], '\033[3m   No corresponding .NAV file\033[0m'))
             continue
@@ -1665,7 +1665,7 @@ def autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega
     filename2 = uf.myglob(os.path.join(base_folder, folder, filename), exclude=excl)
     if filename2 is None:
         if (therm_corr in [None, False]) and (atm_corr in [None, False]):
-            obs_name_bin = glob.glob(os.path.join(_omega_bin_path, '*' + obs_name + '*.QUB'))
+            obs_name_bin = glob.glob(os.path.join(_omega_bin_path, '*' + obs_name + '*.[Qq][Uu][Bb]'))
             if len(obs_name_bin) == 0 :
                 return None
             else:
@@ -2458,14 +2458,14 @@ def test_cube(obs):
     """
     # Recherhe nom de fichier
     data_path = _omega_bin_path
-    obs_name = uf.myglob(os.path.join(data_path, '*' + obs + '*.QUB'))
+    obs_name = uf.myglob(os.path.join(data_path, '*' + obs + '*.[Qq][Uu][Bb]'))
     if obs_name is None:
         print("\033[1;33mAborted\033[0m")
         return False
     nomfic0 = obs_name[obs_name.rfind('/')+1:-4]    # Récupération nom
     numCube = int(nomfic0[-1])
     # Lecture header fichier .QUB
-    hd_qub = _read_header(obs_name[:-4] + '.QUB')
+    hd_qub = _read_header(glob.glob(obs_name[:-4] + '.[Qq][Uu][Bb]')[0])
     summation = np.int64(hd_qub['DOWNTRACK_SUMMING'])
     bits_per_data = np.float64(hd_qub['INST_CMPRS_RATE'])
     data_quality = np.int64(hd_qub['DATA_QUALITY_ID'])
@@ -2479,9 +2479,9 @@ def test_cube(obs):
     else:
         mode_channel = mode_channel_tmp
     # Lecture header fichier .NAV
-    if glob.glob(obs_name[:-4] + '.NAV') == []:
+    if glob.glob(glob.glob(obs_name[:-4] + '.[Nn][Aa][Vv]')[0]) == []:
         return False    # Pas de fichier .NAV
-    hd_nav = _read_header(obs_name[:-4] + '.NAV')
+    hd_nav = _read_header(glob.glob(obs_name[:-4] + '.[Nn][Aa][Vv]')[0])
     npixel, npara, nscan = np.array(hd_nav['CORE_ITEMS'][1:-1].split(','), dtype=np.int64)
     point_mode = hd_nav['SPACECRAFT_POINTING_MODE'][1:-1]
     target = hd_nav['TARGET_NAME']
@@ -2527,7 +2527,7 @@ def compute_list_good_observations(savfilename='liste_good_obs.csv',
         if not test_overwrite:
             return None
     # Liste observations disponibles
-    bin_obs_list = glob.glob(os.path.join(_omega_bin_path, 'ORB*.QUB'))
+    bin_obs_list = glob.glob(os.path.join(_omega_bin_path, 'ORB*.[Qq][Uu][Bb]'))
     bin_obs_list.sort()
     # Initialisation
     gobs = open(sav_file_path, 'w', encoding='utf-8')
@@ -2539,7 +2539,7 @@ def compute_list_good_observations(savfilename='liste_good_obs.csv',
         nomfic0 = obs_name[obs_name.rfind('/')+1:-4]    # Récupération nom
         numCube = nomfic0[-1]
         # Lecture header fichier .QUB
-        hd_qub = _read_header(obs_name[:-4] + '.QUB')
+        hd_qub = _read_header(glob.glob(obs_name[:-4] + '.[Qq][Uu][Bb]')[0])
         summation = np.int64(hd_qub['DOWNTRACK_SUMMING'])
         bits_per_data = np.float64(hd_qub['INST_CMPRS_RATE'])
         data_quality = np.int64(hd_qub['DATA_QUALITY_ID'])
@@ -2553,9 +2553,9 @@ def compute_list_good_observations(savfilename='liste_good_obs.csv',
         else:
             mode_channel = mode_channel_tmp
         # Lecture header fichier .NAV
-        if glob.glob(obs_name[:-4] + '.NAV') == []:
+        if glob.glob(obs_name[:-4] + '.[Nn][Aa][Vv]') == []:
             continue
-        hd_nav = _read_header(obs_name[:-4] + '.NAV')
+        hd_nav = _read_header(glob.glob(obs_name[:-4] + '.[Na][Aa][Vv]')[0])
         npixel, npara, nscan = np.array(hd_nav['CORE_ITEMS'][1:-1].split(','), dtype=np.int64)
         point_mode = hd_nav['SPACECRAFT_POINTING_MODE'][1:-1]
         target = hd_nav['TARGET_NAME']
