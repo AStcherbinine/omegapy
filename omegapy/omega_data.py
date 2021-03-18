@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 08/03/2021
+## Last modified by Aurélien STCHERBININE : 18/03/2021
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -295,7 +295,8 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True):
     # Read cube data
     idat, sdat0, sdat1, info = _read_cube(nomfic, disp)
     # Stop if only one line in the cube
-    if (len(idat.shape) != 3) or (len(idat) == 1):
+    # if (len(idat.shape) != 3) or (len(idat) == 1):
+    if idat.shape[2] == 1:
         raise CubeError('Only one line in cube {0:s}'.format(nomfic0))
     # Extract data from info array
     exposure = info[0:3]
