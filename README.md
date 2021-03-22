@@ -1,6 +1,10 @@
 ![version](https://img.shields.io/badge/version-2.2.2-blue)
 ![pythonversion](https://img.shields.io/badge/Python-3.7+-blue)
 
+<p align="center">
+<img width="250" height="250" src="docs/logo_omegapy_small2.png">
+</p>
+
 # OMEGA-Py : Python tools for OMEGA data
 
 Importation and display of OMEGA/MEx observations in Python 3, based on IDL *SOFT10* routines developped in the IAS planetary team.
