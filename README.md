@@ -9,7 +9,7 @@ Importation and display of OMEGA/MEx observations in Python 3, based on IDL *SOF
 Clone the repository and install with pip:
 
 ~~~bash
-git clone https://git.ias.u-psud.fr/astcherb1/omegapy
+git clone https://github.com/AStcherbinine/omegapy.git
 cd omegapy
 pip3 install .
 ~~~
