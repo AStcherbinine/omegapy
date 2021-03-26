@@ -21,7 +21,7 @@ pip3 install .
 ~~~
 
 ## Update
-Go to the previously cloned repository, pull the last updates, and install with pip:
+Go to the previously cloned repository, pull the last updates, and install them with pip:
 ~~~bash
 cd omegapy
 git pull
@@ -35,10 +35,10 @@ and `OMEGA_PY_PATH` (for the omegapy-made files).
 
 To do so, add the following lines to your `~/.bashrc` :
 ~~~bash
-export OMEGA_BIN_PATH="/data2/opt/geomeg/data/product/"
-export OMEGA_PY_PATH="/data/mex-omegj/data1/omega_python/omegapy/"
+export OMEGA_BIN_PATH="/path/to/binary/files/folder/"
+export OMEGA_PY_PATH="/path/to/omegapy-made/files/folder/"
 ~~~
-*Adapt the path if needed, here is the default configuration for internal IAS use on the server.*
+*Adapt the path to suit your own architecture.*
 
 ## Basic usage
 ~~~python
@@ -61,9 +61,13 @@ i_lam = uf.where_closer(1.085, omega.lam)
 See [`docs/*.md`](docs/) or the interactive IPython help for more details.
 
 ## Credits
-Developped at the Institut d'Astrophysique Spatiale (IAS), Université Paris-Saclay, Orsay, France  
 
 © Aurélien Stcherbinine (2020–2021)
+
+Institut d'Astrophysique Spatiale (IAS), Université Paris-Saclay, CNRS, Orsay, France
+
+LATMOS/IPSL, UVSQ Université Paris-Saclay, Sorbonne Université, CNRS, Guyancourt, France
+
 
 ## License
 This package is released under a MIT open source license. See [`LICENSE`](LICENSE) for more details.
