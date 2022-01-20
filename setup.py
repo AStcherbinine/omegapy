@@ -11,13 +11,13 @@ package_data = {
 
 setuptools.setup(
     name='omegapy',
-    version='2.2.2',
+    version='2.2.3',
     author='Aurélien Stcherbinine',
-    author_email='aurelien.stcherbinine@ias.u-psud.fr',
+    author_email='aurelien@stcherbinine.net',
     description='Python tools for OMEGA/MEx observations analysis',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://git.ias.u-psud.fr/astcherb1/omegapy',
+    url='https://github.com/AStcherbinine/omegapy',
     packages=setuptools.find_packages(),
     package_data=package_data,
     python_requires='>=3.7',
