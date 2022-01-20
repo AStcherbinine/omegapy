@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-2.2.2-blue)
+![version](https://img.shields.io/badge/version-2.2.3-blue)
 ![pythonversion](https://img.shields.io/badge/Python-3.7+-blue)
 
 <p align="center">
@@ -48,10 +48,13 @@ import omegapy.omega_plots as op
 import omegapy.useful_functions as uf
 # OMEGA file importation (ORB0964_2)
 omega = od.OMEGAdata('0964_2')
-# Thermal correction
-omega_corr_therm = od.corr_therm(omega)
 # Atmospheric correction
-omega_corr_therm_atm = od.corr_atm(omega_corr_therm)
+omega_corr_atm = od.corr_atm(omega_corr)
+# Simultaneous Atmospheric & Thermal corrections (for the use of the L-channel)
+# > Use the `npool` argument to control the number of simultaneous processes used to compute the thermal correction (e.g., npool=15 is usually a nice choice if your system can handle it)
+omega_corr_therm_atm = od.corr_therm_atm(omega_corr, npool=1)
+# Thermal correction only
+omega_corr_therm = od.corr_therm(omega, npool=1)
 # Interactive display of the observation (@ λ = 1.085 µm)
 op.show_omega_interactif_v2(omega_corr_therm_atm, lam=1.085, cmap='Greys_r', vmin=0, vmax=0.5, polar=True)
 # Search for the index of λ = 1.085 µm in the wavelength array
@@ -62,7 +65,7 @@ See [`docs/*.md`](docs/) or the interactive IPython help for more details.
 
 ## Credits
 
-© Aurélien Stcherbinine (2020–2021)
+© Aurélien Stcherbinine (2020–2022)
 
 Institut d'Astrophysique Spatiale (IAS), Université Paris-Saclay, CNRS, Orsay, France
 

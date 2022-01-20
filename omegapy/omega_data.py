@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 18/03/2021
+## Last modified by Aurélien STCHERBININE : 18/01/2022
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -2076,6 +2076,157 @@ def corr_atm2(omega):
     return omega_corr
     
 ##-----------------------------------------------------------------------------------
+## **Voie L** -- Correction thermique 1 et atmosphérique 1 simultanées
+def _corr_therm_atm_sp(args):
+    """Remove the thermal and atmospheric component in an OMEGA spectrum, using the historical method
+    based on the reflectance determination using reference spectra from Calvin & Erard (1997).
+    
+    Important note : this function is dedicated to internal use in the corr_therm() function,
+        as it use non-local objects related to the multiprocessing.
+
+    Parameters
+    ==========
+    args : tuple of 3 elements
+      | x : int
+      |     The x-coordinate of the pixel.
+      | y : int
+      |     The y-coordinate of the pixel.
+      | disp : bool, optional (default True)
+      |     If True display the fitted temperature/reflectance in the console.
+
+    Returns
+    =======
+    sp_rf_corr : 1D array
+        The reflectance spectrum, corrected from the thermal and atmospheric component.
+    T_fit : float
+        The retrieved surface temperature (in K).
+    x : int
+        The x-coordinate of the pixel.
+    y : int
+        The y-coordinate of the pixel.
+    """
+    # Extraction arguments
+    x, y, disp = args
+    # Extraction données
+    global _omega_tmp
+    omega = _omega_tmp
+    lam = omega.lam
+    sp_sol = omega.specmars
+    sp_rf = omega.cube_rf[y, x]
+    sp_i = omega.cube_i[y, x]
+    ecl = np.cos(omega.inci[y, x] * np.pi/180)
+    # spectels #97-#112 des spectres de ref <-> 2.3-2.5µm
+    fref = '../data/OMEGA_dataref/refclair_sombr_omega_CL.dat' # from Erard and Calvin (1997)
+    sp_clair, sp_sombre = np.loadtxt(fref, unpack=True)
+    i_lam1, i_lam2 = uf.where_closer_array([2.3, 2.5], lam)
+    alb_clair = np.average(sp_clair[97:113])
+    alb_sombre = np.average(sp_sombre[97:113])
+    alb_C = np.average(sp_rf[i_lam1:i_lam2+1])
+    # Simulation d'un spectre : thèse D. Jouglet, p159
+    # CL des spectres de référence `clair` et `sombre` (Calvin & Erard 1997)
+    coeff = (alb_C - alb_sombre) / (alb_clair - alb_sombre)
+    sp_simu = coeff * sp_clair + (1-coeff) * sp_sombre
+    # Sélection des spectels 5.03-5.09µm (4 derniers voie L)
+    sp_simu_5m = sp_simu[252:256]
+    i_lam3, i_lam4 = uf.where_closer_array([5.03, 5.09], lam)
+    i_lam4 += 1
+    #--- Atmosphère
+    nlam = len(lam)
+    ic_CL = np.concatenate([omega.ic['C'], omega.ic['L']])
+    nV = len(omega.ic['V'])
+    # Chargement données atmosphère
+    atmorap = np.loadtxt('../data/OMEGA_dataref/omega_atmorap_CL.dat')
+    tr_atm = np.ones(nlam)
+    tr_atm[nV:] = atmorap[ic_CL]    # données atm uniquement voies C & L
+    # Détermination exposant
+    i_lam1, i_lam2 = uf.where_closer_array([1.93, 2.01], lam)
+    expo = np.log(sp_rf[i_lam1] / sp_rf[i_lam2]) / np.log(tr_atm[i_lam1] / tr_atm[i_lam2])
+    #---
+    def simu_sp_5microns(i_lams, T):
+        i1, i2 = i_lams.astype(int)
+        lam2 = lam[i1:i2] * 1e-6    # Conversion en m
+        sp_sol2 = sp_sol[i1:i2]
+        Blam = uf.planck(lam2, T) * 1e-6    # Loi de Planck en W.m-2.sr-1.µm-1
+        sp_simu2 = sp_simu_5m * sp_sol2 * ecl + (1-sp_simu_5m) * Blam
+        return sp_simu2
+    try:
+        # Fit de la température
+        T_fit = curve_fit(simu_sp_5microns, (i_lam3, i_lam4), sp_i[i_lam3:i_lam4], 
+                            bounds=(0,400))[0][0]
+        # Réflectance
+        refl = np.average(sp_simu[252:256])
+        if disp:
+            print('Temperature = {0:.3f} K   |   Reflectance = {1:.5f}'.format(T_fit, refl))
+        # Correction thermique spectre
+        Blam = uf.planck(lam*1e-6, T_fit) * 1e-6   # En W.m-2.sr-1.µm-1
+        # sp_rf_corr = (sp_i - Blam) / (sp_sol*ecl - Blam)
+        sp_rf_corr = (sp_i*tr_atm**(-expo) - Blam) / (sp_sol*ecl - Blam)
+    except ValueError:
+        # Si fit impossible (infs ou NaN dans le spectre) -> NaN partout
+        sp_rf_corr = deepcopy(sp_rf)
+        sp_rf_corr.fill(np.nan)
+        T_fit = np.nan
+    # Output
+    return sp_rf_corr, T_fit, x, y
+
+def corr_therm_atm(omega, npool=1):
+    """Remove the thermal and atmospheric component in the OMEGA hyperspectral cube.
+    
+    Parallelization is implemented using the multiprocessing module. The number of
+    process to run is controlled by the npool argument.
+
+    Parameters
+    ==========
+    omega : OMEGAdata
+        The OMEGA observation data.
+    npool : int, optional (default 1)
+        Number of parallelized worker process to use.
+
+    Returns
+    =======
+    omega_corr : OMEGAdata
+        The input OMEGA observation, where the reflectance is corrected from
+        the thermal and atmospheric component.
+    """
+    # Test correction
+    if omega.therm_corr and omega.atm_corr:
+        print("\033[1;33mThermal & atmosphecir corrections already applied\033[0m")
+        return deepcopy(omega)
+    # Initialisation
+    global _omega_tmp
+    _omega_tmp = deepcopy(omega)
+    omega_corr = deepcopy(omega)
+    ny, nx, nlam = omega.cube_i.shape
+    rf_corr = np.zeros((ny,nx,nlam), dtype=np.float64)
+    surf_temp = np.zeros((ny,nx), dtype=np.float64)
+    # Itérateur
+    it = [(x, y, False) for x, y in itertools.product(range(nx), range(ny))]
+    # Correction thermique
+    # chunksize = len(it) // npool    # Approx size of each process
+    chunksize = 1
+    # pool = mp.Pool(npool)
+    with mp.Pool(npool) as pool:
+        for res in tqdm(pool.imap_unordered(_corr_therm_atm_sp, it, chunksize), total=len(it), desc='Thermal correction'):
+            sp_rf_corr, T_fit, x, y = res
+            rf_corr[y,x] = sp_rf_corr
+            surf_temp[y,x] = T_fit
+        pool.close()
+    _omega_tmp = None
+    omega_corr.cube_rf = rf_corr
+    omega_corr.surf_temp = surf_temp
+    # Update infos
+    omega_corr.therm_corr = True
+    omega_corr.therm_corr_infos['datetime'] = datetime.datetime.now()
+    omega_corr.therm_corr_infos['method'] = '(M1) Calvin & Erard - Simultaneous atm (L channel)'
+    omega_corr.atm_corr = True
+    omega_corr.atm_corr_infos['datetime'] = datetime.datetime.now()
+    omega_corr.atm_corr_infos['method'] = 'M1 : same reflectance level at 1.93μm and 2.01μm - Simultaneous therm (L channel)'
+    # Sortie
+    # tfin = time.time()
+    # print('Duration : {0:.0f} min {1:.2f} sec'.format((tfin-tini)//60, (tfin-tini)%60))
+    return omega_corr
+    
+##-----------------------------------------------------------------------------------
 ## Correction mode 128
 def corr_mode_128(omega):
     """Correction corrupted pixels mode 128.
@@ -2188,6 +2339,97 @@ def corr_save_omega(obsname, folder='auto', base_folder=_omega_py_path, security
         print('\n\033[01;34mExistent files preserved for {0} - v{1}\033[0m\n'.format(name, _Version))
 
 def corr_save_omega_list(liste_obs, folder='auto', base_folder=_omega_py_path,
+                         security=True, overwrite=True, compress=True, npool=1):
+    """Correction and saving of a list of OMEGA/MEx observations.
+    
+    Parallelization is implemented using the multiprocessing module. The number of
+    process to run is controlled by the npool argument.
+
+    Parameters
+    ==========
+    liste_obs : list of str
+        The list of the name of the OMEGA observations.
+    folder : str, optional (default 'auto')
+        The subfolder to save the data.
+        | If 'auto' -> folder = 'vX', where X is the major release version of the used code.
+    base_folder : str, optional (default _omega_py_path)
+        The base folder path.
+    security : bool, optional (default True)
+        Enable / disable checking before overwriting a file.
+        | True -> Check if the target file already exists before overwriting on it.
+                  And if is the case, you will be asked for a confirmation.
+        | False -> Do not care about the already existing files.
+    overwrite : bool, optional (default True)
+        If security is False, default choice for overwriting on existent file.
+    compress : bool, optional (default True)
+        If True, the radiance cube after correction is removed (i.e. set to None)
+        in order to reduce the size of the saved file.
+    npool : int, optional (default 1)
+        Number of parallelized worker process to use.
+    """
+    N = len(liste_obs)
+    if folder == 'auto':
+        folder = 'v' + str(int(_Version))
+    for i, obsname in enumerate(liste_obs):
+        print('\n\033[01mComputing observation {0} / {1} : {2}\033[0m\n'.format(i+1, N, obsname))
+        corr_save_omega(obsname, folder, base_folder, security, overwrite, compress, npool)
+    print("\n\033[01;32m Done\033[0m\n")
+
+##-----------------------------------------------------------------------------------
+## Correction & sauvegarde - v2 (L)
+def corr_save_omega2(obsname, folder='auto', base_folder=_omega_py_path, security=True,
+                    overwrite=True, compress=True, npool=1):
+    """Correction and saving of OMEGA/MEx observations.
+    
+    Parallelization is implemented using the multiprocessing module. The number of
+    process to run is controlled by the npool argument.
+
+    Parameters
+    ==========
+    obsname : str
+        The name of the OMEGA observation.
+    folder : str, optional (default 'auto')
+        The subfolder to save the data.
+        | If 'auto' -> folder = 'vX', where X is the major release version of the used code.
+    base_folder : str, optional (default _omega_py_path)
+        The base folder path.
+    security : bool, optional (default True)
+        Enable / disable checking before overwriting a file.
+        | True -> Check if the target file already exists before overwriting on it.
+                  And if is the case, you will be asked for a confirmation.
+        | False -> Didn't care about the already existing files.
+    overwrite : bool, optional (default True)
+        If security is False, default choice for overwriting on existent file.
+    compress : bool, optional (default True)
+        If True, the radiance cube after correction is removed (i.e. set to None)
+        in order to reduce the size of the saved file.
+    npool : int, optional (default 1)
+        Number of parallelized worker process to use.
+    """
+    if folder == 'auto':
+        folder = 'v' + str(int(_Version))
+    omega = OMEGAdata(obsname)
+    name = omega.name
+    # path synthax
+    basename = os.path.join(base_folder, folder, name, '{0}.pkl')
+    # Testing existent file
+    if os.path.exists(basename.format('_corr_therm_atm')):
+        exists = True
+    else:
+        exists = False
+    if security:
+        overwrite = uf.test_security_overwrite(basename.format('*'))
+    if (not exists) or (exists and overwrite):
+        # save_omega(omega, folder=folder, base_folder=base_folder)
+        print('\n\033[01mThermal & atmospheric corrections\033[0m')
+        omega_corr = corr_therm_atm(omega, npool)
+        if compress:
+            omega_corr.cube_i = None
+        save_omega(omega_corr, folder=folder, base_folder=base_folder, suff='corr_therm_atm')
+    else:
+        print('\n\033[01;34mExistent files preserved for {0} - v{1}\033[0m\n'.format(name, _Version))
+
+def corr_save_omega2_list(liste_obs, folder='auto', base_folder=_omega_py_path,
                          security=True, overwrite=True, compress=True, npool=1):
     """Correction and saving of a list of OMEGA/MEx observations.
     
