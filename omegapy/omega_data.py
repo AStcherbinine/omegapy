@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 18/01/2022
+## Last modified by Aurélien STCHERBININE : 27/01/2022
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -2116,7 +2116,7 @@ def _corr_therm_atm_sp(args):
     sp_i = omega.cube_i[y, x]
     ecl = np.cos(omega.inci[y, x] * np.pi/180)
     # spectels #97-#112 des spectres de ref <-> 2.3-2.5µm
-    fref = '../data/OMEGA_dataref/refclair_sombr_omega_CL.dat' # from Erard and Calvin (1997)
+    fref = os.path.join(package_path, 'OMEGA_dataref', 'refclair_sombr_omega_CL.dat') # from Erard and Calvin (1997)
     sp_clair, sp_sombre = np.loadtxt(fref, unpack=True)
     i_lam1, i_lam2 = uf.where_closer_array([2.3, 2.5], lam)
     alb_clair = np.average(sp_clair[97:113])
@@ -2135,7 +2135,7 @@ def _corr_therm_atm_sp(args):
     ic_CL = np.concatenate([omega.ic['C'], omega.ic['L']])
     nV = len(omega.ic['V'])
     # Chargement données atmosphère
-    atmorap = np.loadtxt('../data/OMEGA_dataref/omega_atmorap_CL.dat')
+    atmorap = np.loadtxt(os.path.join(package_path, 'OMEGA_dataref', 'omega_atmorap_CL.dat'))
     tr_atm = np.ones(nlam)
     tr_atm[nV:] = atmorap[ic_CL]    # données atm uniquement voies C & L
     # Détermination exposant
