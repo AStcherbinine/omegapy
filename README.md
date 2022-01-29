@@ -2,7 +2,7 @@
 ![pythonversion](https://img.shields.io/badge/Python-3.7+-blue)
 
 <p align="center">
-<img width="250" height="250" src="docs/logo_omegapy_small2.png">
+<img width="250" height="250" src="https://github.com/AStcherbinine/omegapy/blob/master/docs/logo_omegapy_small2.png">
 </p>
 
 # OMEGA-Py : Python tools for OMEGA data
@@ -62,7 +62,7 @@ op.show_omega_interactif_v2(omega_corr_therm_atm, lam=1.085, cmap='Greys_r', vmi
 i_lam = uf.where_closer(1.085, omega.lam)
 ~~~
 
-See [`docs/*.md`](docs/) or the interactive IPython help for more details.
+See [`docs/*.md`](https://github.com/AStcherbinine/omegapy/blob/master/docs/) or the interactive IPython help for more details.
 
 ## Credits
 
@@ -74,4 +74,4 @@ LATMOS/IPSL, UVSQ Université Paris-Saclay, Sorbonne Université, CNRS, Guyancou
 
 
 ## License
-This package is released under a MIT open source license. See [`LICENSE`](LICENSE) for more details.
+This package is released under a MIT open source license. See [`LICENSE`](https://github.com/AStcherbinine/omegapy/blob/master/LICENSE) for more details.
