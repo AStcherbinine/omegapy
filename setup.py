@@ -11,7 +11,7 @@ package_data = {
 
 setuptools.setup(
     name='omegapy',
-    version='2.2.5-1',
+    version='2.2.5-2',
     author='Aurélien Stcherbinine',
     author_email='aurelien@stcherbinine.net',
     description='Python tools for OMEGA/MEx observations analysis',
@@ -19,7 +19,7 @@ setuptools.setup(
     long_description_content_type='text/markdown',
     url='https://astcherbinine.github.io/omegapy',
     project_urls={
-        Source='https://github.com/AStcherbinine/omegapy',
+        'Source' : 'https://github.com/AStcherbinine/omegapy',
     },
     packages=setuptools.find_packages(),
     package_data=package_data,
