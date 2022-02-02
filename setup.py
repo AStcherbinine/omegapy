@@ -18,8 +18,9 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://astcherbinine.github.io/omegapy',
-    project_urls=
+    project_urls={
         Source='https://github.com/AStcherbinine/omegapy',
+    },
     packages=setuptools.find_packages(),
     package_data=package_data,
     python_requires='>=3.7',
