@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 27/01/2022
+## Last modified by Aurélien STCHERBININE : 02/02/2022
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -257,7 +257,7 @@ class CubeError(Exception):
     def __init__(self, message):
         self.message = message
 
-def _readomega(cube_id, disp=True, corrV=True, corrL=True):
+def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path=_omega_bin_path):
     """Python implementation of the `readomega.pro` routine from the SOFT09 OMEGA pipeline.
     
     Parameters
@@ -271,6 +271,9 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True):
         If True, compute the correction on the visible channel (Vis).
     corrL : bool, optional (default True)
         If True, compute the correction on the long-IR channel (L).
+    data_path : str, optional (default _omega_py_path)
+        The path of the directory containing the data (.QUB) and 
+        navigation (.NAV) files.
 
     Returns
     =======
@@ -283,8 +286,8 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True):
     # Filename
     nomgeo0 = cube_id + '.NAV'
     nomfic0 = cube_id + '.QUB'
-    nomfic = os.path.join(_omega_bin_path, nomfic0)
-    nomgeo = os.path.join(_omega_bin_path, nomgeo0)
+    nomfic = os.path.join(data_path, nomfic0)
+    nomgeo = os.path.join(data_path, nomgeo0)
     if disp:
         print('\n\033[1mComputing OMEGA observation {0:s}\033[0m'.format(cube_id))
     # Orbit number in base 10
@@ -916,7 +919,8 @@ class OMEGAdata:
                 # print("\033[1;33mAborted\033[0m")
                 # return None
             nomfic0 = obs_name[obs_name.rfind('/')+1:-4]    # Récupération nom + décodage UTF-8
-            data_dict, geom_dict = _readomega(nomfic0, disp=disp, corrV=corrV, corrL=corrL)
+            data_dict, geom_dict = _readomega(nomfic0, disp=disp, corrV=corrV, corrL=corrL, 
+                                              data_path=data_path)
 
             if disp:
                 print("\n\033[01;34mComputing data extraction and correction...\033[0m", end=' ')
