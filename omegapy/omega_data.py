@@ -257,7 +257,7 @@ class CubeError(Exception):
     def __init__(self, message):
         self.message = message
 
-def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path=_omega_bin_path):
+def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path='_omega_bin_path'):
     """Python implementation of the `readomega.pro` routine from the SOFT09 OMEGA pipeline.
     
     Parameters
@@ -271,7 +271,7 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path=_omega_bin_
         If True, compute the correction on the visible channel (Vis).
     corrL : bool, optional (default True)
         If True, compute the correction on the long-IR channel (L).
-    data_path : str, optional (default _omega_py_path)
+    data_path : str, optional (default _omega_bin_path)
         The path of the directory containing the data (.QUB) and 
         navigation (.NAV) files.
 
@@ -283,6 +283,9 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path=_omega_bin_
         {'latitude', 'longitude', 'emergence', 'incidence', 'altitude', 'ut_time',
          'temperature, 'saturation_C', 'saturation_vis', 'lat_grid', 'lon_grid'}
     """
+    # Default path
+    if data_path == "_omega_bin_path":
+        data_path = _omega_bin_path
     # Filename
     nomgeo0 = cube_id + '.NAV'
     nomfic0 = cube_id + '.QUB'
@@ -730,7 +733,7 @@ class OMEGAdata:
         The name of the OMEGA observation.
     empty : bool, optional (default False)
         If True, return an empty OMEGAdata object.
-    data_path : str, optional (default _omega_py_path)
+    data_path : str, optional (default _omega_bin_path)
         The path of the directory containing the data (.QUB) and 
         navigation (.NAV) files.
     corrV : bool, optional (default True)
@@ -848,7 +851,10 @@ class OMEGAdata:
         Show in the OMEGAdata representation.
     """
 
-    def __init__(self, obs='', empty=False, data_path=_omega_bin_path, corrV=True, corrL=True, disp=True):
+    def __init__(self, obs='', empty=False, data_path="_omega_bin_path", corrV=True, corrL=True, disp=True):
+        # Default paths
+        if data_path == "_omega_bin_path":
+            data_path = _omega_bin_path
         # Infos
         self.version = int(_Version)
         self.therm_corr = False
@@ -1208,14 +1214,14 @@ class OMEGAdata:
                                     self.therm_corr, self.atm_corr, self.add_infos)
         return description
     
-    def get_header_qub(self, data_path=_omega_bin_path):
+    def get_header_qub(self, data_path='_omega_bin_path'):
         """Return the data from the header of the .QUB file, as a dictionary.
 
         See the OMEGA ECAID for informations about the header entries.
         
         Parameters
         ==========
-        data_path : str, optional (default _omega_py_path)
+        data_path : str, optional (default _omega_bin_path)
             The path of the directory containing the data (.QUB) files.
 
         Returns
@@ -1223,18 +1229,21 @@ class OMEGAdata:
         hd_qub : dict
             Dictionary containing the data from the ORBXXXX_X.QUB file.
         """
+        # Default path
+        if data_path == "_omega_bin_path":
+            data_path = _omega_bin_path
         qub_path = os.path.join(data_path, self.name+'.QUB')
         hd_qub = _read_header(qub_path)
         return hd_qub
 
-    def get_header_nav(self, data_path=_omega_bin_path):
+    def get_header_nav(self, data_path='_omega_bin_path'):
         """Return the data from the header of the .NAV file, as a dictionary.
 
         See the OMEGA ECAID for informations about the header entries.
         
         Parameters
         ==========
-        data_path : str, optional (default _omega_py_path)
+        data_path : str, optional (default _omega_bin_path)
             The path of the directory containing the navigation (.NAV) files.
 
         Returns
@@ -1242,13 +1251,16 @@ class OMEGAdata:
         hd_nav : dict
             Dictionary containing the data from the ORBXXXX_X.NAV file.
         """
+        # Default path
+        if data_path == "_omega_bin_path":
+            data_path = _omega_bin_path
         nav_path = os.path.join(data_path, self.name+'.NAV')
         hd_nav = _read_header(nav_path)
         return hd_nav
 
 ##-----------------------------------------------------------------------------------
 ## Recherche observation
-def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False):
+def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False, data_path='_omega_bin_path'):
     """Display the available OMEGA/MEx cubes with observations of the target
     latitude and longitude, Python translation of the IDL procedure `findcub.pro`.
 
@@ -1264,6 +1276,9 @@ def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False):
         The maximum orbit number.
     out : bool, optional (default False)
         If True -> return output
+    data_path : str, optional (default _omega_bin_path)
+        The path of the directory containing the data (.QUB) and 
+        navigation (.NAV) files.
 
     Returns (If out == True)
     =======
@@ -1271,6 +1286,9 @@ def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False):
         List of matching observations.
         Format : (orbit, x, y, dmin, altMEx, inci, emer, phas, loct, Ls, MY)
     """
+    # Default path
+    if data_path == "_omega_bin_path":
+        data_path = _omega_bin_path
     #-----------------------------
     # Internal function testin
     def testin(x0, y0, x1, y1):
@@ -1400,7 +1418,7 @@ def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False):
     print('{0:^10s} {1:^6s}{2:^6s}{3:^8s}{4:^9s}{5:^7s}{6:^8s}{7:^8s}{8:^8s}{9:^8s}{10:^4s}'.format(
             'orbit', 'x', 'y', 'dmin', 'altMEx', 'inci', 'emer', 'phas', 'loct', 'Ls', 'MY'))
     for n in range(nhits):
-        testfile = os.path.join(_omega_bin_path, nomc[n]+'.NAV')
+        testfile = os.path.join(data_path, nomc[n]+'.NAV')
         if os.path.exists(testfile) == False:
             print('{0:8s}{1:s}'.format(nomc[n], '\033[3m   No corresponding .NAV file\033[0m'))
             continue
@@ -1481,7 +1499,7 @@ def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False):
 
 ##-----------------------------------------------------------------------------------
 ## Sauvegarde / Importation
-def save_omega(omega, savname='auto', folder='', base_folder=_omega_py_path,
+def save_omega(omega, savname='auto', folder='', base_folder='_omega_py_path',
                pref ='', suff='', disp=True):
     """Save an OMEGA object at the selected path using the pickle module.
 
@@ -1507,6 +1525,9 @@ def save_omega(omega, savname='auto', folder='', base_folder=_omega_py_path,
             | True -> Print the saving filename.
             | False -> Nothing printed.
     """
+    # Default path
+    if base_folder == "_omega_py_path":
+        base_folder = _omega_py_path
     # Initialisation nom fichier auto
     if savname == 'auto':
         if (len(suff)>0) and (suff[0] != '_'):
@@ -1569,7 +1590,7 @@ def load_omega_list(basename, disp=True):
         omega_list.append(load_omega(path_list[i], disp))
     return np.array(omega_list)
 
-def autosave_omega(omega, folder='auto', base_folder=_omega_py_path, security=True, disp=True):
+def autosave_omega(omega, folder='auto', base_folder='_omega_py_path', security=True, disp=True):
     """Save an OMEGA object at the selected path using the pickle module, with automatic
     configuration of the target name.
 
@@ -1594,6 +1615,9 @@ def autosave_omega(omega, folder='auto', base_folder=_omega_py_path, security=Tr
             | True -> Print the saving filename.
             | False -> Nothing printed.
     """
+    # Default path
+    if base_folder == "_omega_py_path":
+        base_folder = _omega_py_path
     # Initialisation nom fichier auto
     if omega.therm_corr and omega.atm_corr:
         suff = '_corr_therm_atm'
@@ -1620,8 +1644,8 @@ def autosave_omega(omega, folder='auto', base_folder=_omega_py_path, security=Tr
         if disp:
             print('\033[01;34mSaved as \033[0;03m' + target_path + '\033[0m')
 
-def autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega_py_path,
-                   therm_corr=None, atm_corr=None, disp=True):
+def autoload_omega(obs_name, folder='auto', version=_Version, base_folder='_omega_py_path',
+                   therm_corr=None, atm_corr=None, disp=True, bin_folder='_omega_bin_path'):
     """Load and return a previously saved OMEGAdata object using pickle (with autosave_omega()).
 
     Parameters
@@ -1647,12 +1671,21 @@ def autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega
         Control the display.
             | True -> Print the loading filename.
             | False -> Nothing printed.
+    bin_folder : str, optional (default _omega_bin_path)
+        The path of the directory containing the data (.QUB) and 
+        navigation (.NAV) files.
 
     Returns
     =======
     omega : OMEGAdata 
         The loaded object of OMEGA/MEx observation.
     """
+    # Default paths
+    if base_folder == "_omega_py_path":
+        base_folder = _omega_py_path
+    if bin_folder == "_omega_bin_path":
+        bin_folder = _omega_bin_path
+    # Initialisation
     ext = ''
     excl = []
     if therm_corr:
@@ -1670,12 +1703,12 @@ def autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega
     filename2 = uf.myglob(os.path.join(base_folder, folder, filename), exclude=excl)
     if filename2 is None:
         if (therm_corr in [None, False]) and (atm_corr in [None, False]):
-            obs_name_bin = glob.glob(os.path.join(_omega_bin_path, '*' + obs_name + '*.QUB'))
+            obs_name_bin = glob.glob(os.path.join(bin_folder, '*' + obs_name + '*.QUB'))
             if len(obs_name_bin) == 0 :
                 return None
             else:
                 print('\033[1mMatching binary files:\033[0m')
-                return OMEGAdata(obs_name)
+                return OMEGAdata(obs_name, data_path=bin_folder)
         else:
             return None
     else:
@@ -2287,7 +2320,7 @@ def corr_mode_128(omega):
     
 ##-----------------------------------------------------------------------------------
 ## Correction & sauvegarde
-def corr_save_omega(obsname, folder='auto', base_folder=_omega_py_path, security=True,
+def corr_save_omega(obsname, folder='auto', base_folder='_omega_py_path', security=True,
                     overwrite=True, compress=True, npool=1):
     """Correction and saving of OMEGA/MEx observations.
     
@@ -2320,6 +2353,9 @@ def corr_save_omega(obsname, folder='auto', base_folder=_omega_py_path, security
         folder = 'v' + str(int(_Version))
     omega = OMEGAdata(obsname)
     name = omega.name
+    # Default path
+    if base_folder == "_omega_py_path":
+        base_folder = _omega_py_path
     # path synthax
     basename = os.path.join(base_folder, folder, name, '{0}.pkl')
     # Testing existent file
@@ -2342,7 +2378,7 @@ def corr_save_omega(obsname, folder='auto', base_folder=_omega_py_path, security
     else:
         print('\n\033[01;34mExistent files preserved for {0} - v{1}\033[0m\n'.format(name, _Version))
 
-def corr_save_omega_list(liste_obs, folder='auto', base_folder=_omega_py_path,
+def corr_save_omega_list(liste_obs, folder='auto', base_folder='_omega_py_path',
                          security=True, overwrite=True, compress=True, npool=1):
     """Correction and saving of a list of OMEGA/MEx observations.
     
@@ -2371,6 +2407,9 @@ def corr_save_omega_list(liste_obs, folder='auto', base_folder=_omega_py_path,
     npool : int, optional (default 1)
         Number of parallelized worker process to use.
     """
+    # Default path
+    if base_folder == "_omega_py_path":
+        base_folder = _omega_py_path
     N = len(liste_obs)
     if folder == 'auto':
         folder = 'v' + str(int(_Version))
@@ -2381,7 +2420,7 @@ def corr_save_omega_list(liste_obs, folder='auto', base_folder=_omega_py_path,
 
 ##-----------------------------------------------------------------------------------
 ## Correction & sauvegarde - v2 (L)
-def corr_save_omega2(obsname, folder='auto', base_folder=_omega_py_path, security=True,
+def corr_save_omega2(obsname, folder='auto', base_folder='_omega_py_path', security=True,
                     overwrite=True, compress=True, npool=1):
     """Correction and saving of OMEGA/MEx observations.
     
@@ -2414,6 +2453,9 @@ def corr_save_omega2(obsname, folder='auto', base_folder=_omega_py_path, securit
         folder = 'v' + str(int(_Version))
     omega = OMEGAdata(obsname)
     name = omega.name
+    # Default path
+    if base_folder == "_omega_py_path":
+        base_folder = _omega_py_path
     # path synthax
     basename = os.path.join(base_folder, folder, name, '{0}.pkl')
     # Testing existent file
@@ -2433,7 +2475,7 @@ def corr_save_omega2(obsname, folder='auto', base_folder=_omega_py_path, securit
     else:
         print('\n\033[01;34mExistent files preserved for {0} - v{1}\033[0m\n'.format(name, _Version))
 
-def corr_save_omega2_list(liste_obs, folder='auto', base_folder=_omega_py_path,
+def corr_save_omega2_list(liste_obs, folder='auto', base_folder='_omega_py_path',
                          security=True, overwrite=True, compress=True, npool=1):
     """Correction and saving of a list of OMEGA/MEx observations.
     
@@ -2462,6 +2504,9 @@ def corr_save_omega2_list(liste_obs, folder='auto', base_folder=_omega_py_path,
     npool : int, optional (default 1)
         Number of parallelized worker process to use.
     """
+    # Default path
+    if base_folder == "_omega_py_path":
+        base_folder = _omega_py_path
     N = len(liste_obs)
     if folder == 'auto':
         folder = 'v' + str(int(_Version))
@@ -2579,7 +2624,7 @@ def get_ls(omega_list):
 ##-----------------------------------------------------------------------------------
 ## Update cube quality
 def update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=_Version, 
-                        base_folder=_omega_py_path):
+                        base_folder='_omega_py_path'):
     """Update the quality attribute of previously saved OMEGAdata objects.
 
     Parameters
@@ -2595,6 +2640,9 @@ def update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=_Version,
     base_folder : str, optional (default _omega_py_path)
         The base folder path.
     """
+    # Default path
+    if base_folder == "_omega_py_path":
+        base_folder = _omega_py_path
     # Initialisation
     if obs_name[-4] != '.pkl':
         obs_name += '.pkl'

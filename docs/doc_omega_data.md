@@ -4,19 +4,19 @@
 
 Importation and correction of OMEGA/MEx observations from binaries files.
 
-`class OMEGAdata(obs='', empty=False, data_path=_omega_bin_path, corrV=True, corrL=True, disp=True)`
+`class OMEGAdata(obs='', empty=False, data_path='_omega_bin_path', corrV=True, corrL=True, disp=True)`
 
-`OMEGAdata.get_header_qub(data_path=_omega_bin_path)`
+`OMEGAdata.get_header_qub(data_path='_omega_bin_path')`
 
-`OMEGAdata.get_header_nav(data_path=_omega_bin_path)`
+`OMEGAdata.get_header_nav(data_path='_omega_bin_path')`
 
 `find_cube(lon0, lat0, cmin=0, cmax=10000, out=False)`
 
-`autosave_omega(omega, folder='auto', base_folder=_omega_py_path, security=True, disp=True)`
+`autosave_omega(omega, folder='auto', base_folder='_omega_py_path', security=True, disp=True)`
 
-`autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega_py_path, therm_corr=None, atm_corr=None, disp=True)`
+`autoload_omega(obs_name, folder='auto', version=_Version, base_folder='_omega_py_path', therm_corr=None, atm_corr=None, disp=True, bin_folder='_omega_bin_path')`
 
-`save_omega(omega, savname='auto', folder='', base_folder=_omega_py_path, pref ='', suff='', disp=True)`
+`save_omega(omega, savname='auto', folder='', base_folder='_omega_py_path', pref ='', suff='', disp=True)`
 
 `load_omega(filename, disp=True)`
 
@@ -34,9 +34,9 @@ Importation and correction of OMEGA/MEx observations from binaries files.
 
 `corr_atm2(omega)`
 
-`corr_save_omega(obsname, folder='auto', base_folder=_omega_py_path, security=True, overwrite=True, compress=True, npool=1)`
+`corr_save_omega(obsname, folder='auto', base_folder='_omega_py_path', security=True, overwrite=True, compress=True, npool=1)`
 
-`corr_save_omega_list(liste_obs, folder='auto', base_folder=_omega_py_path, security=True, overwrite=True, compress=True, npool=1)`
+`corr_save_omega_list(liste_obs, folder='auto', base_folder='_omega_py_path', security=True, overwrite=True, compress=True, npool=1)`
 
 `set_omega_bin_path(new_path)`
 
@@ -50,7 +50,7 @@ Importation and correction of OMEGA/MEx observations from binaries files.
 
 `get_ls(omega_list)`
 
-`update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=_Version, base_folder=_omega_py_path)`
+`update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=_Version, base_folder='_omega_py_path')`
 
 `test_cube(obs)`
 
@@ -65,7 +65,7 @@ Importation and correction of OMEGA/MEx observations from binaries files.
 
 ### OMEGAdata class
 ~~~python
-class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_path, corrV=True, corrL=True, disp=True):
+class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path='_omega_bin_path', corrV=True, corrL=True, disp=True):
     Importation of OMEGA/MEx observation.
 
     Parameters
@@ -74,7 +74,7 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_pat
         The name of the OMEGA observation.
     empty : bool, optional (default False)
         If True, return an empty OMEGAdata object.
-    data_path : str, optional (default _omega_py_path)
+    data_path : str, optional (default _omega_bin_path)
         The path of the directory containing the data (.QUB) and 
         navigation (.NAV) files.
     corrV : bool, optional (default True)
@@ -194,7 +194,7 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_pat
     
     Methods
     =======
-    __init__(self, obs='', empty=False, data_path=_omega_bin_path)
+    __init__(self, obs='', empty=False, data_path='_omega_bin_path')
     
     __copy__(self)
 
@@ -204,14 +204,14 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_pat
 
     __repr__(self)
 
-    get_header_qub(self, data_path=_omega_bin_path)
+    get_header_qub(self, data_path='_omega_bin_path')
         Return the data from the header of the .QUB file, as a dictionary.
 
         See the OMEGA ECAID for informations about the header entries.
         
         Parameters
         ==========
-        data_path : str, optional (default _omega_py_path)
+        data_path : str, optional (default _omega_bin_path)
             The path of the directory containing the data (.QUB) files.
 
         Returns
@@ -219,14 +219,14 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path=_omega_bin_pat
         hd_qub : dict
             Dictionary containing the data from the ORBXXXX_X.QUB file.
 
-    get_header_nav(self, data_path=_omega_bin_path)
+    get_header_nav(self, data_path='_omega_bin_path')
         Return the data from the header of the .NAV file, as a dictionary.
 
         See the OMEGA ECAID for informations about the header entries.
         
         Parameters
         ==========
-        data_path : str, optional (default _omega_py_path)
+        data_path : str, optional (default _omega_bin_path)
             The path of the directory containing the navigation (.NAV) files.
 
         Returns
@@ -263,7 +263,7 @@ omegapy.omega_data.find_cube(lon0, lat0, cmin=0, cmax=10000, out=False):
 
 ### OMEGAdata files handling
 ~~~python
-omegapy.omega_data.autosave_omega(omega, folder='auto', base_folder=_omega_py_path, security=True, disp=True):
+omegapy.omega_data.autosave_omega(omega, folder='auto', base_folder='_omega_py_path', security=True, disp=True, bin_folder='_omega_bin_path'):
     Save an OMEGA object at the selected path using the pickle module, with automatic
     configuration of the target name.
 
@@ -287,10 +287,13 @@ omegapy.omega_data.autosave_omega(omega, folder='auto', base_folder=_omega_py_pa
         Control the display.
             | True -> Print the saving filename.
             | False -> Nothing printed.
+    bin_folder : str, optional (default '_omega_bin_path')
+        The path of the directory containing the data (.QUB) and 
+        navigation (.NAV) files.
 ~~~
 
 ~~~python
-omegapy.omega_data.autoload_omega(obs_name, folder='auto', version=_Version, base_folder=_omega_py_path,
+omegapy.omega_data.autoload_omega(obs_name, folder='auto', version=_Version, base_folder='_omega_py_path',
                    therm_corr=None, atm_corr=None, disp=True):
     Load and return a previously saved OMEGAdata object using pickle (with autosave_omega()).
 
@@ -325,7 +328,7 @@ omegapy.omega_data.autoload_omega(obs_name, folder='auto', version=_Version, bas
 ~~~
 
 ~~~python
-omegapy.omega_data.save_omega(omega, savname='auto', folder='', base_folder=_omega_py_path,
+omegapy.omega_data.save_omega(omega, savname='auto', folder='', base_folder='_omega_py_path',
                pref ='', suff='', disp=True):
     Save an OMEGA object at the selected path using the pickle module.
 
@@ -514,7 +517,7 @@ omegapy.omega_data.corr_atm2(omega):
 Import an OMEGA/MEx observation, apply a thermal and atmospheric correction (M1) and save the OMEGAdata object at each step.
 
 ~~~python
-omegapy.omega_data.corr_save_omega(obsname, folder='auto', base_folder=_omega_py_path, security=True,
+omegapy.omega_data.corr_save_omega(obsname, folder='auto', base_folder='_omega_py_path', security=True,
                     overwrite=True, compress=True, npool=1):
     Correction and saving of OMEGA/MEx observations.
     
@@ -545,7 +548,7 @@ omegapy.omega_data.corr_save_omega(obsname, folder='auto', base_folder=_omega_py
 ~~~
 
 ~~~
-omegapy.omega_data.corr_save_omega_list(liste_obs, folder='auto', base_folder=_omega_py_path,
+omegapy.omega_data.corr_save_omega_list(liste_obs, folder='auto', base_folder='_omega_py_path',
                          security=True, overwrite=True, compress=True, npool=1):
     Correction and saving of a list of OMEGA/MEx observations.
     
@@ -649,7 +652,7 @@ omegapy.omega_data.get_ls(omega_list):
 ### Update quality
 ~~~Python
 omegapy.omega_data.update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=_Version, 
-                        base_folder=_omega_py_path):
+                        base_folder='_omega_py_path'):
     Update the quality attribute of previously saved OMEGAdata objects.
 
     Parameters
