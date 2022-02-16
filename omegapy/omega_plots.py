@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 06/03/2021
+## Last modified by Aurélien STCHERBININE : 15/02/2022
 
 ##----------------------------------------------------------------------------------------
 """Display of OMEGAdata cubes.
@@ -200,8 +200,16 @@ def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None
             negatives_longitudes = True
     fig = plt.figure(Nfig)
     Nfig = fig.number   # get the actual figure number if Nfig=None
+    if len(fig.get_axes()) != 0:    # If presence of axes
+        ax0 = fig.get_axes()[0]
+        is_ax0_polar = hasattr(ax0, 'set_theta_offset') # Test if ax has polar projection
+        if not polar == is_ax0_polar:
+            raise ValueError("Can not mix polar and non-polar projections in the same plot")
     if polar:
-        ax = plt.axes(polar=True)
+        if len(fig.get_axes()) == 0:    # Test presence of axes in the figure
+            ax = plt.axes(polar=True)
+        else:
+            ax = fig.get_axes()[0]  # Do not create new axes instance
         plt.pcolormesh(omega.lon_grid*np.pi/180, omega.lat_grid, cube_map, cmap=cmap, 
                        alpha=alpha, vmin=vmin, vmax=vmax, **kwargs)
         ax.set_yticklabels([])  # remove the latitude values in the plot
