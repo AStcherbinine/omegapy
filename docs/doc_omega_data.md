@@ -117,7 +117,7 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path='_omega_bin_pa
     specmars : 1D array
         The Solar radiation spectrum on Mars (W.m-2.sr-1.µm-1).
     utc : datetime.datetime
-        The average UCT time of the observation.
+        The average UTC time of the observation.
     ic : dict
         The index of the used spectral pixels for each channel.
     lat_grid : 2D array
@@ -170,7 +170,7 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path='_omega_bin_pa
     min_lon : float
         Easternmost longitude of the observation (deg).
     max_lon : float
-        Westernmost longitude of the observation (dego.
+        Westernmost longitude of the observation (deg).
     slant : float
         Distance from the spacecraft to the center of the observation along the line of sight (km).
     quality : int

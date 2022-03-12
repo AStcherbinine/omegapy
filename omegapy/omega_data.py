@@ -775,7 +775,7 @@ class OMEGAdata:
     specmars : 1D array
         The Solar radiation spectrum on Mars (W.m-2.sr-1.µm-1).
     utc : datetime.datetime
-        The average UCT time of the observation.
+        The average UTC time of the observation.
     ic : dict
         The index of the used spectral pixels for each channel.
     lat_grid : 2D array
@@ -818,9 +818,9 @@ class OMEGAdata:
     orient : array
         The vector orientation of the spacecraft.
     subsol_lat : float
-        Latitude of the sub-solar point at observation time.
+        Latitude of the sub-solar point at observation time (deg).
     subsol_lon : float
-        Longitude of the sub-solar point at observation time.
+        Longitude of the sub-solar point at observation time (deg).
     min_lat : float
         Southernmost latitude of the observation (deg).
     max_lat : float
@@ -828,7 +828,7 @@ class OMEGAdata:
     min_lon : float
         Easternmost longitude of the observation (deg).
     max_lon : float
-        Westernmost longitude of the observation (dego.
+        Westernmost longitude of the observation (deg).
     slant : float
         Distance from the spacecraft to the center of the observation along the line of sight (km).
     quality : int
@@ -1624,7 +1624,7 @@ def autosave_omega(omega, folder='auto', base_folder='_omega_py_path', security=
     elif omega.therm_corr:
         suff = '_corr_therm'
     elif omega.atm_corr:
-        suff = 'corr_atm'
+        suff = '_corr_atm'
     else:
         suff = ''
     savname = '{name}{suff}.pkl'.format(name=omega.name, suff=suff)
