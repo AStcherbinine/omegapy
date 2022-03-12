@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 15/02/2022
+## Last modified by Aurélien STCHERBININE : 10/03/2022
 
 ##----------------------------------------------------------------------------------------
 """Display of OMEGAdata cubes.
@@ -979,7 +979,8 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
                        pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, 
                        title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto',
                        data_list=None, mask_list=None, negative_values=False, plot=True, 
-                       grid=True, out=False, negatives_longitudes=False, **kwargs):
+                       grid=True, out=False, negatives_longitudes=False, 
+                       edgecolor='face', lw=0.1, **kwargs):
     """Display an composite map from a list OMEGA/MEx observations, sampled on a new lat/lon grid.
 
     Parameters
@@ -1036,6 +1037,11 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
         Argument for non-polar plots.
         | True -> longitudes between 0° and 360°.
         | False -> longitudus between -180° and 180°.
+    edgecolor : {'none', None, 'face', color', color sequence}, optional (default 'face')
+        The color of the edges, see documentation of plt.pcolormesh for more details.
+        > Added in version 2.2.8 to fix display due for new version of matplotlib.
+    lw : float, optional (default 0.1)
+        The line width of the edges (if diplayed).
     **kwargs:
         Optional arguments for the plt.pcolormesh() function.
 
@@ -1097,7 +1103,7 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
         if polar:
             ax = plt.axes(polar=True)
             plt.pcolormesh(grid_lon*np.pi/180, grid_lat, data2, cmap=cmap, 
-                        vmin=vmin, vmax=vmax, **kwargs)
+                        vmin=vmin, vmax=vmax, edgecolor=edgecolor, lw=lw, **kwargs)
             ax.set_yticklabels([])  # remove the latitude values in the plot
             plt.xlim(0, 2*np.pi)
             if np.abs(lat_max) >= np.abs(lat_min):
@@ -1121,11 +1127,11 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
                 data2_nl[:n_neg_lon] = data2[i_lon180-1:]
                 data2_nl[n_neg_lon:] = data2[:i_lon180-1]
                 plt.pcolormesh(grid_lon_nl, grid_lat, data2_nl, cmap=cmap, vmin=vmin, 
-                               vmax=vmax, **kwargs)
+                               vmax=vmax, edgecolor=edgecolor, lw=lw, **kwargs)
                 lon_min, lon_max = grid_lon_nl[[0,-1], 0]   # new longitude bounds
             else:
                 plt.pcolormesh(grid_lon, grid_lat, data2, cmap=cmap, vmin=vmin, 
-                               vmax=vmax, **kwargs)
+                               vmax=vmax, edgecolor=edgecolor, lw=lw, **kwargs)
             plt.gca().axis('equal')
             plt.gca().set_adjustable('box')
             plt.xlabel('Longitude [°]')
@@ -1277,7 +1283,8 @@ def load_map_omega_list(filename):
 
 def show_omega_list_v2_man(data, grid_lat, grid_lon, infos, cmap='Greys_r', vmin=None, vmax=None, 
                            title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto',
-                           grid=True, negatives_longitudes=False, **kwargs):
+                           grid=True, negatives_longitudes=False,
+                           edgecolor='face', lw=0.1, **kwargs):
     """Display an composite map from a list OMEGA/MEx observations, previously sampled on 
     a new lat/lon grid with show_omega_list_v2() and saved with save_map_omega_list().
 
@@ -1313,6 +1320,11 @@ def show_omega_list_v2_man(data, grid_lat, grid_lon, infos, cmap='Greys_r', vmin
         Argument for non-polar plots.
         | True -> longitudes between 0° and 360°.
         | False -> longitudus between -180° and 180°.
+    edgecolor : {'none', None, 'face', color', color sequence}, optional (default 'face')
+        The color of the edges, see documentation of plt.pcolormesh for more details.
+        > Added in version 2.2.8 to fix display due for new version of matplotlib.
+    lw : float, optional (default 0.1)
+        The line width of the edges (if diplayed).
     **kwargs:
         Optional arguments for the plt.pcolormesh() function.
     """
@@ -1325,7 +1337,7 @@ def show_omega_list_v2_man(data, grid_lat, grid_lon, infos, cmap='Greys_r', vmin
     if polar:
         ax = plt.axes(polar=True)
         plt.pcolormesh(grid_lon*np.pi/180, grid_lat, data, cmap=cmap, 
-                    vmin=vmin, vmax=vmax, **kwargs)
+                    vmin=vmin, vmax=vmax, edgecolor=edgecolor, lw=lw, **kwargs)
         ax.set_yticklabels([])  # remove the latitude values in the plot
         plt.xlim(0, 2*np.pi)
         if np.abs(lat_max) >= np.abs(lat_min):
@@ -1349,11 +1361,11 @@ def show_omega_list_v2_man(data, grid_lat, grid_lon, infos, cmap='Greys_r', vmin
             data_nl[:n_neg_lon] = data[i_lon180-1:]
             data_nl[n_neg_lon:] = data[:i_lon180-1]
             plt.pcolormesh(grid_lon_nl, grid_lat, data_nl, cmap=cmap, vmin=vmin, 
-                           vmax=vmax, **kwargs)
+                           vmax=vmax, edgecolor=edgecolor, lw=lw, **kwargs)
             lon_min, lon_max = grid_lon_nl[[0,-1], 0]   # new longitude bounds
         else:
             plt.pcolormesh(grid_lon, grid_lat, data, cmap=cmap, vmin=vmin, 
-                           vmax=vmax, **kwargs)
+                           vmax=vmax, edgecolor=edgecolor, lw=lw, **kwargs)
         plt.gca().axis('equal')
         plt.gca().set_adjustable('box')
         plt.xlabel('Longitude [°]')
