@@ -160,9 +160,9 @@ class omegapy.omega_data.OMEGAdata(obs='', empty=False, data_path='_omega_bin_pa
     orient : array
         The vector orientation of the spacecraft.
     subsol_lat : float
-        Latitude of the sub-solar point at observation time.
+        Latitude of the sub-solar point at observation time (deg).
     subsol_lon : float
-        Longitude of the sub-solar point at observation time.
+        Longitude of the sub-solar point at observation time (deg).
     min_lat : float
         Southernmost latitude of the observation (deg).
     max_lat : float
