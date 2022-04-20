@@ -67,7 +67,7 @@ Importation and correction of OMEGA/MEx observations from binaries files.
 
 Display of OMEGAdata cubes.
 
-`show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, title='auto', xlim=(None, None), ylim=(None, None), Nfig=None)`
+`show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, title='auto', xlim=(None, None), ylim=(None, None), Nfig=None, mask=None)`
 
 `show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, alpha=None, title='auto', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto', **kwargs)`
 

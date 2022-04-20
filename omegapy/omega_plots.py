@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 10/03/2022
+## Last modified by Aurélien STCHERBININE : 20/04/2022
 
 ##----------------------------------------------------------------------------------------
 """Display of OMEGAdata cubes.
@@ -71,7 +71,7 @@ def show_cube(cube, i_lam, cmap='Greys_r', vmin=None, vmax=None, cb_title='', Nf
     plt.tight_layout()
 
 def show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None,
-               title='auto', xlim=(None, None), ylim=(None, None), Nfig=None):
+               title='auto', xlim=(None, None), ylim=(None, None), Nfig=None, mask=None):
     """Display an OMEGA/MEx observation in a rectangular pixel grid.
 
     Parameters
@@ -101,6 +101,11 @@ def show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, v
         The bounds of the y-axis of the figure.
     Nfig : int or str or None, optional (default None)
         The target figure ID.
+    mask : 2D array or None, optional (default None)
+        The array that identify the bad/corrupted pixels to remove.
+        If None, all the pixels are conserved.
+        | 1 -> Good pixel
+        | NaN -> Bad pixel
     """
     if ((lam_unit == 'm') or isinstance(lam, float)) and (lam < 10):
         i_lam = uf.where_closer(lam, omega.lam)
@@ -108,12 +113,14 @@ def show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, v
         i_lam = deepcopy(lam)
     lam = omega.lam[i_lam]
     if refl:
-        cube = omega.cube_rf
+        cube = deepcopy(omega.cube_rf)
         cb_title = r'Reflectance @ $\lambda$' + ' = {0:.2f} µm'.format(lam)
     else:
-        cube = omega.cube_i
+        cube = deepcopy(omega.cube_i)
         cb_title = (r'Radiance [W.m$^{-2}$.sr$^{-1}$.µm$^{-1}$] at $\lambda$' + 
                     ' = {0:.2f} µm'.format(lam))
+    if not (mask is None):
+        cube = (cube.T * mask.T).T      # apply mask to remove bad pixels (turned to NaN)
     if title == 'auto':
         title = 'OMEGA/MEx observation {0}\n'.format(omega.name) 
     show_cube(cube, i_lam, cmap, vmin, vmax, cb_title, Nfig)

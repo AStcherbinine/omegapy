@@ -4,7 +4,7 @@
 
 Display of OMEGAdata cubes.
 
-`show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, title='auto', xlim=(None, None), ylim=(None, None), Nfig=None)`
+`show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, title='auto', xlim=(None, None), ylim=(None, None), Nfig=None, mask=None)`
 
 `show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None, alpha=None, title='auto', lonlim=(None, None), latlim=(None, None), Nfig=None, polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto', **kwargs)`
 
@@ -29,7 +29,7 @@ Display of OMEGAdata cubes.
 
 ~~~python
 omegapy.omega_plots.show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None,
-               title='auto', xlim=(None, None), ylim=(None, None), Nfig=None):
+               title='auto', xlim=(None, None), ylim=(None, None), Nfig=None, mask=None):
     Display an OMEGA/MEx observation in a rectangular pixel grid.
 
     Parameters
@@ -59,6 +59,11 @@ omegapy.omega_plots.show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_
         The bounds of the y-axis of the figure.
     Nfig : int or str or None, optional (default None)
         The target figure ID.
+    mask : 2D array or None, optional (default None)
+        The array that identify the bad/corrupted pixels to remove.
+        If None, all the pixels are conserved.
+        | 1 -> Good pixel
+        | NaN -> Bad pixel
 ~~~
 
 ~~~python
