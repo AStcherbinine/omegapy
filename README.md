@@ -39,7 +39,7 @@ You have to configure the default path of the folders containing the OMEGA binar
 using the environment variables `OMEGA_BIN_PATH` (for the binary .QUB and .NAV files)
 and `OMEGA_PY_PATH` (for the omegapy-made files).
 
-To do so, add the following lines to your `~/.bashrc` :
+To do so, add the following lines to your `~/.bashrc` (or `~/.zshrc`) :
 ~~~bash
 export OMEGA_BIN_PATH="/path/to/binary/files/folder/"
 export OMEGA_PY_PATH="/path/to/omegapy-made/files/folder/"
