@@ -13,4 +13,6 @@ useful_functions :
     Useful python functions, some of them are used in omega_data and omega_plots.
 '''
 
+name = 'omegapy'
+
 from . import omega_data, omega_plots, useful_functions
