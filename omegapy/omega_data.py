@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 02/02/2022
+## Last modified by Aurélien STCHERBININE : 20/01/2023
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -29,6 +29,7 @@ import pandas as pd
 import multiprocessing as mp
 import itertools
 import ctypes
+import platform
 # Local
 from . import useful_functions as uf
 
@@ -924,7 +925,10 @@ class OMEGAdata:
             # if obs_name is None:
                 # print("\033[1;33mAborted\033[0m")
                 # return None
-            nomfic0 = obs_name[obs_name.rfind('/')+1:-4]    # Récupération nom + décodage UTF-8
+            if platform.system() == 'Windows':
+                nomfic0 = obs_name[obs_name.rfind('\\')+1:-4]    # Récupération nom + décodage UTF-8
+            else:
+                nomfic0 = obs_name[obs_name.rfind('/')+1:-4]    # Récupération nom + décodage UTF-8
             data_dict, geom_dict = _readomega(nomfic0, disp=disp, corrV=corrV, corrL=corrL, 
                                               data_path=data_path)
 
@@ -2757,7 +2761,10 @@ def test_cube(obs):
     if obs_name is None:
         print("\033[1;33mAborted\033[0m")
         return False
-    nomfic0 = obs_name[obs_name.rfind('/')+1:-4]    # Récupération nom
+    if platform.system() == 'Windows':
+        nomfic0 = obs_name[obs_name.rfind('\\')+1:-4]    # Récupération nom + décodage UTF-8
+    else:
+        nomfic0 = obs_name[obs_name.rfind('/')+1:-4]    # Récupération nom
     numCube = int(nomfic0[-1])
     # Lecture header fichier .QUB
     hd_qub = _read_header(obs_name[:-4] + '.QUB')
@@ -2831,7 +2838,10 @@ def compute_list_good_observations(savfilename='liste_good_obs.csv',
     Nacc = 0
     # Test qualité de chaque observation
     for obs_name in tqdm(bin_obs_list):
-        nomfic0 = obs_name[obs_name.rfind('/')+1:-4]    # Récupération nom
+        if platform.system() == 'Windows':
+            nomfic0 = obs_name[obs_name.rfind('\\')+1:-4]    # Récupération nom + décodage UTF-8
+        else:
+            nomfic0 = obs_name[obs_name.rfind('/')+1:-4]    # Récupération nom
         numCube = nomfic0[-1]
         # Lecture header fichier .QUB
         hd_qub = _read_header(obs_name[:-4] + '.QUB')
