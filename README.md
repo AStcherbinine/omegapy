@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-2.2.10-blue)
+![version](https://img.shields.io/badge/version-2.2.11-blue)
 ![pythonversion](https://img.shields.io/badge/Python-3.7+-blue)
 
 <p align="center">
