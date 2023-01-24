@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-2.2.11-blue)
+![version](https://img.shields.io/badge/version-2.2.12-blue)
 ![pythonversion](https://img.shields.io/badge/Python-3.7+-blue)
 
 <p align="center">
@@ -85,6 +85,7 @@ omega_corr_atm = od.corr_atm(omega_corr)
 # Simultaneous Atmospheric & Thermal corrections (for the use of the L-channel)
 # > Use the `npool` argument to control the number of simultaneous processes used to compute the thermal correction 
 # > (e.g., npool=15 is usually a nice choice if your system can handle it)
+# > Note: multiprocessing is currently not available for Windows
 omega_corr_therm_atm = od.corr_therm_atm(omega_corr, npool=1)
 # Thermal correction only
 omega_corr_therm = od.corr_therm(omega, npool=1)
