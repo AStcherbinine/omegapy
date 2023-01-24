@@ -99,7 +99,7 @@ See [`docs/*.md`](https://github.com/AStcherbinine/omegapy/blob/master/docs/) or
 
 ## Credits
 
-© Aurélien Stcherbinine (2020–2022)
+© Aurélien Stcherbinine (2020–2023)
 
 Institut d'Astrophysique Spatiale (IAS), Université Paris-Saclay, CNRS, Orsay, France
 
