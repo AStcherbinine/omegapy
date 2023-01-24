@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 20/01/2023
+## Last modified by Aurélien STCHERBININE : 23/01/2023
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -29,6 +29,7 @@ import pandas as pd
 import multiprocessing as mp
 import itertools
 import ctypes
+import platform
 # Local
 from . import useful_functions as uf
 
@@ -1837,12 +1838,20 @@ def corr_therm(omega, npool=1):
     # chunksize = len(it) // npool    # Approx size of each process
     chunksize = 1
     # pool = mp.Pool(npool)
-    with mp.Pool(npool) as pool:
-        for res in tqdm(pool.imap_unordered(_corr_therm_sp, it, chunksize), total=len(it), desc='Thermal correction'):
-            sp_rf_corr, T_fit, x, y = res
+    if (platform.system()=='Windows') and (npool>1):
+        print("\033[33mWarning: multiprocessing is currently not available for Windows, npool has been set to 1.\033[0m")
+    if (npool==1) or (platform.system()=='Windows'):
+        for args in tqdm(it, total=len(it), desc='Thermal correction'):
+            sp_rf_corr, T_fit, x, y = _corr_therm_sp(args)
             rf_corr[y,x] = sp_rf_corr
             surf_temp[y,x] = T_fit
-        pool.close()
+    else:
+        with mp.Pool(npool) as pool:
+            for res in tqdm(pool.imap_unordered(_corr_therm_sp, it, chunksize), total=len(it), desc='Thermal correction'):
+                sp_rf_corr, T_fit, x, y = res
+                rf_corr[y,x] = sp_rf_corr
+                surf_temp[y,x] = T_fit
+            pool.close()
     _omega_tmp = None
     omega_corr.cube_rf = rf_corr
     omega_corr.surf_temp = surf_temp
@@ -2242,12 +2251,20 @@ def corr_therm_atm(omega, npool=1):
     # chunksize = len(it) // npool    # Approx size of each process
     chunksize = 1
     # pool = mp.Pool(npool)
-    with mp.Pool(npool) as pool:
-        for res in tqdm(pool.imap_unordered(_corr_therm_atm_sp, it, chunksize), total=len(it), desc='Thermal correction'):
-            sp_rf_corr, T_fit, x, y = res
+    if (platform.system()=='Windows') and (npool>1):
+        print("\033[33mWarning: multiprocessing is currently not available for Windows, npool has been set to 1.\033[0m")
+    if (npool==1) or (platform.system()=='Windows'):
+        for args in tqdm(it, total=len(it), desc='Thermal & Atmospheric corrections'):
+            sp_rf_corr, T_fit, x, y = _corr_therm_atm_sp(args)
             rf_corr[y,x] = sp_rf_corr
             surf_temp[y,x] = T_fit
-        pool.close()
+    else:
+        with mp.Pool(npool) as pool:
+            for res in tqdm(pool.imap_unordered(_corr_therm_atm_sp, it, chunksize), total=len(it), desc='Thermal & Atmospheric corrections'):
+                sp_rf_corr, T_fit, x, y = res
+                rf_corr[y,x] = sp_rf_corr
+                surf_temp[y,x] = T_fit
+            pool.close()
     _omega_tmp = None
     omega_corr.cube_rf = rf_corr
     omega_corr.surf_temp = surf_temp
