@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 23/01/2023
+## Last modified by Aurélien STCHERBININE : 25/01/2023
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -958,7 +958,11 @@ class OMEGAdata:
             lam_mask_all = deepcopy(lam)
             lam_mask_all[:] = True
             lam_mask = {'all' : lam_mask_all}
-            orbit_nb = int(nomfic0[3:-2])
+            # orbit_nb = int(nomfic0[3:-2])
+            orbnum = int.from_bytes(str.encode(nomfic0[3]), byteorder='big') - 48
+            if orbnum > 9:
+                orbnum -= 7
+            orbit_nb = 1000 * orbnum + int(nomfic0[4:7])
             # Cube in physical units (W.m-2.sr-1.µm-1)
             cube_i = jdat[:, ic2, :]
             # Cube of reflectance factor I/F
