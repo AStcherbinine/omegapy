@@ -1,5 +1,7 @@
 ![version](https://img.shields.io/badge/version-2.3-blue)
 ![pythonversion](https://img.shields.io/badge/Python-3.7+-blue)
+[![DOI](https://zenodo.org/badge/349763849.svg)](https://zenodo.org/badge/latestdoi/349763849)
+
 
 <p align="center">
 <img width="250" height="250" src="https://github.com/AStcherbinine/omegapy/blob/master/docs/logo_omegapy_small2.png">
