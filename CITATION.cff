@@ -1,0 +1,31 @@
+cff-version: 1.2.0
+title: 'OMEGA-Py: Python tools for OMEGA data'
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Aurélien
+    family-names: Stcherbinine
+    email: aurelien@stcherbinine.net
+    orcid: 'https://orcid.org/0000-0002-7086-5443'
+    affiliation: IAS/LATMOS/NAU
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.7818829
+repository-code: 'https://github.com/AStcherbinine/omegapy'
+url: 'https://astcherbinine.github.io/omegapy'
+repository: 'https://pypi.org/project/omegapy'
+keywords:
+  - Science
+  - Mars
+  - Astronomy
+  - Planetary Science
+  - OMEGA
+  - Mars Express
+  - Hyperspectral
+  - Physics
+  - Python 3
+license: MIT
+version: '2.3'
+date-released: '2023-04-11'
