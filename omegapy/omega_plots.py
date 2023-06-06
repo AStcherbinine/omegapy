@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 20/04/2022
+## Last modified by Aurélien STCHERBININE : 06/06/2023
 
 ##----------------------------------------------------------------------------------------
 """Display of OMEGAdata cubes.
@@ -937,6 +937,160 @@ def proj_grid(omega, data, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
                 if (not np.isnan(data_tmp)) & (data_tmp > 0) & (not np.isinf(data_tmp)):   # Filtrage régions sans données
                     grid_data[i_lon,j_lat] += data_tmp
                     mask[i_lon,j_lat] += 1
+    grid_data[grid_data==0] = np.nan
+    grid_data2 = grid_data / mask       # Normalisation
+    mask2 = np.clip(mask, 0, 1)
+    return grid_data2, mask2, grid_lat, grid_lon
+
+def point_in_poly4(x0, y0, X4, Y4):
+    """Test if a point of coordinates (x0, y0) is within a polygon with 4 sides.
+
+    Parameters
+    ==========
+    x0 : float or array-like
+        The x-coordinate of the point to test.
+    y0 : float or array-like
+        The y-coordinate of the point to test.
+    X4 : 4-tuple of floats
+        The x-coordinates of the polygon corners.
+    Y4 : 4-tuple of floats
+        The y-coordinates of the polygon corners.
+
+    Returns
+    =======
+    testin : bool or array-like of bool
+        True if (x0, y0) is within the polygon.
+    """
+    # Extraction
+    Xa, Xb, Xc, Xd = deepcopy(X4)
+    Ya, Yb, Yc, Yd = deepcopy(Y4)
+    # re-order to have
+    #  D--C
+    #  |  |
+    #  A--B
+    if Xa > Xb:
+        Xa, Xb = Xb, Xa
+        Ya, Yb = Yb, Ya
+    if Xd > Xc:
+        Xd, Xc = Xc, Xd
+        Yd, Yc = Yc, Yd
+    if Ya > Yd:
+        Ya, Yd = Yd, Ya
+        Xa, Xd = Xd, Xa
+    if Yb > Yc:
+        Yb, Yc = Yc, Yb
+        Xb, Xc = Xc, Xb
+    # Internal test functions
+    def f_xmin(y):
+        return Xa + ((Xd - Xa) / (Yd - Ya)) * (y - Ya)
+    def f_xmax(y):
+        return Xb + ((Xc - Xb) / (Yc - Yb)) * (y - Yb)
+    def f_ymin(x):
+        return Ya + ((Yb - Ya) / (Xb - Xa)) * (x - Xa)
+    def f_ymax(x):
+        return Yd + ((Yc - Yd) / (Xc - Xd)) * (x - Xd)
+    # Test if point in poly
+    testin = (
+        ( x0 >= f_xmin(y0) ) &
+        ( x0 <= f_xmax(y0) ) &
+        ( y0 >= f_ymin(x0) ) &
+        ( y0 <= f_ymax(x0) )
+        )
+    return testin
+
+def proj_grid2(omega, data, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
+              pas_lat=0.1, pas_lon=0.1, negative_values=False):
+    """Sample the data from the input OMEGA/MEx observation on a given lat/lon grid.
+
+    Parameters
+    ==========
+    omega : OMEGAdata
+        The OMEGA/MEx observation
+    data : 2D array
+        The initial array of values associated to the OMEGAdata observation.
+        e.g.: Refelectance at selected wvl, spectra, or derived data such as IBD map.
+    lat_min : float, optional (default -90)
+        The minimal latitude of the grid.
+    lat_max : float, optional (default 90)
+        The maximum latitude of the grid.
+    lon_min : float, optional (default 0)
+        The minimal longitude of the grid.
+    lon_max : float, optional (default 360)
+        The maximal longitude of the grid.
+    pas_lat : float, optional (default 0.1)
+        The latitude intervals of the grid.
+    pas_lon : float, optional (default 0.1)
+        The longitude intervals of the grid.
+    negative_values : bool, optional (default False)
+        Set if the negative values are considered as relevant data or not.
+
+    Returns
+    =======
+    grid_data : 2D array (dim : Nlon x Nlat)
+        The data values, sampled on the new lat/lon grid.
+    mask : 2D array
+        The array indicating where the new grid has been filled by the OMEGA data.
+    grid lat : 2D array
+        The new latitude grid.
+    grid lon : 2D array
+        The new longitude grid.
+    """
+    # Initialisation
+    #-- OMEGA grids
+    Ωlat = deepcopy(omega.lat)
+    Ωlon = deepcopy(omega.lon)
+    Ωgrid_lat = deepcopy(omega.lat_grid)
+    Ωgrid_lon = deepcopy(omega.lon_grid)
+    #-- Lon/Lat grids
+    # lat_precision = np.floor(np.log10(pas_lat)).astype(int) * -1
+    # lon_precision = np.floor(np.log10(pas_lon)).astype(int) * -1
+    # lat_array = np.round(np.arange(lat_min, lat_max+pas_lat, pas_lat), lat_precision)
+    # lon_array = np.round(np.arange(lon_min, lon_max+pas_lon, pas_lon), lon_precision)
+    lat_array = np.arange(lat_min, lat_max+pas_lat, pas_lat)
+    lon_array = np.arange(lon_min, lon_max+pas_lon, pas_lon)
+    Nlon, Nlat = len(lon_array)-1, len(lat_array)-1
+    grid_lat, grid_lon = np.meshgrid(lat_array, lon_array)
+    grid_data = np.zeros((Nlon, Nlat))
+    mask = np.zeros((Nlon, Nlat))
+    #-- Center grids for projection
+    # lat_arrayC = np.arange(lat_min+pas_lat/2, lat_max, pas_lat)
+    # lon_arrayC = np.arange(lon_min+pas_lon/2, lon_max, pas_lon)
+    # grid_latC, grid_lonC = np.meshgrid(lat_arrayC, lon_arrayC)
+    if lat_min < np.min(omega.lat):
+        i_lat_min = np.where(lat_array < np.min(omega.lat))[0][-1]
+    else:
+        i_lat_min = 0
+    if lat_max > np.max(omega.lat):
+        i_lat_max = np.where(lat_array > np.max(omega.lat))[0][0]
+    else:
+        i_lat_max = -1
+    if lon_min < np.min(omega.lon):
+        i_lon_min = np.where(lon_array < np.min(omega.lon))[0][-1]
+    else:
+        i_lon_min = 0
+    if lon_max > np.max(omega.lon):
+        i_lon_max = np.where(lon_array > np.max(omega.lon))[0][0]
+    else:
+        i_lon_max = -1
+    grid_latC = deepcopy(grid_lat)[i_lon_min:i_lon_max, i_lat_min:i_lat_max] + pas_lat/2
+    grid_lonC = deepcopy(grid_lon)[i_lon_min:i_lon_max, i_lat_min:i_lat_max] + pas_lon/2
+    # Sampling on the new grid
+    nx, ny = data.shape
+    for j in tqdm(range(ny)):
+        for i in tqdm(range(nx), leave=False):
+            data_tmp = data[i,j]
+            lat4 = Ωgrid_lat[i:i+2, j:j+2].reshape(-1)
+            lon4 = Ωgrid_lon[i:i+2, j:j+2].reshape(-1)
+            if negative_values:
+                if (not np.isnan(data_tmp)) & (not np.isinf(data_tmp)):   # Filtrage régions sans données
+                    testin = point_in_poly4(grid_lonC, grid_latC, lon4, lat4)   # Test if in Ω pixel
+                    grid_data[i_lon_min:i_lon_max, i_lat_min:i_lat_max] += (data_tmp * testin)
+                    mask[i_lon_min:i_lon_max, i_lat_min:i_lat_max] += testin
+            else:   # negative values = No data
+                if (not np.isnan(data_tmp)) & (data_tmp > 0) & (not np.isinf(data_tmp)):   # Filtrage régions sans données
+                    testin = point_in_poly4(grid_lonC, grid_latC, lon4, lat4)   # Test if in Ω pixel
+                    grid_data[i_lon_min:i_lon_max, i_lat_min:i_lat_max] += (data_tmp * testin)
+                    mask[i_lon_min:i_lon_max, i_lat_min:i_lat_max] += testin
     grid_data[grid_data==0] = np.nan
     grid_data2 = grid_data / mask       # Normalisation
     mask2 = np.clip(mask, 0, 1)
