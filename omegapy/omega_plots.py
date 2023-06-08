@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 06/06/2023
+## Last modified by Aurélien STCHERBININE : 08/06/2023
 
 ##----------------------------------------------------------------------------------------
 """Display of OMEGAdata cubes.
@@ -942,6 +942,26 @@ def proj_grid(omega, data, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
     mask2 = np.clip(mask, 0, 1)
     return grid_data2, mask2, grid_lat, grid_lon
 
+def reorder_pts(X4, Y4):
+    Xa, Xb, Xc, Xd = deepcopy(X4)
+    Ya, Yb, Yc, Yd = deepcopy(Y4)
+    while ((Xa > Xb) or (Xd > Xc) or (Ya > Yd) or (Yb > Yc)):
+        if Xa > Xb:
+            Xa, Xb = Xb, Xa
+            Ya, Yb = Yb, Ya
+        if Xd > Xc:
+            Xd, Xc = Xc, Xd
+            Yd, Yc = Yc, Yd
+        if Ya > Yd:
+            Ya, Yd = Yd, Ya
+            Xa, Xd = Xd, Xa
+        if Yb > Yc:
+            Yb, Yc = Yc, Yb
+            Xb, Xc = Xc, Xb
+    X4_new = (Xa, Xb, Xc, Xd)
+    Y4_new = (Ya, Yb, Yc, Yd)
+    return X4_new, Y4_new
+
 def point_in_poly4(x0, y0, X4, Y4):
     """Test if a point of coordinates (x0, y0) is within a polygon with 4 sides.
 
@@ -968,18 +988,19 @@ def point_in_poly4(x0, y0, X4, Y4):
     #  D--C
     #  |  |
     #  A--B
-    if Xa > Xb:
-        Xa, Xb = Xb, Xa
-        Ya, Yb = Yb, Ya
-    if Xd > Xc:
-        Xd, Xc = Xc, Xd
-        Yd, Yc = Yc, Yd
-    if Ya > Yd:
-        Ya, Yd = Yd, Ya
-        Xa, Xd = Xd, Xa
-    if Yb > Yc:
-        Yb, Yc = Yc, Yb
-        Xb, Xc = Xc, Xb
+    while ((Xa > Xb) or (Xd > Xc) or (Ya > Yd) or (Yb > Yc)):
+        if Xa > Xb:
+            Xa, Xb = Xb, Xa
+            Ya, Yb = Yb, Ya
+        if Xd > Xc:
+            Xd, Xc = Xc, Xd
+            Yd, Yc = Yc, Yd
+        if Ya > Yd:
+            Ya, Yd = Yd, Ya
+            Xa, Xd = Xd, Xa
+        if Yb > Yc:
+            Yb, Yc = Yc, Yb
+            Xb, Xc = Xc, Xb
     # Internal test functions
     def f_xmin(y):
         return Xa + ((Xd - Xa) / (Yd - Ya)) * (y - Ya)
@@ -1041,6 +1062,146 @@ def proj_grid2(omega, data, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
     Ωlon = deepcopy(omega.lon)
     Ωgrid_lat = deepcopy(omega.lat_grid)
     Ωgrid_lon = deepcopy(omega.lon_grid)
+    #-- Test negative longitudes if close to 0°/360°
+    mask_lat = (np.abs(omega.lat) < 85)
+    if (omega.lon[mask_lat] < 10).any() and (omega.lon[mask_lat] > 350).any() and (lon_min >= 0) and (lon_max > 180):
+        negatives_longitudes = True
+    else:
+        negatives_longitudes = False
+    #-- Test polar case
+    if (omega.lat > 85).any():
+        polarN = True
+        polarS = False
+    elif (omega.lat < -85).any():
+        polarN = False
+        polarS = True
+    else:
+        polarN = False
+        polarS = False
+    #-- Lon/Lat grids
+    lat_array = np.arange(lat_min, lat_max+pas_lat, pas_lat)
+    lon_array = np.arange(lon_min, lon_max+pas_lon, pas_lon)
+    if negatives_longitudes:
+        n_neg_lon = np.sum(lon_array > 180) # nb of negative longitudes (>180°)
+        i_lon180 = np.where(lon_array > 180)[0][0] # 1st index of lon > 180°
+        lon_array_nl = deepcopy(lon_array)        # new longitude grid [-180°, 180°]
+        lon_array_nl[:n_neg_lon] = lon_array[i_lon180-1:-1] - 360
+        lon_array_nl[n_neg_lon:] = lon_array[:i_lon180]
+        lon_array = deepcopy(lon_array_nl)
+        Ωgrid_lon[Ωgrid_lon > 180] -= 360
+        Ωlon[Ωlon > 180] -= 360
+    Nlon, Nlat = len(lon_array)-1, len(lat_array)-1
+    grid_lat, grid_lon = np.meshgrid(lat_array, lon_array)
+    grid_data = np.zeros((Nlon, Nlat))
+    mask = np.zeros((Nlon, Nlat))
+    #-- Center grids for projection
+    if np.min(lat_array) < np.min(Ωgrid_lat):
+        i_lat_min = np.where(lat_array < np.min(Ωgrid_lat))[0][-1]
+    else:
+        i_lat_min = 0
+    if np.max(lat_array) > np.max(Ωgrid_lat):
+        i_lat_max = np.where(lat_array > np.max(Ωgrid_lat))[0][0]
+    else:
+        i_lat_max = Nlat
+    if np.min(lon_array) < np.min(Ωgrid_lon):
+        i_lon_min = np.where(lon_array < np.min(Ωgrid_lon))[0][-1]
+    else:
+        i_lon_min = 0
+    if np.max(lon_array) > np.max(Ωgrid_lon):
+        i_lon_max = np.where(lon_array > np.max(Ωgrid_lon))[0][0]
+    else:
+        i_lon_max = Nlon
+    if polarN or polarS:
+        i_lon_min, i_lon_max = 0, Nlon
+    grid_latC = deepcopy(grid_lat)[i_lon_min:i_lon_max, i_lat_min:i_lat_max] + pas_lat/2
+    grid_lonC = deepcopy(grid_lon)[i_lon_min:i_lon_max, i_lat_min:i_lat_max] + pas_lon/2
+    # Sampling on the new grid
+    nx, ny = data.shape
+    for j in tqdm(range(ny)):
+        for i in tqdm(range(nx), leave=False):
+            data_tmp = data[i,j]
+            lat4 = Ωgrid_lat[i:i+2, j:j+2].reshape(-1)
+            lon4 = Ωgrid_lon[i:i+2, j:j+2].reshape(-1)
+            # Filtrage régions sans données
+            if negative_values:
+                data_ok = (not np.isnan(data_tmp)) & (not np.isinf(data_tmp))
+            else:   # negative values = No data
+                data_ok = (not np.isnan(data_tmp)) & (data_tmp > 0) & (not np.isinf(data_tmp))
+            # Filling grids with data
+            if data_ok:
+                testin = point_in_poly4(grid_lonC, grid_latC, lon4, lat4)   # Test if in Ω pixel
+                grid_data[i_lon_min:i_lon_max, i_lat_min:i_lat_max] += (data_tmp * testin)
+                mask[i_lon_min:i_lon_max, i_lat_min:i_lat_max] += testin
+                # if testin.any():
+                    # print(i,j, np.sum(testin))
+    grid_data[grid_data==0] = np.nan
+    grid_data2 = grid_data / mask       # Normalisation
+    mask2 = np.clip(mask, 0, 1)
+    # Re-ordering if negatives longitudes
+    if negatives_longitudes:
+        n_pos_lon = np.sum(grid_lon[:,0] >= 0) # nb of positives longitudes (>= 0°)
+        i_lon0 = np.where(grid_lon[:,0] >= 0)[0][0] # 1st index of lon >= 0°
+        # lon
+        grid_lon_pl = deepcopy(grid_lon)        # new longitude grid [0°, 360°]
+        grid_lon_pl[:n_pos_lon] = grid_lon[i_lon0:]
+        grid_lon_pl[n_pos_lon:] = grid_lon[1:i_lon0+1] + 360
+        grid_lon = deepcopy(grid_lon_pl)
+        # data
+        grid_data2_pl = deepcopy(grid_data2)      # new data array
+        grid_data2_pl[:n_pos_lon-1] = grid_data2[i_lon0:]
+        grid_data2_pl[n_pos_lon-1:] = grid_data2[:i_lon0]
+        grid_data2 = deepcopy(grid_data2_pl)
+        # mask
+        mask2_pl = deepcopy(mask2)      # new mask array
+        mask2_pl[:n_pos_lon-1] = mask2[i_lon0:]
+        mask2_pl[n_pos_lon-1:] = mask2[:i_lon0]
+        mask2 = deepcopy(mask2_pl)
+    # Output
+    return grid_data2, mask2, grid_lat, grid_lon
+
+def proj_grid2_v2(omega, data, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
+              pas_lat=0.1, pas_lon=0.1, negative_values=False):
+    """Sample the data from the input OMEGA/MEx observation on a given lat/lon grid.
+
+    Parameters
+    ==========
+    omega : OMEGAdata
+        The OMEGA/MEx observation
+    data : 2D array
+        The initial array of values associated to the OMEGAdata observation.
+        e.g.: Refelectance at selected wvl, spectra, or derived data such as IBD map.
+    lat_min : float, optional (default -90)
+        The minimal latitude of the grid.
+    lat_max : float, optional (default 90)
+        The maximum latitude of the grid.
+    lon_min : float, optional (default 0)
+        The minimal longitude of the grid.
+    lon_max : float, optional (default 360)
+        The maximal longitude of the grid.
+    pas_lat : float, optional (default 0.1)
+        The latitude intervals of the grid.
+    pas_lon : float, optional (default 0.1)
+        The longitude intervals of the grid.
+    negative_values : bool, optional (default False)
+        Set if the negative values are considered as relevant data or not.
+
+    Returns
+    =======
+    grid_data : 2D array (dim : Nlon x Nlat)
+        The data values, sampled on the new lat/lon grid.
+    mask : 2D array
+        The array indicating where the new grid has been filled by the OMEGA data.
+    grid lat : 2D array
+        The new latitude grid.
+    grid lon : 2D array
+        The new longitude grid.
+    """
+    # Initialisation
+    #-- OMEGA grids
+    Ωlat = deepcopy(omega.lat)
+    Ωlon = deepcopy(omega.lon)
+    Ωgrid_lat = deepcopy(omega.lat_grid)
+    Ωgrid_lon = deepcopy(omega.lon_grid)
     #-- Lon/Lat grids
     # lat_precision = np.floor(np.log10(pas_lat)).astype(int) * -1
     # lon_precision = np.floor(np.log10(pas_lon)).astype(int) * -1
@@ -1053,41 +1214,67 @@ def proj_grid2(omega, data, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
     grid_data = np.zeros((Nlon, Nlat))
     mask = np.zeros((Nlon, Nlat))
     #-- Center grids for projection
-    # lat_arrayC = np.arange(lat_min+pas_lat/2, lat_max, pas_lat)
-    # lon_arrayC = np.arange(lon_min+pas_lon/2, lon_max, pas_lon)
-    # grid_latC, grid_lonC = np.meshgrid(lat_arrayC, lon_arrayC)
-    if lat_min < np.min(omega.lat):
-        i_lat_min = np.where(lat_array < np.min(omega.lat))[0][-1]
-    else:
-        i_lat_min = 0
-    if lat_max > np.max(omega.lat):
-        i_lat_max = np.where(lat_array > np.max(omega.lat))[0][0]
-    else:
-        i_lat_max = -1
-    if lon_min < np.min(omega.lon):
-        i_lon_min = np.where(lon_array < np.min(omega.lon))[0][-1]
-    else:
-        i_lon_min = 0
-    if lon_max > np.max(omega.lon):
-        i_lon_max = np.where(lon_array > np.max(omega.lon))[0][0]
-    else:
-        i_lon_max = -1
-    grid_latC = deepcopy(grid_lat)[i_lon_min:i_lon_max, i_lat_min:i_lat_max] + pas_lat/2
-    grid_lonC = deepcopy(grid_lon)[i_lon_min:i_lon_max, i_lat_min:i_lat_max] + pas_lon/2
+    # if lat_min < np.min(Ωgrid_lat):
+        # i_lat_min = np.where(lat_array < np.min(Ωgrid_lat))[0][-1]
+    # else:
+        # i_lat_min = 0
+    # if lat_max > np.max(Ωgrid_lat):
+        # i_lat_max = np.where(lat_array > np.max(Ωgrid_lat))[0][0]
+    # else:
+        # i_lat_max = -1
+    # if lon_min < np.min(Ωgrid_lon):
+        # i_lon_min = np.where(lon_array < np.min(Ωgrid_lon))[0][-1]
+    # else:
+        # i_lon_min = 0
+    # if lon_max > np.max(Ωgrid_lon):
+        # i_lon_max = np.where(lon_array > np.max(Ωgrid_lon))[0][0]
+    # else:
+        # i_lon_max = -1
+    # grid_latC = deepcopy(grid_lat)[i_lon_min:i_lon_max, i_lat_min:i_lat_max] + pas_lat/2
+    # grid_lonC = deepcopy(grid_lon)[i_lon_min:i_lon_max, i_lat_min:i_lat_max] + pas_lon/2
     # Sampling on the new grid
     nx, ny = data.shape
     for j in tqdm(range(ny)):
         for i in tqdm(range(nx), leave=False):
             data_tmp = data[i,j]
-            lat4 = Ωgrid_lat[i:i+2, j:j+2].reshape(-1)
-            lon4 = Ωgrid_lon[i:i+2, j:j+2].reshape(-1)
+            # Filtrage régions sans données
             if negative_values:
-                if (not np.isnan(data_tmp)) & (not np.isinf(data_tmp)):   # Filtrage régions sans données
-                    testin = point_in_poly4(grid_lonC, grid_latC, lon4, lat4)   # Test if in Ω pixel
-                    grid_data[i_lon_min:i_lon_max, i_lat_min:i_lat_max] += (data_tmp * testin)
-                    mask[i_lon_min:i_lon_max, i_lat_min:i_lat_max] += testin
+                data_ok = (not np.isnan(data_tmp)) & (not np.isinf(data_tmp))
             else:   # negative values = No data
-                if (not np.isnan(data_tmp)) & (data_tmp > 0) & (not np.isinf(data_tmp)):   # Filtrage régions sans données
+                data_ok = (not np.isnan(data_tmp)) & (data_tmp > 0) & (not np.isinf(data_tmp))
+            # Filling grids with data
+            if data_ok:
+                lat4 = Ωgrid_lat[i:i+2, j:j+2].reshape(-1)
+                lon4 = Ωgrid_lon[i:i+2, j:j+2].reshape(-1)
+                lat4min, lat4max = np.min(lat4), np.max(lat4)
+                lon4min, lon4max = np.min(lon4), np.max(lon4)
+                #---------
+                #-- Center grids for projection
+                if lat_min < lat4min:
+                    i_lat_min = np.where(lat_array < lat4min)[0][-1]
+                else:
+                    i_lat_min = 0
+                if lat_max > lat4max:
+                    i_lat_max = np.where(lat_array > lat4max)[0][0]
+                else:
+                    i_lat_max = Nlat
+                if lon_min < lon4min:
+                    i_lon_min = np.where(lon_array < lon4min)[0][-1]
+                else:
+                    i_lon_min = 0
+                if lon_max > lon4max:
+                    i_lon_max = np.where(lon_array > lon4max)[0][0]
+                else:
+                    i_lon_max = Nlon
+                # Entire Ω pixel within new grid
+                if (np.abs(i_lat_max - i_lat_min) <= 1) or (np.abs(i_lon_max - i_lon_min) <= 1):
+                    grid_data[i_lon_min:i_lon_max, i_lat_min:i_lat_max] += data_tmp
+                    mask[i_lon_min:i_lon_max, i_lat_min:i_lat_max] += 1
+                # Else, test points in pixel poly4
+                else:
+                    grid_latC = deepcopy(grid_lat)[i_lon_min:i_lon_max, i_lat_min:i_lat_max] + pas_lat/2
+                    grid_lonC = deepcopy(grid_lon)[i_lon_min:i_lon_max, i_lat_min:i_lat_max] + pas_lon/2
+                    #---------
                     testin = point_in_poly4(grid_lonC, grid_latC, lon4, lat4)   # Test if in Ω pixel
                     grid_data[i_lon_min:i_lon_max, i_lat_min:i_lat_max] += (data_tmp * testin)
                     mask[i_lon_min:i_lon_max, i_lat_min:i_lat_max] += testin
@@ -1144,7 +1331,7 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
                        pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, 
                        title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto',
                        data_list=None, mask_list=None, negative_values=False, plot=True, 
-                       grid=True, out=False, negatives_longitudes=False, 
+                       grid=True, out=False, negatives_longitudes=False, proj_method=1,
                        edgecolor='face', lw=0.1, **kwargs):
     """Display an composite map from a list OMEGA/MEx observations, sampled on a new lat/lon grid.
 
@@ -1202,6 +1389,12 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
         Argument for non-polar plots.
         | True -> longitudes between 0° and 360°.
         | False -> longitudus between -180° and 180°.
+    proj_method : int, optional (default 1)
+        Select the projection method used (1 or 2).
+        | 1 -> Consider only the center point of each pixel.
+               Faster but not adapted if the grid resolution is lower than the OMEGA pixels size.
+        | 2 -> Consider the entire spatial extent of each pixel.
+               More accurate, but take more time.
     edgecolor : {'none', None, 'face', color', color sequence}, optional (default 'face')
         The color of the edges, see documentation of plt.pcolormesh for more details.
         > Added in version 2.2.8 to fix display due for new version of matplotlib.
@@ -1223,6 +1416,8 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
     mask_obs : 2D array of str
         The array indicating which observations have been used to fill each grid position.
     """
+    if proj_method not in [1, 2]:
+        raise ValueError("`proj_method` must be 1 (pixel centers) or 2 (polygons).")
     # Sampling on same grid
     lat_array = np.arange(lat_min, lat_max+pas_lat, pas_lat)
     lon_array = np.arange(lon_min, lon_max+pas_lon, pas_lon)
@@ -1240,8 +1435,12 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
                 data_tmp = omega.cube_rf[:,:,i_lam]     # Reflectance without mask
             else:
                 data_tmp = omega.cube_rf[:,:,i_lam] * mask_list[i]  # Reflectance with mask
-            data0, mask0 = proj_grid(omega, data_tmp, lat_min, lat_max,
-                                     lon_min, lon_max, pas_lat, pas_lon, negative_values)[:2]
+            if proj_method == 1:
+                data0, mask0 = proj_grid(omega, data_tmp, lat_min, lat_max,
+                                        lon_min, lon_max, pas_lat, pas_lon, negative_values)[:2]
+            else:
+                data0, mask0 = proj_grid2(omega, data_tmp, lat_min, lat_max,
+                                         lon_min, lon_max, pas_lat, pas_lon, negative_values)[:2]
             data += np.nan_to_num(data0)    # Conversion NaN -> 0 pour somme des images
             mask += mask0
             mask_obs[mask0 == 1] += (omega.name + ',')
@@ -1252,8 +1451,12 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
                 data_tmp = data_list[i]     # Data without mask
             else:
                 data_tmp = data_list[i] * mask_list[i]  # Data with mask
-            data0, mask0 = proj_grid(omega, data_tmp, lat_min, lat_max,
-                                     lon_min, lon_max, pas_lat, pas_lon, negative_values)[:2]
+            if proj_method == 1:
+                data0, mask0 = proj_grid(omega, data_tmp, lat_min, lat_max,
+                                        lon_min, lon_max, pas_lat, pas_lon, negative_values)[:2]
+            else:
+                data0, mask0 = proj_grid2(omega, data_tmp, lat_min, lat_max,
+                                         lon_min, lon_max, pas_lat, pas_lon, negative_values)[:2]
             data += np.nan_to_num(data0)    # Conversion NaN -> 0 pour somme des images
             mask += mask0
             mask_obs[mask0 == 1] += (omega.name + ',')
@@ -1335,7 +1538,8 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
 ## Sauvegarde résultats
 def save_map_omega_list(omega_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
                         pas_lat=0.1, pas_lon=0.1, lam=1.085, data_list=None, data_desc='', 
-                        mask_list=None, negative_values=False, sav_filename='auto', ext='',
+                        mask_list=None, negative_values=False, proj_method=1, 
+                        sav_filename='auto', ext='',
                         base_folder='../data/OMEGA/sav_map_list_v2/', sub_folder=''):
     """Save the output of the omega_plots.show_omega_list_v2() function with the requested
     parameters as a dictionary.
@@ -1370,6 +1574,12 @@ def save_map_omega_list(omega_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=
         Each mask is a 2D array, filled with 1 for good pixels and NaN for bad ones.
     negative_values : bool, optional (default False)
         Set if the negative values are considered as relevant data or not.
+    proj_method : int, optional (default 1)
+        Select the projection method used (1 or 2).
+        | 1 -> Consider only the center point of each pixel.
+               Faster but not adapted if the grid resolution is lower than the OMEGA pixels size.
+        | 2 -> Consider the entire spatial extent of each pixel.
+               More accurate, but take more time.
     sav_filename : str, optional (default 'auto')
         The saving file name.
         | If 'auto' -> Automatically generated.
@@ -1395,7 +1605,7 @@ def save_map_omega_list(omega_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=
     data, mask, grid_lat, grid_lon, mask_obs = show_omega_list_v2(omega_list,
                 lam, lat_min, lat_max, lon_min, lon_max, pas_lat, pas_lon,
                 data_list=data_list, mask_list=mask_list, negative_values=negative_values,
-                plot=False, out=True)
+                proj_method=proj_method, plot=False, out=True)
     # Sav file
     input_params = {
         'omega_list' : od.get_names(omega_list),
@@ -1407,7 +1617,9 @@ def save_map_omega_list(omega_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=
         'pas_lon' : pas_lon,
         'data'    : data_desc,
         'filename': sav_filename,
-        'datetime': datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}
+        'datetime': datetime.datetime.now().strftime('%d/%m/%Y %H:%M'),
+        'proj_method' : proj_method,
+            }
     save_file = {
         'data' : data,
         'mask' : mask,
