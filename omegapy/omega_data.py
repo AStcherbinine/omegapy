@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 25/01/2023
+## Last modified by Aurélien STCHERBININE : 16/06/2023
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -35,7 +35,7 @@ from . import useful_functions as uf
 
 # Name of the current file
 _py_file = 'omega_data.py'
-_Version = 2.2
+_Version = 2.3
 
 # Path of the package files
 package_path = os.path.abspath(os.path.dirname(__file__))
@@ -2533,7 +2533,7 @@ def corr_save_omega2_list(liste_obs, folder='auto', base_folder='_omega_py_path'
         folder = 'v' + str(int(_Version))
     for i, obsname in enumerate(liste_obs):
         print('\n\033[01mComputing observation {0} / {1} : {2}\033[0m\n'.format(i+1, N, obsname))
-        corr_save_omega(obsname, folder, base_folder, security, overwrite, compress, npool)
+        corr_save_omega2(obsname, folder, base_folder, security, overwrite, compress, npool)
     print("\n\033[01;32m Done\033[0m\n")
 
 ##-----------------------------------------------------------------------------------
