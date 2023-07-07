@@ -1,0 +1,55 @@
+---
+# Project Information
+site_name: OMEGA-Py
+site_url: https://astcherbinine.github.io/omegapy
+site_author: Aurélien Stcherbinine
+site_description: OMEGA-Py: Python tools for OMEGA data
+
+# Repository information
+repo_name: AStcherbinine/omegapy
+repo_url: https://github.com/AStcherbinine/omegapy
+edit_uri: "edit/main/docs/"
+
+# Copyright
+copyright: Copyright &copy; 2023 Aurélien Stcherbinine
+
+# Configuration
+theme:
+  name: custommill
+  icon:
+    repo: fontawesome/brands/github
+    view: material/eye
+  features:
+    - navigation.instant
+    - navigation.tabs
+  language: en
+
+plugins:
+  - search
+  - gen-files:
+      scripts:
+      - docs/gen_api_pages.py
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [omegapy]
+  - literate-nav:
+      nav_file: SUMMARY.md
+
+# Footer
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/AStcherbinine
+      name: AStcherbinine on GitHub
+
+# Page tree
+nav:
+  - Home: index.md
+  #- 'User Guide':
+    #- 'Getting Started': 'getting_started.md'
+    #- 'Examples': examples.md
+  #- About: about.md
+  - Code Reference: reference/
+
