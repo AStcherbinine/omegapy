@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 08/06/2023
+## Last modified by Aurélien STCHERBININE : 07/07/2023
 
 ##----------------------------------------------------------------------------------------
 """Display of OMEGAdata cubes.
@@ -247,6 +247,7 @@ def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None
     if cbar:
         cb = plt.colorbar()
         cb.set_label(cb_title)
+    plt.grid(visible=False)
     if grid:
         ax = plt.figure(Nfig).get_axes()[0]
         lonlim = ax.get_xlim()
@@ -257,7 +258,7 @@ def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None
                     10 * lon_sgn)   # 10° grid in longitude
         lat_grid = np.arange(np.round(latlim[0]/10)*10, np.round(latlim[1]/10)*10+lat_sgn, 
                     10 * lat_sgn)   # 10° grid in latitude
-        plt.grid()
+        plt.grid(visible=True)
         if polar:
             ax.set_rticks(lat_grid)
         else:
@@ -853,6 +854,7 @@ def show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, 
     if cbar:
         cb = plt.colorbar()
         cb.set_label(cb_title)
+    plt.grid(visible=False)
     if grid:
         ax = plt.figure(Nfig).get_axes()[0]
         lonlim = ax.get_xlim()
@@ -863,7 +865,7 @@ def show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, 
                     10 * lon_sgn)   # 10° grid in longitude
         lat_grid = np.arange(np.round(latlim[0]/10)*10, np.round(latlim[1]/10)*10+lat_sgn, 
                     10 * lat_sgn)   # 10° grid in latitude
-        plt.grid()
+        plt.grid(visible=True)
         if polar:
             ax.set_rticks(lat_grid)
         else:
@@ -906,9 +908,9 @@ def proj_grid(omega, data, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
         The data values, sampled on the new lat/lon grid.
     mask : 2D array
         The array indicating where the new grid has been filled by the OMEGA data.
-    grid lat : 2D array
+    grid_lat : 2D array
         The new latitude grid.
-    grid lon : 2D array
+    grid_lon : 2D array
         The new longitude grid.
     """
     # Initialisation
@@ -1051,9 +1053,9 @@ def proj_grid2(omega, data, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
         The data values, sampled on the new lat/lon grid.
     mask : 2D array
         The array indicating where the new grid has been filled by the OMEGA data.
-    grid lat : 2D array
+    grid_lat : 2D array
         The new latitude grid.
-    grid lon : 2D array
+    grid_lon : 2D array
         The new longitude grid.
     """
     # Initialisation
@@ -1157,130 +1159,6 @@ def proj_grid2(omega, data, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
         mask2_pl[n_pos_lon-1:] = mask2[:i_lon0]
         mask2 = deepcopy(mask2_pl)
     # Output
-    return grid_data2, mask2, grid_lat, grid_lon
-
-def proj_grid2_v2(omega, data, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
-              pas_lat=0.1, pas_lon=0.1, negative_values=False):
-    """Sample the data from the input OMEGA/MEx observation on a given lat/lon grid.
-
-    Parameters
-    ==========
-    omega : OMEGAdata
-        The OMEGA/MEx observation
-    data : 2D array
-        The initial array of values associated to the OMEGAdata observation.
-        e.g.: Refelectance at selected wvl, spectra, or derived data such as IBD map.
-    lat_min : float, optional (default -90)
-        The minimal latitude of the grid.
-    lat_max : float, optional (default 90)
-        The maximum latitude of the grid.
-    lon_min : float, optional (default 0)
-        The minimal longitude of the grid.
-    lon_max : float, optional (default 360)
-        The maximal longitude of the grid.
-    pas_lat : float, optional (default 0.1)
-        The latitude intervals of the grid.
-    pas_lon : float, optional (default 0.1)
-        The longitude intervals of the grid.
-    negative_values : bool, optional (default False)
-        Set if the negative values are considered as relevant data or not.
-
-    Returns
-    =======
-    grid_data : 2D array (dim : Nlon x Nlat)
-        The data values, sampled on the new lat/lon grid.
-    mask : 2D array
-        The array indicating where the new grid has been filled by the OMEGA data.
-    grid lat : 2D array
-        The new latitude grid.
-    grid lon : 2D array
-        The new longitude grid.
-    """
-    # Initialisation
-    #-- OMEGA grids
-    Ωlat = deepcopy(omega.lat)
-    Ωlon = deepcopy(omega.lon)
-    Ωgrid_lat = deepcopy(omega.lat_grid)
-    Ωgrid_lon = deepcopy(omega.lon_grid)
-    #-- Lon/Lat grids
-    # lat_precision = np.floor(np.log10(pas_lat)).astype(int) * -1
-    # lon_precision = np.floor(np.log10(pas_lon)).astype(int) * -1
-    # lat_array = np.round(np.arange(lat_min, lat_max+pas_lat, pas_lat), lat_precision)
-    # lon_array = np.round(np.arange(lon_min, lon_max+pas_lon, pas_lon), lon_precision)
-    lat_array = np.arange(lat_min, lat_max+pas_lat, pas_lat)
-    lon_array = np.arange(lon_min, lon_max+pas_lon, pas_lon)
-    Nlon, Nlat = len(lon_array)-1, len(lat_array)-1
-    grid_lat, grid_lon = np.meshgrid(lat_array, lon_array)
-    grid_data = np.zeros((Nlon, Nlat))
-    mask = np.zeros((Nlon, Nlat))
-    #-- Center grids for projection
-    # if lat_min < np.min(Ωgrid_lat):
-        # i_lat_min = np.where(lat_array < np.min(Ωgrid_lat))[0][-1]
-    # else:
-        # i_lat_min = 0
-    # if lat_max > np.max(Ωgrid_lat):
-        # i_lat_max = np.where(lat_array > np.max(Ωgrid_lat))[0][0]
-    # else:
-        # i_lat_max = -1
-    # if lon_min < np.min(Ωgrid_lon):
-        # i_lon_min = np.where(lon_array < np.min(Ωgrid_lon))[0][-1]
-    # else:
-        # i_lon_min = 0
-    # if lon_max > np.max(Ωgrid_lon):
-        # i_lon_max = np.where(lon_array > np.max(Ωgrid_lon))[0][0]
-    # else:
-        # i_lon_max = -1
-    # grid_latC = deepcopy(grid_lat)[i_lon_min:i_lon_max, i_lat_min:i_lat_max] + pas_lat/2
-    # grid_lonC = deepcopy(grid_lon)[i_lon_min:i_lon_max, i_lat_min:i_lat_max] + pas_lon/2
-    # Sampling on the new grid
-    nx, ny = data.shape
-    for j in tqdm(range(ny)):
-        for i in tqdm(range(nx), leave=False):
-            data_tmp = data[i,j]
-            # Filtrage régions sans données
-            if negative_values:
-                data_ok = (not np.isnan(data_tmp)) & (not np.isinf(data_tmp))
-            else:   # negative values = No data
-                data_ok = (not np.isnan(data_tmp)) & (data_tmp > 0) & (not np.isinf(data_tmp))
-            # Filling grids with data
-            if data_ok:
-                lat4 = Ωgrid_lat[i:i+2, j:j+2].reshape(-1)
-                lon4 = Ωgrid_lon[i:i+2, j:j+2].reshape(-1)
-                lat4min, lat4max = np.min(lat4), np.max(lat4)
-                lon4min, lon4max = np.min(lon4), np.max(lon4)
-                #---------
-                #-- Center grids for projection
-                if lat_min < lat4min:
-                    i_lat_min = np.where(lat_array < lat4min)[0][-1]
-                else:
-                    i_lat_min = 0
-                if lat_max > lat4max:
-                    i_lat_max = np.where(lat_array > lat4max)[0][0]
-                else:
-                    i_lat_max = Nlat
-                if lon_min < lon4min:
-                    i_lon_min = np.where(lon_array < lon4min)[0][-1]
-                else:
-                    i_lon_min = 0
-                if lon_max > lon4max:
-                    i_lon_max = np.where(lon_array > lon4max)[0][0]
-                else:
-                    i_lon_max = Nlon
-                # Entire Ω pixel within new grid
-                if (np.abs(i_lat_max - i_lat_min) <= 1) or (np.abs(i_lon_max - i_lon_min) <= 1):
-                    grid_data[i_lon_min:i_lon_max, i_lat_min:i_lat_max] += data_tmp
-                    mask[i_lon_min:i_lon_max, i_lat_min:i_lat_max] += 1
-                # Else, test points in pixel poly4
-                else:
-                    grid_latC = deepcopy(grid_lat)[i_lon_min:i_lon_max, i_lat_min:i_lat_max] + pas_lat/2
-                    grid_lonC = deepcopy(grid_lon)[i_lon_min:i_lon_max, i_lat_min:i_lat_max] + pas_lon/2
-                    #---------
-                    testin = point_in_poly4(grid_lonC, grid_latC, lon4, lat4)   # Test if in Ω pixel
-                    grid_data[i_lon_min:i_lon_max, i_lat_min:i_lat_max] += (data_tmp * testin)
-                    mask[i_lon_min:i_lon_max, i_lat_min:i_lat_max] += testin
-    grid_data[grid_data==0] = np.nan
-    grid_data2 = grid_data / mask       # Normalisation
-    mask2 = np.clip(mask, 0, 1)
     return grid_data2, mask2, grid_lat, grid_lon
 
 def check_list_data_omega(omega_list, data_list, disp=True):
@@ -1511,6 +1389,7 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
                 cb_title = r'Reflectance @ $\lambda$' + ' = {0:.2f} µm'.format(lam)
             cb = plt.colorbar()
             cb.set_label(cb_title)
+        plt.grid(visible=False)
         if grid:
             ax = plt.figure(Nfig).get_axes()[0]
             lonlim = ax.get_xlim()
@@ -1521,7 +1400,7 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
                         10 * lon_sgn)   # 10° grid in longitude
             lat_grid = np.arange(np.round(latlim[0]/10)*10, np.round(latlim[1]/10)*10+lat_sgn, 
                         10 * lat_sgn)   # 10° grid in latitude
-            plt.grid()
+            plt.grid(visible=True)
             if polar:
                 ax.set_rticks(lat_grid)
             else:
@@ -1754,6 +1633,7 @@ def show_omega_list_v2_man(data, grid_lat, grid_lon, infos, cmap='Greys_r', vmin
             cb_title = infos['data']
         cb = plt.colorbar()
         cb.set_label(cb_title)
+    plt.grid(visible=False)
     if grid:
         ax = plt.figure(Nfig).get_axes()[0]
         lonlim = ax.get_xlim()
@@ -1764,7 +1644,7 @@ def show_omega_list_v2_man(data, grid_lat, grid_lon, infos, cmap='Greys_r', vmin
                     10 * lon_sgn)   # 10° grid in longitude
         lat_grid = np.arange(np.round(latlim[0]/10)*10, np.round(latlim[1]/10)*10+lat_sgn, 
                     10 * lat_sgn)   # 10° grid in latitude
-        plt.grid()
+        plt.grid(visible=True)
         if polar:
             ax.set_rticks(lat_grid)
         else:
@@ -1817,341 +1697,6 @@ def plot_psp(sp1_id, *args, sp2_id=(None, None), Nfig=None, sp_dict=picked_spect
     plt.ylabel(ylabel)
     plt.tight_layout()
 
-# ##----------------------------------------------------------------------------------------
-# ## Affichage cartes composites - sauvegardées high-level
-# def proj_grid_v3(Lat, Lon, data, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
-                 # pas_lat=0.1, pas_lon=0.1):
-    # """Sample the data from the input OMEGA/MEx observation on a given lat/lon grid.
-
-    # Parameters
-    # ==========
-    # Lat : 2D array
-        # The array of latitudes for each pixel of data.
-    # Lon : 2D array
-        # The array of longitudes for each pixel of data.
-    # data : 2D array
-        # The initial array of values from an OMEGA/MEx observation.
-        # e.g.: Refelectance at selected wvl, spectra, or derived data such as IBD map.
-    # lat_min : float, optional (default -90)
-        # The minimal latitude of the grid.
-    # lat_max : float, optional (default 90)
-        # The maximum latitude of the grid.
-    # lon_min : float, optional (default 0)
-        # The minimal longitude of the grid.
-    # lon_max : float, optional (default 360)
-        # The maximal longitude of the grid.
-    # pas_lat : float, optional (default 0.1)
-        # The latitude intervals of the grid.
-    # pas_lon : float, optional (default 0.1)
-        # The longitude intervals of the grid.
-
-    # Returns
-    # =======
-    # grid_data : 2D array (dim : Nlon x Nlat)
-        # The data values, sampled on the new lat/lon grid.
-    # mask : 2D array
-        # The array indicating where the new grid has been filled by the OMEGA data.
-    # grid lat : 2D array
-        # The new latitude grid.
-    # grid lon : 2D array
-        # The new longitude grid.
-    # """
-    # # Initialisation
-    # lat_array = np.arange(lat_min, lat_max+pas_lat, pas_lat)
-    # lon_array = np.arange(lon_min, lon_max+pas_lon, pas_lon)
-    # Nlon, Nlat = len(lon_array)-1, len(lat_array)-1
-    # grid_lat, grid_lon = np.meshgrid(lat_array, lon_array)
-    # grid_data = np.zeros((Nlon, Nlat))
-    # mask = np.zeros((Nlon, Nlat))
-    # lat2 = np.floor(np.clip(Lat, lat_min, lat_max-0.1*pas_lat) /pas_lat) * pas_lat
-    # lon2 = np.floor(np.clip(Lon, lon_min, lon_max-0.1*pas_lon) /pas_lon) * pas_lon
-    # nx, ny = lat2.shape
-    # # Sampling on the new grid
-    # for j in range(ny):
-        # for i in range(nx):
-            # longi, lati = lon2[i,j], lat2[i,j]
-            # i_lon = int(longi/pas_lon - lon_min/pas_lon)
-            # j_lat = int(lati/pas_lat - lat_min/pas_lat)
-            # data_tmp = data[i,j]
-            # if (not np.isnan(data_tmp)) & (data_tmp > 0):   # Filtrage régions sans données
-                # grid_data[i_lon,j_lat] += data_tmp
-                # mask[i_lon,j_lat] += 1
-    # grid_data[grid_data==0] = np.nan
-    # grid_data2 = grid_data / mask       # Normalisation
-    # mask2 = np.clip(mask, 0, 1)
-    # return grid_data2, mask2, grid_lat, grid_lon
-
-# def check_list_data_mask(data_list, mask_list, disp=True):
-    # """Check the compatibility between data_list and mask_list.
-    # Raise ValueError if uncompatibility.
-
-    # Parameters
-    # ==========
-    # data_list : 3D array
-        # List of high-level map associated to a sample of OMEGA/MEx observations.
-    # mask_list : 3D array
-        # List of masks to remove the corrupted pixels of each OMEGA/MEx observation.
-    # disp : bool, optional (default True)
-        # Enable the display of the result of the test.
-    # """
-    # if len(mask_list) != len(data_list):
-        # raise ValueError("data_list and mask_list must have the same size")
-    # else:
-        # for i in range(len(data_list)):
-            # if mask_list[i].shape != data_list[i].shape:
-                # raise ValueError("The shapes of items {0} of data_list and mask_list does not match.".format(i))
-    # if disp:
-        # print("\033[01;32mCompatibility between data_list and mask_list OK\033[0m")
-
-# def show_omega_list_v3(data_list, geom_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
-                       # pas_lat=0.1, pas_lon=0.1, cmap='Greys_r', vmin=None, vmax=None, 
-                       # title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto',
-                       # mask_list=None, plot=True, grid=True, out=False, 
-                       # negatives_longitudes=False, **kwargs):
-    # """Display an composite map from a list OMEGA/MEx observations, sampled on a new lat/lon grid.
-    
-    # Specificities of v3 : use previously saved high-level data from OMEGA/MEx observations.
-
-    # Parameters
-    # ==========
-    # data_list : 3D array
-        # List of 2D array maps corresponding to severals OMEGA/MEx observations.
-    # geom_list : 1D array of dict
-        # List of dictionaries containing geometric informations corresponding to the 
-        # OMEGA/MEx observations that are in `data_list` in the **same order**.
-    # lat_min : float, optional (default -90)
-        # The minimal latitude of the grid.
-    # lat_max : float, optional (default 90)
-        # The maximum latitude of the grid.
-    # lon_min : float, optional (default 0)
-        # The minimal longitude of the grid.
-    # lon_max : float, optional (default 360)
-        # The maximal longitude of the grid.
-    # pas_lat : float, optional (default 0.1)
-        # The latitude intervals of the grid.
-    # pas_lon : float, optional (default 0.1)
-        # The longitude intervals of the grid.
-    # cmap : str, optional (default 'Greys_r')
-        # The matplotlib colormap.
-    # vmin : float or None, optional (default None)
-        # The lower bound of the coloscale.
-    # vmax : float or None, optional (default None)
-        # The upper bound of the colorscale.
-    # title : str, optional (default 'auto')
-        # The title of the figure.
-    # Nfig : int or str or None, optional (default None)
-        # The target figure ID.
-    # polar : bool, optional (default False)
-        # If True -> Use a polar projection for the plot.
-    # cbar : bool, optional (default True)
-        # If True -> Diplay the colorbar.
-    # cb_title : str, optional (default 'auto')
-        # The title of the colorbar.
-    # mask_list : 3D array
-        # 1D array of the same dimension of `omega_list` containing the masks to remove the
-        # corrupted pixels of each observaiton, in the **same order** that the observations of 
-        # `data_list`.
-        # Each mask is a 2D array, filled with 1 for good pixels and NaN for bad ones.
-    # plot : bool, optional (default True)
-        # If True -> Diplay the final figure.
-    # grid : bool, optional (default True)
-        # Enable the display of the lat/lon grid.
-    # out : bool, optional (default False)
-        # If True -> Return output.
-    # negatives_longitudes : bool, optional (default False)
-        # Argument for non-polar plots.
-        # | True -> longitudes between 0° and 360°.
-        # | False -> longitudus between -180° and 180°.
-    # **kwargs:
-        # Optional arguments for the plt.pcolormesh() function.
-
-    # Returns (if out=True)
-    # =======
-    # data : 2D array (dim : Nlon x Nlat)
-        # The omega reflectance at lam, sampled on the new lat/lon grid.
-    # mask : 2D array
-        # The array indicating where the new grid has been filled by the OMEGA data.
-    # grid lat : 2D array
-        # The new latitude grid.
-    # grid lon : 2D array
-        # The new longitude grid.
-    # mask_obs : 2D array of str
-        # The array indicating which observations have been used to fill each grid position.
-    # """
-    # # Init grids
-    # lat_array = np.arange(lat_min, lat_max+pas_lat, pas_lat)
-    # lon_array = np.arange(lon_min, lon_max+pas_lon, pas_lon)
-    # Nlon, Nlat = len(lon_array)-1, len(lat_array)-1
-    # grid_lat, grid_lon = np.meshgrid(lat_array, lon_array)
-    # data, mask = np.zeros((Nlon, Nlat)), np.zeros((Nlon, Nlat))
-    # mask_obs = np.ndarray((Nlon, Nlat), dtype=object)
-    # mask_obs.fill('')
-    # # Test compatibility
-    # # > add test avec geom
-    # if not (mask_list is None):
-        # check_list_data_mask(data_list, mask_list, disp=True)
-    # # Loop on observations -> sampling and projection on the same grid
-    # for i in tqdm(range(len(data_list))):
-        # if mask_list is None:
-            # data_tmp = data_list[i]     # Data without mask
-        # else:
-            # data_tmp = data_list[i] * mask_list[i]  # Data with mask
-        # data0, mask0 = proj_grid_v3(geom_list[i]['lat'], geom_list[i]['lon'], data_tmp, 
-                                    # lat_min, lat_max, lon_min, lon_max, pas_lat, pas_lon)[:2]
-        # data += np.nan_to_num(data0)    # Conversion NaN -> 0 pour somme des images
-        # mask += mask0
-        # mask_obs[mask0 == 1] += (geom_list[i]['obsname'] + ',')
-    # data[mask == 0] = np.nan
-    # data2 = data/mask   # Normalisation
-    # # Affichage figure
-    # if plot:
-        # if title == 'auto':
-            # title = 'Composite map from OMEGA/MEx observations' 
-        # fig = plt.figure(Nfig)
-        # Nfig = fig.number   # get the actual figure number if Nfig=None
-        # if polar:
-            # ax = plt.axes(polar=True)
-            # plt.pcolormesh(grid_lon*np.pi/180, grid_lat, data2, cmap=cmap, 
-                        # vmin=vmin, vmax=vmax, **kwargs)
-            # ax.set_yticklabels([])  # remove the latitude values in the plot
-            # plt.xlim(0, 2*np.pi)
-            # if np.abs(lat_max) >= np.abs(lat_min):
-                # latlim = (lat_max, lat_min)
-            # else:
-                # latlim = (lat_min, lat_max)
-            # if latlim[0] > 0:   # Northern hemisphere
-                # ax.set_theta_offset(-np.pi/2)   # longitude origin at the bottom
-            # else:               # Southern hemisphere
-                # ax.set_theta_offset(np.pi/2)    # longitude origin at the top
-                # ax.set_theta_direction(-1)      # clockwise theta
-            # plt.ylim(latlim)
-        # else:
-            # if negatives_longitudes and (lon_max > 180):
-                # n_neg_lon = np.sum(grid_lon[:,0] > 180) # nb of negative longitudes (>180°)
-                # i_lon180 = np.where(grid_lon[:,0] > 180)[0][0] # 1st index of lon > 180°
-                # grid_lon_nl = deepcopy(grid_lon)        # new longitude grid [-180°, 180°]
-                # grid_lon_nl[:n_neg_lon] = grid_lon[i_lon180-1:-1] - 360
-                # grid_lon_nl[n_neg_lon:] = grid_lon[:i_lon180]
-                # data2_nl = deepcopy(data2)      # new data array
-                # data2_nl[:n_neg_lon] = data2[i_lon180-1:]
-                # data2_nl[n_neg_lon:] = data2[:i_lon180-1]
-                # plt.pcolormesh(grid_lon_nl, grid_lat, data2_nl, cmap=cmap, vmin=vmin, 
-                               # vmax=vmax, **kwargs)
-                # lon_min, lon_max = grid_lon_nl[[0,-1], 0]   # new longitude bounds
-            # else:
-                # plt.pcolormesh(grid_lon, grid_lat, data2, cmap=cmap, vmin=vmin, 
-                               # vmax=vmax, **kwargs)
-            # plt.gca().axis('equal')
-            # plt.gca().set_adjustable('box')
-            # plt.xlabel('Longitude [°]')
-            # plt.ylabel('Latitude [°]')
-            # plt.xlim(lon_min, lon_max)
-            # plt.ylim(lat_min, lat_max)
-        # if cbar:
-            # if cb_title == 'auto':
-                # cb_title = r'Reflectance @ $\lambda$' + ' = {0:.2f} µm'.format(lam)
-            # cb = plt.colorbar()
-            # cb.set_label(cb_title)
-        # if grid:
-            # ax = plt.figure(Nfig).get_axes()[0]
-            # lonlim = ax.get_xlim()
-            # latlim = ax.get_ylim()
-            # lon_sgn = np.sign(lonlim[1] - lonlim[0])
-            # lat_sgn = np.sign(latlim[1] - latlim[0])
-            # lon_grid = np.arange(np.round(lonlim[0]/10)*10, np.round(lonlim[1]/10)*10+lon_sgn, 
-                        # 10 * lon_sgn)   # 10° grid in longitude
-            # lat_grid = np.arange(np.round(latlim[0]/10)*10, np.round(latlim[1]/10)*10+lat_sgn, 
-                        # 10 * lat_sgn)   # 10° grid in latitude
-            # plt.grid()
-            # if polar:
-                # ax.set_rticks(lat_grid)
-            # else:
-                # ax.set_xticks(lon_grid)
-                # ax.set_yticks(lat_grid)
-        # plt.title(title)
-        # plt.tight_layout()
-    # # Output
-    # if out:
-        # mask2 = np.clip(mask, 0, 1)
-        # return data2, mask2, grid_lat, grid_lon, mask_obs
-
-# def save_map_omega_list_v3(data_list, geom_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
-                           # pas_lat=0.1, pas_lon=0.1, data_desc='', mask_list=None, sav_filename='auto', ext='',
-                           # base_folder='../data/OMEGA/sav_map_list_v2/', sub_folder=''):
-    # """Save the output of the omega_plots.show_omega_list_v2() function with the requested
-    # parameters as a dictionary.
-
-    # Parameters
-    # ==========
-    # data_list : 3D array
-        # List of 2D array maps corresponding to severals OMEGA/MEx observations.
-    # geom_list : 1D array of dict
-        # List of dictionaries containing geometric informations corresponding to the 
-        # OMEGA/MEx observations that are in `data_list` in the **same order**.
-    # lat_min : float, optional (default -90)
-        # The minimal latitude of the grid.
-    # lat_max : float, optional (default 90)
-        # The maximum latitude of the grid.
-    # lon_min : float, optional (default 0)
-        # The minimal longitude of the grid.
-    # lon_max : float, optional (default 360)
-        # The maximal longitude of the grid.
-    # pas_lat : float, optional (default 0.1)
-        # The latitude intervals of the grid.
-    # pas_lon : float, optional (default 0.1)
-        # The longitude intervals of the grid.
-    # data_desc : str, optional (default '')
-        # Description of the data contained in data_list (if used).
-    # mask_list : 3D array
-        # 1D array of the same dimension of `omega_list` containing the masks to remove the
-        # corrupted pixels of each observaiton, in the **same order** than the observations of 
-        # `omega_list`.
-        # Each mask is a 2D array, filled with 1 for good pixels and NaN for bad ones.
-    # sav_filename : str, optional (default 'auto')
-        # The saving file name.
-        # | If 'auto' -> Automatically generated.
-    # ext : str, optional (default '')
-        # Extension to add at the end of the filename (useful in case of automatic generation).
-    # base_folder : str, optional (default '../data/OMEGA/sav_map_list_v2/')
-        # The base folder to save the data.
-    # sub_folder : str, optional (default '')
-        # The subfolder to save the data.
-        # Final path = "base_folder / sub_folder / sav_filename"
-    # """
-    # # Initialization filename
-    # if sav_filename == 'auto':
-        # sav_filename = ('res_show_omega_list_v3__lat{0:0>2d}-{1:0>2d}_pas{2:0}_'
-                        # + 'lon{3:0>3d}-{4:0>3d}_pas{5:0}__{6:s}.pkl').format(
-                            # lat_min, lat_max, pas_lat, lon_min, lon_max, pas_lon, ext)
-    # sav_filename2 = os.path.join(base_folder, sub_folder, sav_filename)
-    # if data_desc == '':
-        # data_desc = 'unknown data'
-    # # Compute the data sampling
-    # data, mask, grid_lat, grid_lon, mask_obs = show_omega_list_v3(data_list,
-                # geom_list, lat_min, lat_max, lon_min, lon_max, pas_lat, pas_lon,
-                # mask_list=mask_list, plot=False, out=True)
-    # # Sav file
-    # input_params = {
-        # 'omega_list' : np.array([geom_obs['obsname'] for geom_obs in geom_list]),
-        # 'lat_min' : lat_min,
-        # 'lat_max' : lat_max,
-        # 'lon_min' : lon_min,
-        # 'lon_max' : lon_max,
-        # 'pas_lat' : pas_lat,
-        # 'pas_lon' : pas_lon,
-        # 'data'    : data_desc,
-        # 'filename': sav_filename,
-        # 'datetime': datetime.datetime.now().strftime('%d/%m/%Y %H:%M')}
-    # save_file = {
-        # 'data' : data,
-        # 'mask' : mask,
-        # 'grid_lat' : grid_lat,
-        # 'grid_lon' : grid_lon,
-        # 'mask_obs' : mask_obs,
-        # 'infos' : input_params
-                # }
-    # uf.save_pickle(save_file, sav_filename2, True)
-    
 ##----------------------------------------------------------------------------------------
 ## End of code
 ##----------------------------------------------------------------------------------------
