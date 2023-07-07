@@ -4,10 +4,10 @@ name: Docs
 on:
   push:
     branches:
-      - main
+      - master
   release:
     branches:
-      - main
+      - master
 
 jobs:
   deploy:
