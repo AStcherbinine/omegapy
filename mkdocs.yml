@@ -3,7 +3,7 @@
 site_name: OMEGA-Py
 site_url: https://astcherbinine.github.io/omegapy
 site_author: Aurélien Stcherbinine
-site_description: OMEGA-Py: Python tools for OMEGA data
+site_description: "OMEGA-Py: Python tools for OMEGA data"
 
 # Repository information
 repo_name: AStcherbinine/omegapy
