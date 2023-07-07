@@ -15,22 +15,23 @@ copyright: Copyright &copy; 2023 Aurélien Stcherbinine
 
 # Configuration
 theme:
-  name: custommill
-  search_index_only: true
-  include_search_page: true
-  home: usage
-  main_color: "#bb0000"
-  gray: "#d0d0d0"
-  lighter_gray: "#eeeeee"
-  date_time_format: "%Y-%m-%d %H:%M:%S %Z"
-  toc_depth: 2
-#  icon:
-#    repo: fontawesome/brands/github
-#    view: material/eye
-#  features:
-#    - navigation.instant
-#    - navigation.tabs
-#  language: en
+  #name: custommill
+  #search_index_only: true
+  #include_search_page: true
+  #home: usage
+  #main_color: "#bb0000"
+  #gray: "#d0d0d0"
+  #lighter_gray: "#eeeeee"
+  #date_time_format: "%Y-%m-%d %H:%M:%S %Z"
+  #toc_depth: 2
+  name: material
+  icon:
+    repo: fontawesome/brands/github
+    view: material/eye
+  features:
+    - navigation.instant
+    - navigation.tabs
+  language: en
 
 plugins:
   - search
@@ -47,10 +48,10 @@ plugins:
 
 # Footer
 extra:
-  history_buttons: false
+  #history_buttons: false
   version: v2.4
-  nav_links:
-#  social:
+  #nav_links:
+  social:
     - icon: fontawesome/brands/github
       link: https://github.com/AStcherbinine
       name: AStcherbinine on GitHub

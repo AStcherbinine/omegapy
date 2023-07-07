@@ -1,5 +1,6 @@
 mkdocs
-mkdocs-custommill
+#mkdocs-custommill
+mkdocs-material
 mkdocs-gen-files
 mkdocs-literate-nav
 mkdocstrings
