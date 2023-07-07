@@ -2288,6 +2288,17 @@ def corr_therm_atm(omega, npool=1):
 ## Correction mode 128
 def corr_mode_128(omega):
     """Correction corrupted pixels mode 128.
+
+    Parameters
+    ==========
+    omega : OMEGAdata
+        The OMEGA observation data.
+
+    Returns
+    =======
+    omega_corr : OMEGAdata
+        The input OMEGA observation, where data from the corrupted columns of 128-pixels wide
+        observations have been corrected if possible.
     """
     omega_corr = deepcopy(omega)
     ic128 = deepcopy(omega.ic)
@@ -2989,6 +3000,125 @@ def shared_lam_omegalist(omega_list):
             lam2.append(lami)
     lam2 = np.array(lam2)
     return lam2
+
+##----------------------------------------------------------------------------------------
+## Mask OMEGA observation
+def omega_mask(omega, emer_lim=None, inci_lim=None, tempc_lim=None, limsat_c=None,
+               hide_128=True, reject_low_quality=False):
+    """Return a mask to remove the bad, corrupted or undesired pixels of an observation.
+
+    Parameters
+    ==========
+    omega : OMEGAdata
+        The OMEGA observation data.
+    emer_lim : float or None, optional (default None)
+        The maximum emergence angle.
+    inci_lim : float or None, optional (default None)
+        The maximum incidence angle.
+    tempc_lim : float or None, optional (default None)
+        The maximum temperature for the C-channel.
+    limsat_c : float or None, optional (default None)
+        The maximum value of the C-channel saturation [DN].
+        The maximum value in DN for the spectel #40 (i.e., λ=1.486μm).
+        > See Vincendon et al. (2015) or Stcherbinine et al. (2021).
+    hide_128 : bool, optional (default True)
+        If True, hide the corrupted columns for 128-px wide cubes affected.
+    reject_low_quality : bool, optional (default False)
+        Reject observations flagged as low quality, as defined in Stcherbinine et al. (2021).
+        I.e., if: 
+         >  (omega.data_quality == 0)   # Low quality
+         >  or (not omega.orbit in good_orbits_OBC) # Not in "good orbits" file
+         >  or (omega.quality == 0)
+         >  or ((numCube == 0) and (npixel == 64) and (omega.bits_per_data == 1)) 
+         >  or (omega.target != 'MARS') # Mars pointing only
+         >  or (omega.mode_channel != 1)    # All 3 channels required
+         >  or (omega.point_mode == 'N/A')  # Unknown pointing informations
+
+    Returns
+    =======
+    mask : 2D array 
+        The array that identify the bad/corrupted pixels to remove.
+        | 1 -> Good pixel
+        | NaN -> Bad pixel
+    """
+    # Initialisation
+    mask = np.ones((omega.nscan, omega.npixel))
+    numCube = int(omega.name[-1], 16)
+    npixel = omega.npixel
+    summation = omega.summation
+    OBC = readsav(os.path.join(package_path, 'OMEGA_dataref', 'OBC_OMEGA_OCT2017.sav'))
+    good_orbits_OBC = np.array(OBC['good_orbits'][0], dtype=int)
+    # Rejected cubes : NaN everywhere
+    if reject_low_quality:
+        test_rej = ( 
+            (omega.data_quality == 0)   # Low quality
+            or (not omega.orbit in good_orbits_OBC) # Not in "good orbits" file
+            or (omega.quality == 0)
+            or ((numCube == 0) and (npixel == 64) and (omega.bits_per_data == 1)) 
+            or (omega.target != 'MARS') # Mars pointing only
+            or (omega.mode_channel != 1)    # All 3 channels required
+            or (omega.point_mode == 'N/A')  # Unknown pointing informations
+            # or (omega.npixel == 16)
+                    )
+        if test_rej:
+            mask.fill(np.nan)
+            print('\033[1mObservation {0} rejected because of low data quality.\033[0m'.format(omega.name))
+            return mask
+    # Create mask
+    # Modes 128
+    if (npixel == 128) and hide_128:
+        if omega.orbit >= 511:
+            # print("Mode 128 pixels observation")
+            mask[:, 80:96] = np.nan
+        if (omega.orbit >= 2124) and (omega.orbit <= 3283):
+            mask[:, 64:] = np.nan
+    # Calibration lines C-channel for cubes 0
+    if numCube == 0:
+        if npixel == 16:
+            mask[:192] = np.nan
+        elif npixel == 32:
+            mask[:96] = np.nan
+        elif npixel == 64:
+            mask[:48] = np.nan
+        elif npixel == 128:
+            if summation == 1:
+                mask[:24] = np.nan
+            elif summation == 2:
+                mask[:12] = np.nan
+            elif summation == 4:
+                mask[:6] = np.nan
+    # Calib lines VIS-channel for all cubes
+    else:   # Already included in C-channel calib lines for cubes 0
+        if npixel == 16:
+            mask[:56] = np.nan
+        elif npixel == 32:
+            mask[:28] = np.nan
+        elif npixel == 64:
+            mask[:14] = np.nan
+        elif npixel == 128:
+            if summation == 1:
+                mask[:7] = np.nan
+            elif summation == 2:
+                mask[:3] = np.nan
+            elif summation == 4:
+                mask[0] = np.nan
+    # Remove 4 last lines
+    mask[-4:] = np.nan
+    # Incidence angle limit
+    if not (inci_lim is None):
+        mask[omega.inci > inci_lim] = np.nan
+    # Emergence angle limit
+    if not (emer_lim is None):
+        mask[omega.emer > emer_lim] = np.nan
+    # C-channel temperature limit
+    if not (tempc_lim is None):
+        mask[omega.sensor_temp_c > tempc_lim] = np.nan
+    # C-channel saturation criterion limit
+    # (cf Vincendon et al. (2015) or Stcherbinine et al. (2021))
+    if not (limsat_c is None):
+        mask[omega.saturation_c < limsat_c] = np.nan
+    # Output
+    return mask
 
 ##-----------------------------------------------------------------------------------
 ## End of code
