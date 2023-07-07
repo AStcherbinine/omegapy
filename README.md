@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-2.3-blue)
+![version](https://img.shields.io/badge/version-2.4-blue)
 ![pythonversion](https://img.shields.io/badge/Python-3.7+-blue)
 [![DOI](https://zenodo.org/badge/349763849.svg)](https://zenodo.org/badge/latestdoi/349763849)
 
@@ -91,6 +91,8 @@ omega_corr_atm = od.corr_atm(omega_corr)
 omega_corr_therm_atm = od.corr_therm_atm(omega_corr, npool=1)
 # Thermal correction only
 omega_corr_therm = od.corr_therm(omega, npool=1)
+# OMEGA mask to hide bad pixels / calibration lines
+mask = od.omega_mask(omega, hide_128=True, emer_lim=10, inci_lim=70, temc_lim=-194, limsat_c=500)
 # Interactive display of the observation (@ λ = 1.085 µm)
 op.show_omega_interactif_v2(omega_corr_therm_atm, lam=1.085, cmap='Greys_r', vmin=0, vmax=0.5, polar=True)
 # Search for the index of λ = 1.085 µm in the wavelength array
