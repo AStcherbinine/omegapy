@@ -28,6 +28,8 @@ theme:
   icon:
     repo: fontawesome/brands/github
     view: material/eye
+  logo: img/logo_omegapy.svg
+  favicon: img/favicon_omegapy.ico
   features:
     - navigation.instant
     - navigation.tabs
