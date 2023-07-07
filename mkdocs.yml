@@ -1,13 +1,13 @@
 ---
 # Project Information
-site_name: OMEGA-Py
-site_url: https://astcherbinine.github.io/omegapy
-site_author: Aurélien Stcherbinine
+site_name: "OMEGA-Py"
+site_url: "https://astcherbinine.github.io/omegapy"
+site_author: "Aurélien Stcherbinine"
 site_description: "OMEGA-Py: Python tools for OMEGA data"
 
 # Repository information
-repo_name: AStcherbinine/omegapy
-repo_url: https://github.com/AStcherbinine/omegapy
+repo_name: "AStcherbinine/omegapy"
+repo_url: "https://github.com/AStcherbinine/omegapy"
 edit_uri: "edit/main/docs/"
 
 # Copyright
@@ -16,13 +16,21 @@ copyright: Copyright &copy; 2023 Aurélien Stcherbinine
 # Configuration
 theme:
   name: custommill
-  icon:
-    repo: fontawesome/brands/github
-    view: material/eye
-  features:
-    - navigation.instant
-    - navigation.tabs
-  language: en
+  search_index_only: true
+  include_search_page: true
+  home: usage
+  main_color: "#bb0000"
+  gray: "#d0d0d0"
+  lighter_gray: "#eeeeee"
+  date_time_format: "%Y-%m-%d %H:%M:%S %Z"
+  toc_depth: 2
+#  icon:
+#    repo: fontawesome/brands/github
+#    view: material/eye
+#  features:
+#    - navigation.instant
+#    - navigation.tabs
+#  language: en
 
 plugins:
   - search
@@ -39,7 +47,10 @@ plugins:
 
 # Footer
 extra:
-  social:
+  history_buttons: false
+  version: v2.4
+  nav_links:
+#  social:
     - icon: fontawesome/brands/github
       link: https://github.com/AStcherbinine
       name: AStcherbinine on GitHub
