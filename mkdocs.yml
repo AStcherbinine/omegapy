@@ -62,5 +62,6 @@ nav:
     #- 'Getting Started': 'getting_started.md'
     #- 'Examples': examples.md
   #- About: about.md
+  - Readme: readme.md
   - Code Reference: reference/
 
