@@ -3,7 +3,7 @@
 
 ## useful_functions.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 15/02/2021
+## Last modified by Aurélien STCHERBININE : 10/07/2023
 
 ##-----------------------------------------------------------------------------------
 """Useful generics functions.
@@ -27,7 +27,7 @@ def f_lin(x, a, b):
     """Fonction linéaire : renvoie f(x) = a*x + b
     
     Parameters
-    ==========
+    ----------
     x : float or ndarray
     a : float
         The line slope.
@@ -35,7 +35,7 @@ def f_lin(x, a, b):
         The origin ordinate.
     
     Returns
-    =======
+    -------
     f(x) = a*x + b : float or ndarray
     """
     return a*x + b
@@ -45,16 +45,16 @@ def reg_lin(X, Y, **kwargs):
     en entrée.
     
     Parameters
-    ==========
+    ----------
     X : ndarray
         The X-values.
     Y : ndarray
         The Y-values.
     **kwargs
-        Optional keyword arguments to pass to the scipy.optimize.curve_fit function.
+        Optional keyword arguments to pass to the `scipy.optimize.curve_fit` function.
 
     Returns
-    =======
+    -------
     a : float
         Slope of the fitted line.
     b : float
@@ -68,14 +68,14 @@ def planck(lam, T):
     temperature. According to the Planck's law.
 
     Parameters
-    ==========
+    ----------
     lam : float or array-like
         The wavelength (in m).
     T : float
         The temperature (in K).
     
     Returns
-    =======
+    -------
     B_lam : float or array-like
         The spectral radiance (in W.m-2.sr-1.m-1).
     """
@@ -90,16 +90,16 @@ def fit_black_body(lam, sp, T_bounds=(0, 1e6)):
     spectrum.
 
     Parameters
-    ==========
+    ----------
     lam : array-like
         The wavelength array (in m).
     sp : array-like
         The spectral radiance (in W.m-2.sr-1.m-1) to be fitted.
-    bounds : 2-tuple, optional (default (0, 1e6))
+    bounds : 2-tuple, default (0, 1e6)
         The bounds for the temperature fitting.
 
     Returns
-    =======
+    -------
     T : float
         The temperature of the fitted Planck's law radiance (in K).
     """
@@ -110,14 +110,14 @@ def degre2(x, a, b, c):
     """Polynôme d'ordre 2.
 
     Parameters
-    ==========
+    ----------
     x : array-like or float
     a : float
     b : float
     c : float
 
     Returns
-    =======
+    -------
     y : float
         y = a*x**2 + b*x + c
     """
@@ -127,7 +127,7 @@ def degre3(x, a, b, c, d):
     """Polynôme d'ordre 3.
 
     Parameters
-    ==========
+    ----------
     x : array-like or float
     a : float
     b : float
@@ -135,7 +135,7 @@ def degre3(x, a, b, c, d):
     d : float
 
     Returns
-    =======
+    -------
     y : float
         y = a*x**3 + b*x**2 + c*x + d
     """
@@ -149,14 +149,14 @@ def filtre_median(sp, n):
     en question.
 
     Parameters
-    ==========
+    ----------
     sp : ndarray
         Array of transmittance values.
     n : int
         The len of the window the moving median is 2n+1.
 
     Returns
-    =======
+    -------
     sp_med : ndarray
         Filtered transmittance array.
     """
@@ -188,14 +188,14 @@ def moyenne_glissante(sp, n):
     sur la valeur en question.
 
     Parameters
-    ==========
+    ----------
     sp : ndarray
         Array of the transmittance values.
     n : int
         The len of the window of the moving average is 2n+1.
 
     Returns
-    =======
+    -------
     sp_med : ndarray
         Filtered transmittance array.
     """
@@ -227,14 +227,14 @@ def where_closer(value, array):
     """Renvoie l'indice de la valeur la plus proche de celle recherchée dans array.
     
     Parameters
-    ==========
+    ----------
     values : float
         Searched value.
     array : ndarray
         The array.
 
     Returns
-    =======
+    -------
     i : int
         The index of the closer value to value in array.
     """
@@ -247,14 +247,14 @@ def where_closer_array(values, array):
     dans array.
 
     Parameters
-    ==========
+    ----------
     values : ndarray
         Array of searched values.
     array : ndarray
         The array.
 
     Returns
-    =======
+    -------
     I : ndarray
         Array of the index of the closer values in the array.
     """
@@ -279,14 +279,14 @@ def myglob(basename, exclude=[]):
     --------------------------------------------
 
     Parameters
-    ==========
+    ----------
     basename : str
         The basename of the target file.
-    exclude : list or np.ndarray of str, optional (default [])
+    exclude : list or np.ndarray of str, default []
         List of sub-strings to exclude from the results.
 
     Returns
-    =======
+    -------
     fname : str
         The absolute path of the selected file.
     """
@@ -340,12 +340,12 @@ def sort_dict(dico):
     """Sort a dictionary by its keys values.
 
     Parameters
-    ==========
+    ----------
     dico : dict
         The input unsorted dictionary.
 
     Returns
-    =======
+    -------
     dico_sorted : dict
         The sordet dictionary.
     """
@@ -368,12 +368,12 @@ def save_pickle(obj, target_path, disp=True):
     """Save an object at the selected path using the pickle module.
 
     Parameters
-    ==========
+    ----------
     obj : Object
         The object to save.
     target_path : str
         The saving path name.
-    disp : bool
+    disp : bool, default True
         Control the display.
             | True -> Print the saving filename.
             | False -> Nothing printed.
@@ -387,16 +387,16 @@ def load_pickle(filename, disp=True):
     """Load and return a previously saved object with pickle.
 
     Parameters
-    ==========
+    ----------
     filename : str
         The file path.
-    disp : bool
+    disp : bool, default True
         Control the display.
             | True -> Print the loading filename.
             | False -> Nothing printed.
 
     Returns
-    =======
+    -------
     obj : Object
         The loaded object.
     """
@@ -414,12 +414,12 @@ def test_security_overwrite(path):
     ovewrite it or not.
 
     Parameters
-    ==========
+    ----------
     path : str
         The target file path.
 
     Returns
-    =======
+    -------
     overwrite : bool
         | True -> No existent file, or overwriting allowed.
         | False -> Existent file, no overwriting.

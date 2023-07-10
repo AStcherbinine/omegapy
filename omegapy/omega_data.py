@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 16/06/2023
+## Last modified by Aurélien STCHERBININE : 10/07/2023
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -56,12 +56,12 @@ def _read_header(filename):
     (format PDS).
 
     Parameters
-    ==========
+    ----------
     filename : str
         The path of the target file.
 
     Returns
-    =======
+    -------
     header_dict : dict
         The data contained in the header.
         type : {'keyword' : 'value', ...}
@@ -107,14 +107,14 @@ def _compute_local_time(lon, subsol_lon):
     """Compute the local time at each point of an OMEGA observation.
 
     Parameters
-    ==========
+    ----------
     lon : 2D array
         The longitude of each pixel (deg).
     subsol_lon : float
         The longitude of the sub-solar point at observation time.
 
     Returns
-    =======
+    -------
     loct : 2D array of floats
         The array of the local time for each pixel of the observation.
     """
@@ -141,12 +141,12 @@ def _utc_to_my(dt):
     (at a time such that Ls=0) on April 11th, 1955.
 
     Parameters
-    ==========
+    ----------
     dt : datetime.datetime
         The UTC datetime object.
 
     Returns
-    =======
+    -------
     my : int
         The corresponding Martian Year.
     """
@@ -161,15 +161,15 @@ def _read_cube(filename_qub, disp=True):
     Extract and return the binary data from an OMEGA/MEx .QUB file.
 
     Parameters
-    ==========
+    ----------
     filename_qub : str
         The path to the .QUB file.
-    disp : bool, optional (default True)
+    disp : bool, default True
         Enable or disable the display of informations during the file reading.
         | True -> Enable display.
 
     Returns
-    =======
+    -------
     idat : 3D ndarray
 
     sdat0 : 2D ndarray
@@ -262,22 +262,22 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path='_omega_bin
     """Python implementation of the `readomega.pro` routine from the SOFT09 OMEGA pipeline.
     
     Parameters
-    ==========
+    ----------
     cube_id : str
         The observation ID (format ORBXXXX_X).
-    disp : bool, optional (default True)
+    disp : bool, default True
         Enable or disable the display of informations during the file reading.
         | True -> Enable display.
-    corrV : bool, optional (default True)
+    corrV : bool, default True
         If True, compute the correction on the visible channel (Vis).
-    corrL : bool, optional (default True)
+    corrL : bool, default True
         If True, compute the correction on the long-IR channel (L).
-    data_path : str, optional (default _omega_bin_path)
+    data_path : str, default _omega_bin_path
         The path of the directory containing the data (.QUB) and 
         navigation (.NAV) files.
 
     Returns
-    =======
+    -------
     out_data : dict
         {'ldat', 'jdat', 'wvl', 'ic', 'specmars'}
     out_geom : dict
@@ -729,24 +729,24 @@ class OMEGAdata:
     """Importation of OMEGA/MEx observation.
 
     Parameters
-    ==========
+    ----------
     obs : str
         The name of the OMEGA observation.
-    empty : bool, optional (default False)
+    empty : bool, default False
         If True, return an empty OMEGAdata object.
-    data_path : str, optional (default _omega_bin_path)
+    data_path : str, default _omega_bin_path
         The path of the directory containing the data (.QUB) and 
         navigation (.NAV) files.
-    corrV : bool, optional (default True)
+    corrV : bool, default True
         If True, compute the correction on the visible channel (Vis).
-    corrL : bool, optional (default True)
+    corrL : bool, default True
         If True, compute the correction on the long-IR channel (L).
-    disp : bool, optional (default True)
+    disp : bool, default True
         Enable or disable the display of informations during the file reading.
         | True -> Enable display.
 
     Attributes
-    ==========
+    ----------
     name : str
         The observation ID.
     lam : 1D array
@@ -1225,12 +1225,12 @@ class OMEGAdata:
         See the OMEGA ECAID for informations about the header entries.
         
         Parameters
-        ==========
-        data_path : str, optional (default _omega_bin_path)
+        ----------
+        data_path : str, default _omega_bin_path
             The path of the directory containing the data (.QUB) files.
 
         Returns
-        =======
+        -------
         hd_qub : dict
             Dictionary containing the data from the ORBXXXX_X.QUB file.
         """
@@ -1247,12 +1247,12 @@ class OMEGAdata:
         See the OMEGA ECAID for informations about the header entries.
         
         Parameters
-        ==========
-        data_path : str, optional (default _omega_bin_path)
+        ----------
+        data_path : str, default _omega_bin_path
             The path of the directory containing the navigation (.NAV) files.
 
         Returns
-        =======
+        -------
         hd_nav : dict
             Dictionary containing the data from the ORBXXXX_X.NAV file.
         """
@@ -1270,23 +1270,23 @@ def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False, data_path='_omega_bin_p
     latitude and longitude, Python translation of the IDL procedure `findcub.pro`.
 
     Parameters
-    ==========
+    ----------
     lon0 : float
         The target longitude (in degrees).
     lat0 : float
         The target latitude (in degrees).
-    cmin : float, optional (default 0)
+    cmin : float, default 0
         The minimum orbit number.
-    cmax : float, optional (default 10000)
+    cmax : float, default 10000
         The maximum orbit number.
-    out : bool, optional (default False)
+    out : bool, default False
         If True -> return output
-    data_path : str, optional (default _omega_bin_path)
+    data_path : str, default _omega_bin_path
         The path of the directory containing the data (.QUB) and 
         navigation (.NAV) files.
 
-    Returns (If out == True)
-    =======
+    Returns
+    -------
     cub_list : array-like
         List of matching observations.
         Format : (orbit, x, y, dmin, altMEx, inci, emer, phas, loct, Ls, MY)
@@ -1301,7 +1301,7 @@ def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False, data_path='_omega_bin_p
         (x0, y0) is include in the (x1, y1) grid.
 
         Parameters
-        ==========
+        ----------
         x0 : float
             X-coordinate of the point.
         y0 : float
@@ -1312,7 +1312,7 @@ def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False, data_path='_omega_bin_p
             Y-coordinates of the observations.
 
         Returns
-        =======
+        -------
         res : bool
             | True if the point (x0, y0) is in the observation grid.
             | False if it's not.
@@ -1511,21 +1511,21 @@ def save_omega(omega, savname='auto', folder='', base_folder='_omega_py_path',
     Final_path = base_folder + folder + savname
 
     Parameters
-    ==========
+    ----------
     omega : OMEGAdata
         The OMEGA/MEx observation object.
-    savname : str, optional (default 'auto')
+    savname : str, default 'auto'
         The saving filename.
         | If 'auto' -> savname = 'pref_omega.name_ext.pkl'
-    folder : str, optional (default '')
+    folder : str, default ''
         The subfolder to save the data.
-    base_folder : str, optional (default _omega_py_path)
+    base_folder : str, default _omega_py_path
         The base folder path.
-    pref : str, optional (default '')
+    pref : str, default ''
         The prefix of the savname.
-    suff : str, optional (default '')
+    suff : str, default ''
         The suffix of the savname.
-    disp : bool
+    disp : bool, default True
         Control the display.
             | True -> Print the saving filename.
             | False -> Nothing printed.
@@ -1552,16 +1552,16 @@ def load_omega(filename, disp=True):
     """Load and return a previously saved OMEGAdata object (with save_omega()).
 
     Parameters
-    ==========
+    ----------
     filename : str
         The file path.
-    disp : bool
+    disp : bool, default True
         Control the display.
             | True -> Print the loading filename.
             | False -> Nothing printed.
 
     Returns
-    =======
+    -------
     omega : OMEGAdata 
         The loaded object of OMEGA/MEx observation.
     """
@@ -1576,16 +1576,16 @@ def load_omega_list(basename, disp=True):
     """Load a list of saved OMEGAdata objects, using load_omega().
 
     Parameters
-    ==========
+    ----------
     basename : str
         The file path basename.
-    disp : bool
+    disp : bool, default True
         Control the display.
             | True -> Print the loading filename.
             | False -> Nothing printed.
 
     Returns
-    =======
+    -------
     omega_list : ndarray of OMEGAdata objects
         The array of loaded objects of OMEGA/MEx observation.
     """
@@ -1602,20 +1602,20 @@ def autosave_omega(omega, folder='auto', base_folder='_omega_py_path', security=
     Final_path = base_folder + folder + name{_corr_therm_atm}.pkl
 
     Parameters
-    ==========
+    ----------
     omega : OMEGAdata
         The OMEGA/MEx observation object.
-    folder : str, optional (default 'auto')
+    folder : str, default 'auto'
         The subfolder to save the data.
         | If 'auto' -> folder = 'vX', where X is the major release version of the used code.
-    base_folder : str, optional (default _omega_py_path)
+    base_folder : str, default _omega_py_path
         The base folder path.
-    security : bool, optional (default True)
+    security : bool, default True
         Enable / disable checking before overwriting a file.
         | True -> Check if the target file already exists before overwriting on it.
                   And if is the case, you will be asked for a confirmation.
         | False -> Didn't care about the already existing files.
-    disp : bool
+    disp : bool, default True
         Control the display.
             | True -> Print the saving filename.
             | False -> Nothing printed.
@@ -1654,34 +1654,34 @@ def autoload_omega(obs_name, folder='auto', version=_Version, base_folder='_omeg
     """Load and return a previously saved OMEGAdata object using pickle (with autosave_omega()).
 
     Parameters
-    ==========
+    ----------
     obs_name : str
         The observation ID.
-    folder : str, optional (default 'auto')
+    folder : str, default 'auto'
         The subfolder where the data is.
         | If 'auto' -> folder = 'vX', where X is the major release version of the used code.
-    version : float, optional (default _Version)
+    version : float, default _Version
         The version of the target file (if folder is 'auto').
-    base_folder : str, optional (default _omega_py_path)
+    base_folder : str, default _omega_py_path
         The base folder path.
-    therm_corr : bool or None, optional (default None)
+    therm_corr : bool or None, default None
         | True -> Only results with thermal correction.
         | False -> Only results without thermal correction.
         | None -> Both with and without thermal correction.
-    atm_corr : bool or None, optional (default None)
+    atm_corr : bool or None, default None
         | True -> Only results with atmospheric correction.
         | False -> Only results without atmospheric correction.
         | None -> Both with and without atmospheric correction.
-    disp : bool
+    disp : bool, default True
         Control the display.
             | True -> Print the loading filename.
             | False -> Nothing printed.
-    bin_folder : str, optional (default _omega_bin_path)
+    bin_folder : str, default _omega_bin_path
         The path of the directory containing the data (.QUB) and 
         navigation (.NAV) files.
 
     Returns
-    =======
+    -------
     omega : OMEGAdata 
         The loaded object of OMEGA/MEx observation.
     """
@@ -1735,17 +1735,17 @@ def _corr_therm_sp(args):
         as it use non-local objects related to the multiprocessing.
 
     Parameters
-    ==========
+    ----------
     args : tuple of 3 elements
       | x : int
       |     The x-coordinate of the pixel.
       | y : int
       |     The y-coordinate of the pixel.
-      | disp : bool, optional (default True)
+      | disp : bool, default True
       |     If True display the fitted temperature/reflectance in the console.
 
     Returns
-    =======
+    -------
     sp_rf_corr : 1D array
         The reflectance spectrum, corrected from the thermal component.
     T_fit : float
@@ -1813,14 +1813,14 @@ def corr_therm(omega, npool=1):
     process to run is controlled by the npool argument.
 
     Parameters
-    ==========
+    ----------
     omega : OMEGAdata
         The OMEGA observation data.
-    npool : int, optional (default 1)
+    npool : int, default 1
         Number of parallelized worker process to use.
 
     Returns
-    =======
+    -------
     omega_corr : OMEGAdata
         The input OMEGA observation, where the reflectance is corrected from
         the thermal component.
@@ -1875,18 +1875,18 @@ def corr_therm2_sp(omega, x, y, disp=True):
     of reflectance and temperature.
 
     Parameters
-    ==========
+    ----------
     omega : OMEGAdata
         The OMEGA observation data.
     x : int
         The x-coordinate of the pixel.
     y : int
         The y-coordinate of the pixel.
-    disp : bool, optional (default True)
+    disp : bool, default True
         If True display the fitted temperature/reflectance in the console.
 
     Returns
-    =======
+    -------
     lam : 1D array
         The wavelength array (in µm).
     sp_rf_corr : 1D array
@@ -1935,12 +1935,12 @@ def corr_therm2(omega):
     with simultaneous retriving of reflectance and temperature.
 
     Parameters
-    ==========
+    ----------
     omega : OMEGAdata
         The OMEGA observation data.
 
     Returns
-    =======
+    -------
     omega_corr : OMEGAdata
         The input OMEGA observation, where the reflectance is corrected from
         the thermal component.
@@ -1971,7 +1971,7 @@ def corr_atm_sp(lam, sp_rf, tr_atm):
     """Remove the atmospheric component in an OMEGA spectrum.
 
     Parameters
-    ==========
+    ----------
     lam : 1D array
         The wavelength array.
     sp_rf : 1D array
@@ -1980,7 +1980,7 @@ def corr_atm_sp(lam, sp_rf, tr_atm):
         Atmospheric transmission spectrum.
 
     Returns
-    =======
+    -------
     sp_rf_corr : 1D array
         The reflectance spectrum, corrected from the atmospheric component.
     """
@@ -1999,12 +1999,12 @@ def corr_atm(omega):
     """Remove the atmospheric component in the OMEGA hyperspectral cube.
 
     Parameters
-    ==========
+    ----------
     omega : OMEGAdata
         The OMEGA observation data.
 
     Returns
-    =======
+    -------
     omega_corr : OMEGAdata
         The input OMEGA observation, where the reflectance is corrected from
         the atmospheric component.
@@ -2052,7 +2052,7 @@ def corr_atm2_sp(lam, sp_rf, tr_atm):
     """Remove the atmospheric component in an OMEGA spectrum.
 
     Parameters
-    ==========
+    ----------
     lam : 1D array
         The wavelength array.
     sp_rf : 1D array
@@ -2061,7 +2061,7 @@ def corr_atm2_sp(lam, sp_rf, tr_atm):
         Atmospheric transmission spectrum.
 
     Returns
-    =======
+    -------
     sp_rf_corr : 1D array
         The reflectance spectrum, corrected from the atmospheric component.
     """
@@ -2083,12 +2083,12 @@ def corr_atm2(omega):
     """Remove the atmospheric component in the OMEGA hyperspectral cube.
 
     Parameters
-    ==========
+    ----------
     omega : OMEGAdata
         The OMEGA observation data.
 
     Returns
-    =======
+    -------
     omega_corr : OMEGAdata
         The input OMEGA observation, where the reflectance is corrected from
         the atmospheric component.
@@ -2135,17 +2135,17 @@ def _corr_therm_atm_sp(args):
         as it use non-local objects related to the multiprocessing.
 
     Parameters
-    ==========
+    ----------
     args : tuple of 3 elements
       | x : int
       |     The x-coordinate of the pixel.
       | y : int
       |     The y-coordinate of the pixel.
-      | disp : bool, optional (default True)
+      | disp : bool, default True
       |     If True display the fitted temperature/reflectance in the console.
 
     Returns
-    =======
+    -------
     sp_rf_corr : 1D array
         The reflectance spectrum, corrected from the thermal and atmospheric component.
     T_fit : float
@@ -2226,14 +2226,14 @@ def corr_therm_atm(omega, npool=1):
     process to run is controlled by the npool argument.
 
     Parameters
-    ==========
+    ----------
     omega : OMEGAdata
         The OMEGA observation data.
-    npool : int, optional (default 1)
+    npool : int, default 1
         Number of parallelized worker process to use.
 
     Returns
-    =======
+    -------
     omega_corr : OMEGAdata
         The input OMEGA observation, where the reflectance is corrected from
         the thermal and atmospheric component.
@@ -2290,12 +2290,12 @@ def corr_mode_128(omega):
     """Correction corrupted pixels mode 128.
 
     Parameters
-    ==========
+    ----------
     omega : OMEGAdata
         The OMEGA observation data.
 
     Returns
-    =======
+    -------
     omega_corr : OMEGAdata
         The input OMEGA observation, where data from the corrupted columns of 128-pixels wide
         observations have been corrected if possible.
@@ -2360,25 +2360,25 @@ def corr_save_omega(obsname, folder='auto', base_folder='_omega_py_path', securi
     process to run is controlled by the npool argument.
 
     Parameters
-    ==========
+    ----------
     obsname : str
         The name of the OMEGA observation.
-    folder : str, optional (default 'auto')
+    folder : str, default 'auto'
         The subfolder to save the data.
         | If 'auto' -> folder = 'vX', where X is the major release version of the used code.
-    base_folder : str, optional (default _omega_py_path)
+    base_folder : str, default _omega_py_path
         The base folder path.
-    security : bool, optional (default True)
+    security : bool, default True
         Enable / disable checking before overwriting a file.
         | True -> Check if the target file already exists before overwriting on it.
                   And if is the case, you will be asked for a confirmation.
         | False -> Didn't care about the already existing files.
-    overwrite : bool, optional (default True)
+    overwrite : bool, default True
         If security is False, default choice for overwriting on existent file.
-    compress : bool, optional (default True)
+    compress : bool, default True
         If True, the radiance cube after correction is removed (i.e. set to None)
         in order to reduce the size of the saved file.
-    npool : int, optional (default 1)
+    npool : int, default 1
         Number of parallelized worker process to use.
     """
     if folder == 'auto':
@@ -2418,25 +2418,25 @@ def corr_save_omega_list(liste_obs, folder='auto', base_folder='_omega_py_path',
     process to run is controlled by the npool argument.
 
     Parameters
-    ==========
+    ----------
     liste_obs : list of str
         The list of the name of the OMEGA observations.
-    folder : str, optional (default 'auto')
+    folder : str, default 'auto'
         The subfolder to save the data.
         | If 'auto' -> folder = 'vX', where X is the major release version of the used code.
-    base_folder : str, optional (default _omega_py_path)
+    base_folder : str, default _omega_py_path
         The base folder path.
-    security : bool, optional (default True)
+    security : bool, default True
         Enable / disable checking before overwriting a file.
         | True -> Check if the target file already exists before overwriting on it.
                   And if is the case, you will be asked for a confirmation.
         | False -> Do not care about the already existing files.
-    overwrite : bool, optional (default True)
+    overwrite : bool, default True
         If security is False, default choice for overwriting on existent file.
-    compress : bool, optional (default True)
+    compress : bool, default True
         If True, the radiance cube after correction is removed (i.e. set to None)
         in order to reduce the size of the saved file.
-    npool : int, optional (default 1)
+    npool : int, default 1
         Number of parallelized worker process to use.
     """
     # Default path
@@ -2460,25 +2460,25 @@ def corr_save_omega2(obsname, folder='auto', base_folder='_omega_py_path', secur
     process to run is controlled by the npool argument.
 
     Parameters
-    ==========
+    ----------
     obsname : str
         The name of the OMEGA observation.
-    folder : str, optional (default 'auto')
+    folder : str, default 'auto'
         The subfolder to save the data.
         | If 'auto' -> folder = 'vX', where X is the major release version of the used code.
-    base_folder : str, optional (default _omega_py_path)
+    base_folder : str, default _omega_py_path
         The base folder path.
-    security : bool, optional (default True)
+    security : bool, default True
         Enable / disable checking before overwriting a file.
         | True -> Check if the target file already exists before overwriting on it.
                   And if is the case, you will be asked for a confirmation.
         | False -> Didn't care about the already existing files.
-    overwrite : bool, optional (default True)
+    overwrite : bool, default True
         If security is False, default choice for overwriting on existent file.
-    compress : bool, optional (default True)
+    compress : bool, default True
         If True, the radiance cube after correction is removed (i.e. set to None)
         in order to reduce the size of the saved file.
-    npool : int, optional (default 1)
+    npool : int, default 1
         Number of parallelized worker process to use.
     """
     if folder == 'auto':
@@ -2515,25 +2515,25 @@ def corr_save_omega2_list(liste_obs, folder='auto', base_folder='_omega_py_path'
     process to run is controlled by the npool argument.
 
     Parameters
-    ==========
+    ----------
     liste_obs : list of str
         The list of the name of the OMEGA observations.
-    folder : str, optional (default 'auto')
+    folder : str, default 'auto'
         The subfolder to save the data.
         | If 'auto' -> folder = 'vX', where X is the major release version of the used code.
-    base_folder : str, optional (default _omega_py_path)
+    base_folder : str, default _omega_py_path
         The base folder path.
-    security : bool, optional (default True)
+    security : bool, default True
         Enable / disable checking before overwriting a file.
         | True -> Check if the target file already exists before overwriting on it.
                   And if is the case, you will be asked for a confirmation.
         | False -> Do not care about the already existing files.
-    overwrite : bool, optional (default True)
+    overwrite : bool, default True
         If security is False, default choice for overwriting on existent file.
-    compress : bool, optional (default True)
+    compress : bool, default True
         If True, the radiance cube after correction is removed (i.e. set to None)
         in order to reduce the size of the saved file.
-    npool : int, optional (default 1)
+    npool : int, default 1
         Number of parallelized worker process to use.
     """
     # Default path
@@ -2553,12 +2553,12 @@ def import_list_obs_csv(filename):
     """Import a list of observations ID from a csv file generated by JMars.
 
     Parameters
-    ==========
+    ----------
     filename : str
         The target path of the csv file.
 
     Returns
-    =======
+    -------
     liste_obs : array of str
         The list of observations ID from the csv file.
     """
@@ -2573,7 +2573,7 @@ def set_omega_bin_path(new_path):
     """Set the global private _omega_bin_path variable to new_path.
 
     Parameters
-    ==========
+    ----------
     new_path : str
         The new path of the OMEGA binary files (.QUB and .NAV).
     """
@@ -2586,7 +2586,7 @@ def set_omega_py_path(new_path):
     """Set the global private _omega_py_path variable to new_path.
 
     Parameters
-    ==========
+    ----------
     new_path : str
         The new path of the OMEGA python-made files.
     """
@@ -2601,7 +2601,7 @@ def get_omega_bin_path():
     """Return the vavue of the global private _omega_bin_path variable.
 
     Returns
-    =======
+    -------
     omega_bin_path : str
         The path of the OMEGA binary files (.QUB and .NAV).
     """
@@ -2611,7 +2611,7 @@ def get_omega_py_path():
     """Return the vavue of the global private _omega_py_path variable.
 
     Returns
-    =======
+    -------
     omega_py_path : str
         The new path of the OMEGA python-made files.
     """
@@ -2621,12 +2621,12 @@ def get_names(omega_list):
     """Return the array of the observation ID of each OMEGA/MEx observation in omega_list.
 
     Parameters
-    ==========
+    ----------
     omega_list : array of OMEGAdata
         The input array of OMEGA observations.
     
     Returns
-    =======
+    -------
     names : ndarray
         The array of the omega_list observations ID.
     """
@@ -2639,12 +2639,12 @@ def get_ls(omega_list):
     """Return the array of the Solar longitude of each OMEGA/MEx observation in omega_list.
 
     Parameters
-    ==========
+    ----------
     omega_list : array of OMEGAdata
         The input array of OMEGA observations.
     
     Returns
-    =======
+    -------
     ls : ndarray
         The array of the omega_list Ls.
     """
@@ -2660,16 +2660,16 @@ def update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=_Version,
     """Update the quality attribute of previously saved OMEGAdata objects.
 
     Parameters
-    ==========
-    obs_name : str, optional (default 'ORB*.pkl')
+    ----------
+    obs_name : str, default 'ORB*.pkl'
         The files basename.
-    folder : str, optional (default 'auto')
+    folder : str, default 'auto'
         The subfolder where the data is.
         | If 'auto' -> folder = 'vX', where X is the major release version of the used code.
-    version : float, optional (default _Version)
+    version : float, default _Version
         The version of the target file (if folder is 'auto').
         Default is the current code version.
-    base_folder : str, optional (default _omega_py_path)
+    base_folder : str, default _omega_py_path
         The base folder path.
     """
     # Default path
@@ -2715,14 +2715,14 @@ def load_omega_list2(liste_obs, therm_corr=True, atm_corr=True, **kwargs):
     """Load a list of saved OMEGAdata objects, using load_omega().
 
     Parameters
-    ==========
+    ----------
     liste_obs : array of str
         List of OMEGA/MEx observations ID.
-    therm_corr : bool or None, optional (default None)
+    therm_corr : bool or None, default None
         | True -> Only results with thermal correction.
         | False -> Only results without thermal correction.
         | None -> Both with and without thermal correction.
-    atm_corr : bool or None, optional (default None)
+    atm_corr : bool or None, default None
         | True -> Only results with atmospheric correction.
         | False -> Only results without atmospheric correction.
         | None -> Both with and without atmospheric correction.
@@ -2730,7 +2730,7 @@ def load_omega_list2(liste_obs, therm_corr=True, atm_corr=True, **kwargs):
         Optional arguments for autoload_omega().
 
     Returns
-    =======
+    -------
     omega_list : list of OMEGAdata objects
         The list of loaded objects of OMEGA/MEx observation.
     """
@@ -2773,12 +2773,12 @@ def test_cube(obs):
     witout open it.
 
     Parameters
-    ==========
+    ----------
     obs : str
         The name of the OMEGA observation.
 
     Returns
-    =======
+    -------
     test_quality : bool
         | True -> Accepted observation.
         | False -> Rejected observation.
@@ -2835,13 +2835,13 @@ def compute_list_good_observations(savfilename='liste_good_obs.csv',
     The results are saved in the specified csv file.
 
     Parameters
-    ==========
-    savfilename : str
+    ----------
+    savfilename : str, default 'liste_good_obs.csv'
         The name of the csv file to save the data.
-    folder : str
+    folder : str, default '../data/OMEGA/liste_obs'
         The name of the folder where the saved file will be located.
         Final saved file path = folder + savfilename
-    security : bool, optional (default True)
+    security : bool, default True
         Enable / disable checking before overwriting a file.
         | True -> Check if the target file already exists before overwriting on it.
                   And if is the case, you will be asked for a confirmation.
@@ -2929,12 +2929,12 @@ def utc_to_my(dt):
     (at a time such that Ls=0) on April 11th, 1955.
 
     Parameters
-    ==========
+    ----------
     dt : datetime.datetime
         The UTC datetime object.
 
     Returns
-    =======
+    -------
     my : int
         The corresponding Martian Year.
     """
@@ -2950,12 +2950,12 @@ def shared_lam(lam_list):
     """Return a list of wavelength shared by all the input wavelength arrays.
 
     Parameters
-    ==========
+    ----------
     lam_list : list of 1D np.array
         The list of wavelength array.
 
     Returns
-    =======
+    -------
     lam2 : 1D np.array
         The wavelength array that contains only wavelength shared by all the arrays of
         lam_list.
@@ -2978,12 +2978,12 @@ def shared_lam_omegalist(omega_list):
     OMEGA/MEx observations.
 
     Parameters
-    ==========
+    ----------
     omega_list : list of OMEGAdata
         The list of OMEGA/MEx observations.
 
     Returns
-    =======
+    -------
     lam2 : 1D np.array
         The wavelength array that contains only wavelength shared by all the arrays of
         lam_list.
@@ -3008,22 +3008,22 @@ def omega_mask(omega, emer_lim=None, inci_lim=None, tempc_lim=None, limsat_c=Non
     """Return a mask to remove the bad, corrupted or undesired pixels of an observation.
 
     Parameters
-    ==========
+    ----------
     omega : OMEGAdata
         The OMEGA observation data.
-    emer_lim : float or None, optional (default None)
+    emer_lim : float or None, default None
         The maximum emergence angle.
-    inci_lim : float or None, optional (default None)
+    inci_lim : float or None, default None
         The maximum incidence angle.
-    tempc_lim : float or None, optional (default None)
+    tempc_lim : float or None, default None
         The maximum temperature for the C-channel.
-    limsat_c : float or None, optional (default None)
+    limsat_c : float or None, default None
         The maximum value of the C-channel saturation [DN].
         The maximum value in DN for the spectel #40 (i.e., λ=1.486μm).
         > See Vincendon et al. (2015) or Stcherbinine et al. (2021).
-    hide_128 : bool, optional (default True)
+    hide_128 : bool, default True
         If True, hide the corrupted columns for 128-px wide cubes affected.
-    reject_low_quality : bool, optional (default False)
+    reject_low_quality : bool, default False
         Reject observations flagged as low quality, as defined in Stcherbinine et al. (2021).
         I.e., if: 
          >  (omega.data_quality == 0)   # Low quality
@@ -3035,7 +3035,7 @@ def omega_mask(omega, emer_lim=None, inci_lim=None, tempc_lim=None, limsat_c=Non
          >  or (omega.point_mode == 'N/A')  # Unknown pointing informations
 
     Returns
-    =======
+    -------
     mask : 2D array 
         The array that identify the bad/corrupted pixels to remove.
         | 1 -> Good pixel
