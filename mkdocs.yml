@@ -49,6 +49,9 @@ plugins:
       handlers:
         python:
           paths: [omegapy]
+          options:
+            docstring_style: numpy
+            docstring_section_style: table
   - literate-nav:
       nav_file: SUMMARY.md
 
