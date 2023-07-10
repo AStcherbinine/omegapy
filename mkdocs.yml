@@ -36,7 +36,11 @@ theme:
       accent: orange
   features:
     - navigation.instant
-    - navigation.tabs
+    #- navigation.tabs
+    #- navigation.tabs.sticky
+    - content.code.copy
+    #- content.code.select
+    - content.code.annotate
   language: en
 
 plugins:
@@ -52,8 +56,22 @@ plugins:
           options:
             docstring_style: numpy
             docstring_section_style: table
+            #docstring_section_style: list
+            docstring_options:
+              ignore_init_summary: true
   - literate-nav:
       nav_file: SUMMARY.md
+
+# Markdown code highlighting (with Pygments)
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
 
 # Footer
 extra:
@@ -80,10 +98,16 @@ extra:
 # Page tree
 nav:
   - Home: index.md
-  #- 'User Guide':
-    #- 'Getting Started': 'getting_started.md'
-    #- 'Examples': examples.md
   #- About: about.md
-  - Readme: readme.md
+  - Getting started:
+    - Installation: installation.md
+    - Configuration: configuration.md
+    - Basic usage: basic_usage.md
+  - User Guide:
+    - Data importation: data_importation.md
+    - Data correction: data_correction.md
+    - Data visualization: data_visualization.md
+  - Examples: example1.md
   - Code Reference: reference/
+  - Credits: credits.md
 
