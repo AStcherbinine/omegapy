@@ -73,9 +73,9 @@ extra:
     - icon: fontawesome/brands/linkedin
       link: https://www.linkedin.com/in/aurelien-stcherbinine/
       name: Aurélien Stcherbinine on LinkedIn
-    - icon: :globe_with_meridians:
-      link: https://aurelien.stcherbinine.net/
-      name: Aurélien Stcherbinine personal page
+    #- icon: fontawesome/regular/globe
+    #  link: https://aurelien.stcherbinine.net/
+    #  name: Aurélien Stcherbinine personal page
 
 # Page tree
 nav:
