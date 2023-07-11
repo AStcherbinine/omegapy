@@ -38,9 +38,16 @@ theme:
     - navigation.instant
     #- navigation.tabs
     #- navigation.tabs.sticky
+    #- navigation.sections
+    #- navigation.path
+    #- navigation.expand
+    - navigation.indexes
+    - toc.integrate
+    - toc.follow
     - content.code.copy
     #- content.code.select
     - content.code.annotate
+    #- content.tabs.link
   language: en
 
 plugins:
@@ -59,11 +66,16 @@ plugins:
             #docstring_section_style: list
             docstring_options:
               ignore_init_summary: true
+            merge_init_into_class: true
+            show_object_full_path: true
+            members_order: alphabetical
+            #members_order: source
+            #separate_signature: true
   - literate-nav:
       nav_file: SUMMARY.md
 
-# Markdown code highlighting (with Pygments)
 markdown_extensions:
+  # Code highlighting (with Pygments)
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -71,6 +83,27 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
+  # footnotes
+  - footnotes
+  # image support
+  - attr_list
+  - md_in_html
+  # lists
+  - def_list
+  #- pymdownx.tasklist:
+    #custom_checkbox: true
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  # content tabs
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true 
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
 
 
 # Footer
@@ -106,8 +139,10 @@ nav:
   - User Guide:
     - Data importation: data_importation.md
     - Data correction: data_correction.md
+    - Data handling: data_handling.md
     - Data visualization: data_visualization.md
   - Examples: example1.md
   - Code Reference: reference/
+  - Litterature: litterature.md
   - Credits: credits.md
 
