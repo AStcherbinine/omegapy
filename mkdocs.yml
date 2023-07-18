@@ -52,6 +52,7 @@ theme:
 
 plugins:
   - search
+  - autorefs
   - gen-files:
       scripts:
       - docs/gen_api_pages.py
@@ -79,9 +80,13 @@ markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
+      use_pygments: true
       pygments_lang_class: true
   - pymdownx.inlinehilite
-  - pymdownx.snippets
+  #- pymdownx.snippets
+  - pymdownx.snippets:
+      auto_append:
+        - docs/abbreviations.md
   - pymdownx.superfences
   # footnotes
   - footnotes
@@ -94,9 +99,9 @@ markdown_extensions:
     #custom_checkbox: true
   - admonition
   - pymdownx.details
-  - pymdownx.superfences
+  #- pymdownx.superfences
   # content tabs
-  - pymdownx.superfences
+  #- pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true 
   - pymdownx.critic
@@ -104,6 +109,19 @@ markdown_extensions:
   - pymdownx.keys
   - pymdownx.mark
   - pymdownx.tilde
+  - pymdownx.smartsymbols
+  # Annotations
+  #- attr_list
+  #- md_in_html
+  #- pymdownx.superfences
+  # Emojis
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  # Abbreviations
+  - abbr
+  #- attr_list
+  #- pymdownx.snippets
 
 
 # Footer
@@ -141,7 +159,10 @@ nav:
     - Data correction: data_correction.md
     - Data handling: data_handling.md
     - Data visualization: data_visualization.md
-  - Examples: example1.md
+    #- IDL SOFT10 Readme: SOFT10_readme.txt
+  - Examples: 
+    - Band depth: example1_band_depth.md
+    - Overplotting: example2_overplot.md
   - Code Reference: reference/
   - Litterature: litterature.md
   - Credits: credits.md

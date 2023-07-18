@@ -28,10 +28,18 @@ Note that it also apply if you are using another OS but had troubles setting the
 
 In that case, you can set these path directly with Python using the `omega_data.set_omega_bin_path()` and `omega_data.set_omega_py_path()` functions.
 Assuming you have already load `omegapy.omega_data` as `od`, simply execute:
-~~~python
-od.set_omega_bin_path("/path/to/binary/files/folder/")
-od.set_omega_py_path("/path/to/omegapy-made/files/folder/")
-~~~
+=== "Windows"
+    ~~~python
+    od.set_omega_bin_path("C:\\path\\to\\binary\\files\\folder\")
+    od.set_omega_py_path("C:\\path\\to\\omegapy-made\\files\\folder\")
+    ~~~
+
+=== "Linux/Mac"
+    ~~~python
+    od.set_omega_bin_path("/path/to/binary/files/folder/")
+    od.set_omega_py_path("/path/to/omegapy-made/files/folder/")
+    ~~~
+
 *Adapt the path to suit your own architecture.*
 
 You will have to run these commands everytime you start a new Python console, so I suggest to put these lines at the beginning of your script, just after the omegapy import.
