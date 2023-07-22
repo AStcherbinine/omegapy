@@ -260,6 +260,15 @@ op.show_omega_interactif_v2(
   </figcaption>
 </figure>
 
+!!! tip "Unprojected interactive visualization"
+    It is also possible to use a similar interactive display of an OMEGA data cube without
+    any equatorial or polar projection, only using the (X, Y) axes of the cube with
+    the [show_omega_interactif](../reference/omega_plots/#omega_plots.show_omega_interactif)
+    function.
+    In this case it uses [show_omega](../reference/omega_plots/#omega_plots.show_omega)
+    instead of [show_omega_v2](../reference/omega_plots/#omega_plots.show_omega_v2)
+    to display the OMEGA map.
+
 ## Composite maps
 
 OMEGA-Py provides functions to generate composite maps from multiple OMEGA
@@ -274,12 +283,46 @@ Identification of a new spectral signature at 3 µm over Martian northern high l
 
 For the following examples, let's assume we have loaded these 3 OMEGA observations:
 ~~~python
-omega41 = od.autoload_omega('0041_1', therm_corr=True, atm_corr=True)
-omega61 = od.autoload_omega('0061_1', therm_corr=True, atm_corr=True)
+omega41  = od.autoload_omega('0041_1', therm_corr=True, atm_corr=True)
+omega61  = od.autoload_omega('0061_1', therm_corr=True, atm_corr=True)
 omega103 = od.autoload_omega('0103_1', therm_corr=True, atm_corr=True)
 ~~~
 
+Computing and displaying a composite map is done by using the 
+[`show_omega_list_v2`](../reference/omega_plots/#omega_plots.show_omega_list_v2) function.
+
+!!! tip "Defining the grid"
+    Generating composite maps requires to project all the OMEGA observations on the same
+    longitude/latide grid, defined by the following parameters in the call of the function:
+
+    | Parameter | Decription |
+    | --------- | ---------- |
+    | `lon_min` | Minimum longitude in degrees E (comprised between 0 and 360) |
+    | `lon_max` | Maximum longitude in degrees E (comprised between 0 and 360) |
+    | `pas_lon` | Resolution of the longidude grid in degrees (*i.e., size of the pixels along the longitude axis*) |
+    | `lat_min` | Minimum latitude in degrees N (comprised between -90 and 90) |
+    | `lat_max` | Maximum latitude in degrees N (comprised between -90 and 90) |
+    | `pas_lat` | Resolution of the latidude grid in degrees (*i.e., size of the pixels along the latitude axis*) |
+
+!!! tip "Extracting the projected map"
+    The newly created arrays containing the composite map, and the associated longitude/latitude grids
+    can be retrieved as an output of the [`show_omega_list_v2`](../reference/omega_plots/#omega_plots.show_omega_list_v2)
+    function by adding `out = True` in the call.
+
+    Alternatively, they can also be saved in a specific file then loaded when you want, as described
+    in [Saving & Loading composite maps](#saving-loading-composite-maps).
+
 ### Reflectance
+
+To generate a composite reflectance map, all we need to provide is:
+
+ * The list of OMEGA observations previously loaded as [OMEGAdata](../reference/omega_data/#omega_data.OMEGAdata)
+   objects.
+ * The grid parameters.
+ * The desired wavelength in μm (`lam`).
+
+Then additional optional parameters can be used to customize the displayed map 
+(polar viewing, colormap, colorscale, title...).
 
 ~~~python
 op.show_omega_list_v2(
@@ -312,6 +355,21 @@ op.show_omega_list_v2(
 Let's assume we have now also computed the corresponding masks (`mask_41`, `mask_61`, `mask_103`)
 and 1.5μm BD maps (`bd15_41`, `bd15_61`, `bd15_103`).
 
+Similarly to how it works for the [`show_omega_v2`](../reference/omega_plots/#omega_plots.show_omega_v2) function,
+adding masks to hide some specific pixels of the OMEGA observations can be done simply by
+passing these masks as a list to the `mask_list` parameter.
+If using masks, then it is required that masks for all the observations present in `omega_list`
+are given, in the same order.
+
+Replacing the reflectance by pre-computed data maps for all OMEGA observations can be done
+by passing them to the `data_list` argument of the function 
+(instead of specifying the `lam` argument).
+
+!!! danger "Important"
+    The data in `mask_list` and `data_list` (if used) must be in the same order as `omega_list`.
+    Otherwise, if the dimensions of the content of all lists do not match, an `ValueError` will be
+    raised.
+
 ~~~python
 import cmocean.cm as cmo    # Some more very nice colormaps
 
@@ -338,20 +396,183 @@ op.show_omega_list_v2(
 ~~~
 
 <figure markdown>
-  ![show_omega_list_v2 - South albedo](img/ORB41-61-103__show_omega_list_v2_nbd15_polar_mask.png)
+  ![show_omega_list_v2 - South NBD15](img/ORB41-61-103__show_omega_list_v2_nbd15_polar_mask__method1_ecface.png)
   <figcaption>
     ORB0041_1/ORB0061_1/ORB0103_1 </br> 1.5μm BD – Polar projection with mask
   </figcaption>
 </figure>
 
 ### Projection methods
+
+Since version 2.4, two projections methods are available to generate composite
+maps of OMEGA observations.
+
+They can be selected by specifying `proj_method=1` or `proj_method=2` in the call of the
+[`show_omega_list_v2`](../reference/omega_plots/#omega_plots.show_omega_list_v2) function
+(*current default is method 1*).
+
 #### Method 1
+The fastest way to generate composite maps.
+It will only consider the coordinates of the center of every pixels of an observation
+to fill the new grid.
+
+It works well for a grid with a coarser resolution compared to the size of the actual
+OMEGA pixels, but for high-resolution maps (typically with pixels smaller than 1°x1°) it may
+results in gaps in the newly created map.
+
+!!! tip "Nicer maps with method 1"
+    There is still a way to improve the rendering of high-resolution maps generated with
+    the method 1, as shown in [Illustration](#illustration): it is possible to hide the
+    small lines of `NaN` pixels within the map by adding contours on the edges of the plot.
+
+    This is done by setting the `edgecolor` parameter to `'face'`, and controlling the
+    with with `lw`.</br>
+    *Default behaviour of the function is: `edgecolor='face'` and `lw=0.1`.*
 
 #### Method 2
+The second method allows to generate high-resolution composite maps.
+
+Here the algorithm is going to search for every pixels of the grid that are within the
+OMEGA pixels footprints polygons.
+It fixes the issue of the gaps within the composite map that can be observed with the
+method 1 for high-resolution grid, but takes much more time to process.
+
+!!! tip
+    If the generation of composite maps can take a few seconds to minutes with the method 1,
+    it can easily be hours with method 2 for a large number of observations.
+
+    Thus, we suggest to use method 1 to preview the maps and make some test, then only
+    use method 2 for the final processing, and save them directly
+    (see [Saving & Loading composite maps](#saving-loading-composite-maps)) to only
+    have to process them once.
+
+!!! tip "Displaying maps generated with method 2"
+    For maps computed with method 2, it no longer needed to add the edges to hide the data
+    gaps, so the `edgecolor` parameter can be set to `'none'`.
+
+#### Illustration
+
+=== "Method 1 with `edgecolor = 'face'` (default)"
+
+    ![Method 1 edgecolor='face' illustration - polar](img/ORB41-61-103__show_omega_list_v2_nbd15_polar_mask__method1_ecface.png)
+    ![Method 1 edgecolor='face' illustration - equatorial](img/ORB41-61-103__show_omega_list_v2_nbd15_nonpolar_mask__method1_ecface.png)
+
+    ??? example "Source code"
+        ~~~python
+        op.show_omega_list_v2(
+            # OMEGA observations
+            [omega41, omega61, omega103],
+            # Grid parameters
+            lat_min=-90, lat_max=-75,
+            lon_min=0, lon_max=360,
+            pas_lon=0.1, pas_lat=0.1,
+            # Polar viewing
+            polar=True,
+            # Colorscale min/max
+            vmin=0, vmax=0.4,
+            # Colormap
+            cmap=cmo.ice,
+            # Data
+            data_list = [bd15_41, bd15_61, bd15_103],
+            # Masks
+            mask_list = [mask_41, mask_61, mask_103],
+            # Colorbar title
+            cb_title = r'1.5 μm BD',
+            # Projection method & display
+            proj_method = 1,
+            edgecolor = 'face',
+            lw = 0.1,
+            )
+        ~~~
+
+=== "Method 1 with `edgecolor = 'none'`"
+
+    ![Method 1 edgecolor=None illustration - polar](img/ORB41-61-103__show_omega_list_v2_nbd15_polar_mask__method1_ecNone.png)
+    ![Method 1 edgecolor=None illustration - equatorial](img/ORB41-61-103__show_omega_list_v2_nbd15_nonpolar_mask__method1_ecNone.png)
+
+    ??? example "Source code"
+        ~~~python
+        op.show_omega_list_v2(
+            # OMEGA observations
+            [omega41, omega61, omega103],
+            # Grid parameters
+            lat_min=-90, lat_max=-75,
+            lon_min=0, lon_max=360,
+            pas_lon=0.1, pas_lat=0.1,
+            # Polar viewing
+            polar=True,
+            # Colorscale min/max
+            vmin=0, vmax=0.4,
+            # Colormap
+            cmap=cmo.ice,
+            # Data
+            data_list = [bd15_41, bd15_61, bd15_103],
+            # Masks
+            mask_list = [mask_41, mask_61, mask_103],
+            # Colorbar title
+            cb_title = r'1.5 μm BD',
+            # Projection method & display
+            proj_method = 1,
+            edgecolor = None,
+            )
+        ~~~
+
+
+=== "Method 2 with `edgecolor = 'none'`"
+
+    ![Method 2 edgecolor=None illustration - polar](img/ORB41-61-103__show_omega_list_v2_nbd15_polar_mask__method2_ecNone.png)
+    ![Method 2 edgecolor=None illustration - equatorial](img/ORB41-61-103__show_omega_list_v2_nbd15_nonpolar_mask__method2_ecNone.png)
+
+    ??? example "Source code"
+        ~~~python
+        op.show_omega_list_v2(
+            # OMEGA observations
+            [omega41, omega61, omega103],
+            # Grid parameters
+            lat_min=-90, lat_max=-75,
+            lon_min=0, lon_max=360,
+            pas_lon=0.1, pas_lat=0.1,
+            # Polar viewing
+            polar=True,
+            # Colorscale min/max
+            vmin=0, vmax=0.4,
+            # Colormap
+            cmap=cmo.ice,
+            # Data
+            data_list = [bd15_41, bd15_61, bd15_103],
+            # Masks
+            mask_list = [mask_41, mask_61, mask_103],
+            # Colorbar title
+            cb_title = r'1.5 μm BD',
+            # Projection method & display
+            proj_method = 2,
+            edgecolor = None,
+            )
+        ~~~
 
 ### Saving & Loading composite maps
 
+To avoid reprocessing every time the projection of the OMEGA observations to generate
+the composite maps, which may take time, especially for large datasets and/or if you
+are using the method 2, it is possible to export them in a single file after the processing.
+Then, all you have to do is to load this file and display the map as you want.
+
 #### Saving composite map
+Computing and saving a composite map is done by using the 
+[`save_map_omega_list`](../reference/omega_plots/#omega_plots.save_map_omega_list) function.
+It is very similar to [`show_omega_list_v2`](../reference/omega_plots/#omega_plots.show_omega_list_v2)
+except that you do not need to give the parameters related to the display of the map.
+
+Instead, you can define the path where the data will be saved, and the filename.
+
+!!! tip "Good practises"
+    If you are not using the reflectance, it is recommended to fill the `data_desc`
+    argument with a description of the data (similarly to `cb_title`).
+    This value will be used by default as the colorbar label when displaying the map,
+    and it is a good way to know what data are stored within the file when you load it.
+
+    Also, if you use the automatically generated filename, it is recommended to
+    use the `ext` argument to indicate the data used to generate the map, and identify them.
 
 ~~~python
 op.save_map_omega_list(
@@ -374,6 +595,22 @@ op.save_map_omega_list(
 ~~~
 
 #### Loading & displaying previously saved map
+
+Once you have saved a composite map in a file with 
+[`save_map_omega_list`](../reference/omega_plots/#omega_plots.save_map_omega_list),
+you can load its content with
+[`load_map_omega_list`](../reference/omega_plots/#omega_plots.load_map_omega_list)
+and display the map with 
+[`show_omega_list_v2_man`](../reference/omega_plots/#omega_plots.show_omega_list_v2_man).
+
+The function takes as argument the arrays previously loaded, and parameters to customize
+the plot, similarly to [`show_omega_v2`](../reference/omega_plots/#omega_plots.show_omega_v2)
+or [`show_omega_list_v2`](../reference/omega_plots/#omega_plots.show_omega_list_v2)
+(colormap, colorscale, title, polar viewing...).
+
+!!! info "Colorbar title"
+    By default, the colorbar title will used the one passed to `data_desc` when saving the map,
+    but it can be changed using the `cb_title` argument.
 
 ~~~python
 data_bd19, mask, grid_lat, grid_lon, mask_obs, infos = op.load_map_omega_list(
