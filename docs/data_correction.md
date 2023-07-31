@@ -74,7 +74,8 @@ smaller than ~3 μm, it has to be taken into account when using larger wavelengt
 the L-channel ; see figure above).
 
 The thermal correction can also be performed using two methods. 
-However, only the first one has been optimized to use multiprocessing for now.
+However, only the first one has been optimized to use 
+[`multiprocessing`](https://docs.python.org/3/library/multiprocessing.html) for now.
 
 ???+ note "Method 1 (with C-channel)"
     The reflectance at 5 μm is theoretically estimated from the measured reflectance at 2.4 μm,
@@ -83,7 +84,9 @@ However, only the first one has been optimized to use multiprocessing for now.
     (Jouglet et al., 2007)[^1].
 
     In addition, to reduce the computation time of the thermal correction, parallel
-    processing has been implemented using the `multiprocessing` module for this method. 
+    processing has been implemented using the 
+    [`multiprocessing`](https://docs.python.org/3/library/multiprocessing.html) 
+    module for this method. 
     ~~~python
     omega_corr_them = od.corr_therm(omega, npool=1)     # Method 1 with 1 single process
     # or
@@ -92,7 +95,7 @@ However, only the first one has been optimized to use multiprocessing for now.
     !!! info "Using multiple processes"
         `npool` controls the number of simultaneous processes used to
         compute the thermal correction of the OMEGA data cube.
-        I.e., it defines the number of `multiprocessing.Pool` that will be created.
+        I.e., it defines the number of [`multiprocessing.Pool`](https://docs.python.org/3/library/multiprocessing.html#multiprocessing.pool.Pool) that will be created.
 
 ???+ note "Method 2 (without C-channel)"
     If the data from the C-channel are not available, the first method is no longer usable,
@@ -142,7 +145,17 @@ taken into account while removing the thermal correction.
     !!! info "Using multiple processes"
         `npool` controls the number of simultaneous processes used to
         compute the thermal correction of the OMEGA data cube.
-        I.e., it defines the number of `multiprocessing.Pool` that will be created.
+        I.e., it defines the number of [`multiprocessing.Pool`](https://docs.python.org/3/library/multiprocessing.html#multiprocessing.pool.Pool) that will be created.
+
+!!! tip "Correcting and saving OMEGA observations in one single command"
+    As the correction of an OMEGA observation can take some time, you may want to save the
+    final cube to avoid reprocessing it every time.
+
+    Instead of returning an [`OMEGAdata`](../reference/omega_data/#omega_data.OMEGAdata) object
+    after processing the thermal & atmospheric corrections, it is also possible to 
+    save it into a file that can be loaded later using the 
+    [`corr_save_omega2`](../reference/omega_data/#omega_data.corr_save_omega2) function
+    (more details [here](../data_handling/#correcting-and-saving-omega-observations-in-one-single-command)).
 
 ## Checking applied corrections
 

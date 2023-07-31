@@ -5,3 +5,11 @@
 *[BD]: Band Depth
 *[IBD]: Integrated Band Depth
 
+*[IR]: Infrared
+
+*[spectel]: Spectral pixel
+*[spectels]: Spectral pixels
+
+*[MY]: Martian Year
+
+*[DN]: Digital Numbers

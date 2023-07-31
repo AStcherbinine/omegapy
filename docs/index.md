@@ -46,6 +46,6 @@ OMEGA : Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité.
  - Use of a custom atmospheric spectrum for the atmospheric correction
  - Optimization of the customization of display functions
  - Add slider to change the displayed wavelength for the reflectance for interactive plots
- - Simplify the use of the thermal and atmospheric correction functions -> only one with multiple arguments
+ - Simplify the use of the thermal and atmospheric correction functions --> only one with multiple arguments
  - Add filtering options in the `find_cube` function
 
