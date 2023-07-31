@@ -1,57 +1,44 @@
-# OMEGA-Py: Python tools for OMEGA data
-![version](https://img.shields.io/badge/version-2.2.7-blue)
-![pythonversion](https://img.shields.io/badge/Python-3.7+-blue)
+<!--![version](https://img.shields.io/badge/version-2.4-blue)-->
+<!--![pythonversion](https://img.shields.io/badge/Python-3.7+-blue)-->
+<!--[![DOI](https://zenodo.org/badge/349763849.svg)](https://zenodo.org/badge/latestdoi/349763849)-->
 
-OMEGA-Py is a Python module dedicated to the use and analysis of data from the OMEGA instrument onboard the ESA Mars-Express orbiter.
+<p align="center">
+<img width="250" height="250" src="logo_omegapy_small2.png">
+</p>
 
-> **Disclaimer:** This module is not the official software distributed by the OMEGA team.
+# OMEGA-Py : Python tools for OMEGA data
 
-#### Features:
+<!--Importation and display of OMEGA/MEx observations in Python 3, based on the IDL *SOFT10* routines developped in the IAS planetary team.-->
+
+!!! warning "Disclaimer"
+    This module is not the official software distributed by the OMEGA team.
+
+<!-- > **Disclaimer:** This module is not the official software distributed by the OMEGA team.-->
+
+*OMEGA-Py* is a Python 3 module dedicated to the scientific use of data
+provided by the *Observatoire pour la Minéralogie, l'Eau, les Glaces et
+l'Activité* (OMEGA) instrument onboard the ESA Mars Express (MEx) orbiter[^1].
+It has been developed as an alternative to the historical *SOFT 10* IDL routines
+of the official OMEGA software provided by the instrument team[^2].
+
+The module notably includes a re-implementation of the most recent release of
+the IDL OMEGA software, but also contains several additional data reduction
+functions such as build-in atmospheric and thermal corrections (using
+previously published methods) and graphics tools including interactive
+visualization of the data or generation of composite OMEGA maps.
+
+[^1]: J.-P. Bibring, A. Soufflot, M. Berthé, et al. (2004). 
+OMEGA : Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité.
+*ESA Publication Division, 1240*, 37
+
+[^2]: [ftp://psa.esac.esa.int/pub/mirror/MARS-EXPRESS/OMEGA/MEX-M-OMEGA-2-EDR-FLIGHT-EXT7-V1.0/SOFTWARE/](ftp://psa.esac.esa.int/pub/mirror/MARS-EXPRESS/OMEGA/MEX-M-OMEGA-2-EDR-FLIGHT-EXT7-V1.0/SOFTWARE/)
+
+-------------
+## Main features
  - Importation of raw PSA-format data.
  - Data correction from instrumental effects.
  - Thermal and atmospheric corrections.
  - Visualization of the data with interactive tools.
-
-## Installation
-### Method 1: from PyPI (recommended)
-~~~bash
-pip3 install omegapy
-~~~
-
-### Method 2: from the GitHub repository (development version)
-~~~bash
-git clone https://github.com/AStcherbinine/omegapy.git
-cd omegapy
-pip3 install .
-~~~
-
-## Configuration
-You have to configure the default path of the folders containing the OMEGA binary and omegapy-made files
-using the environment variables `OMEGA_BIN_PATH` (for the binary .QUB and .NAV files)
-and `OMEGA_PY_PATH` (for the omegapy-made files).
-
-To do so, add the following lines to your `~/.bashrc` :
-~~~bash
-export OMEGA_BIN_PATH="/path/to/binary/files/folder/"
-export OMEGA_PY_PATH="/path/to/omegapy-made/files/folder/"
-~~~
-*Adapt the path to suit your own architecture.*
-
-
-## Reading of binaries
-
-## Data correction
-### Atmospheric correction
-
-### Thermal correction
-
-### Aerosols correction
-**TODO**
-
-## Data visualization
-![Interactive display example](img/exemple_affichage_interactif_ORB0979_3_alb226.png)
-
-## Data handling
 
 ## Futures improvement
  - Compatibility with files downloaded from the PDS (lowercase letters) and not only PSA (uppercase letters)
@@ -59,18 +46,6 @@ export OMEGA_PY_PATH="/path/to/omegapy-made/files/folder/"
  - Use of a custom atmospheric spectrum for the atmospheric correction
  - Optimization of the customization of display functions
  - Add slider to change the displayed wavelength for the reflectance for interactive plots
- - Simplify the use of the thermal and atmospheric correction functions -> only one with multiple arguments
+ - Simplify the use of the thermal and atmospheric correction functions --> only one with multiple arguments
  - Add filtering options in the `find_cube` function
 
-------------
-## Credits
-
-© Aurélien Stcherbinine (2020–2022)
-
-Institut d'Astrophysique Spatiale (IAS), Université Paris-Saclay, CNRS, Orsay, France
-
-LATMOS/IPSL, UVSQ Université Paris-Saclay, Sorbonne Université, CNRS, Guyancourt, France
-
-
-## License
-This package is released under a MIT open source license. See [`LICENSE`](https://github.com/AStcherbinine/omegapy/blob/master/LICENSE) for more details.

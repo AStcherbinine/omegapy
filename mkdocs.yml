@@ -36,11 +36,23 @@ theme:
       accent: orange
   features:
     - navigation.instant
-    - navigation.tabs
+    #- navigation.tabs
+    #- navigation.tabs.sticky
+    #- navigation.sections
+    #- navigation.path
+    #- navigation.expand
+    - navigation.indexes
+    - toc.integrate
+    - toc.follow
+    - content.code.copy
+    #- content.code.select
+    - content.code.annotate
+    #- content.tabs.link
   language: en
 
 plugins:
   - search
+  - autorefs
   - gen-files:
       scripts:
       - docs/gen_api_pages.py
@@ -52,8 +64,65 @@ plugins:
           options:
             docstring_style: numpy
             docstring_section_style: table
+            #docstring_section_style: list
+            docstring_options:
+              ignore_init_summary: true
+            merge_init_into_class: true
+            show_object_full_path: true
+            members_order: alphabetical
+            #members_order: source
+            #separate_signature: true
   - literate-nav:
       nav_file: SUMMARY.md
+
+markdown_extensions:
+  # Code highlighting (with Pygments)
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      use_pygments: true
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  #- pymdownx.snippets
+  - pymdownx.snippets:
+      auto_append:
+        - docs/abbreviations.md
+  - pymdownx.superfences
+  # footnotes
+  - footnotes
+  # image support
+  - attr_list
+  - md_in_html
+  # lists
+  - def_list
+  #- pymdownx.tasklist:
+    #custom_checkbox: true
+  - admonition
+  - pymdownx.details
+  #- pymdownx.superfences
+  # content tabs
+  #- pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true 
+  - pymdownx.critic
+  - pymdownx.caret
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.tilde
+  - pymdownx.smartsymbols
+  # Annotations
+  #- attr_list
+  #- md_in_html
+  #- pymdownx.superfences
+  # Emojis
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  # Abbreviations
+  - abbr
+  #- attr_list
+  #- pymdownx.snippets
+
 
 # Footer
 extra:
@@ -80,10 +149,21 @@ extra:
 # Page tree
 nav:
   - Home: index.md
-  #- 'User Guide':
-    #- 'Getting Started': 'getting_started.md'
-    #- 'Examples': examples.md
   #- About: about.md
-  - Readme: readme.md
+  - Getting started:
+    - Installation: installation.md
+    - Configuration: configuration.md
+    - Basic usage: basic_usage.md
+  - User Guide:
+    - Data importation: data_importation.md
+    - Data correction: data_correction.md
+    - Data handling: data_handling.md
+    - Data visualization: data_visualization.md
+    #- IDL SOFT10 Readme: SOFT10_readme.txt
+  - Examples: 
+    - Band depth: example1_band_depth.md
+    - Overplotting: example2_overplot.md
   - Code Reference: reference/
+  - Litterature: litterature.md
+  - Credits: credits.md
 
