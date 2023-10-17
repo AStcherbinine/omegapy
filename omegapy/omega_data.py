@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 20/07/2023
+## Last modified by Aurélien STCHERBININE : 16/10/2023
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -35,7 +35,7 @@ from . import useful_functions as uf
 
 # Name of the current file
 _py_file = 'omega_data.py'
-_Version = 2.3
+_Version = 3.0
 
 # Path of the package files
 package_path = os.path.abspath(os.path.dirname(__file__))
@@ -367,6 +367,7 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path='_omega_bin
     altitude = geocube[:, 12, :] * 1e-3
     emergence = geocube[:, 3, :] * 1e-4
     incidence = geocube[:, 2, :] * 1e-4
+    incidence_norm = geocube[:, 8, :] * 1e-4
     ut_time = geocube[:, 1, :]
     lon_grid = np.swapaxes(geocube[:, 13:17, :], 1, 2) * 1e-4
     lat_grid = np.swapaxes(geocube[:, 17:21, :], 1, 2) * 1e-4
@@ -382,7 +383,7 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path='_omega_bin
     fondcur = np.transpose(fond2[128:] * np.ones((nbal, 128)))
     
     # Init jdat
-    jdat = deepcopy(idat).astype(np.float64)
+    jdat = deepcopy(idat).astype(np.float32)
     idat_leq1 = np.where(idat <= 1)
     jdat[idat_leq1] = 1e-5
     # Nombre pixels à 0 IR
@@ -407,10 +408,13 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path='_omega_bin
         if sdat0[26, nbal-1] < 20:
             sdat0[:, nbal-1] = sdat0[:, nbal-2]
         for k in range(256):
-            b = sdat0[k, indi].astype(np.float64)
+            b = sdat0[k, indi].astype(np.float32)
             a = np.concatenate([
                 2*b[0] - b[:balsm][::-1], b, 2*b[nf] - b[nf-balsm+1:] ])
-            c = ndimage.uniform_filter(a, balsm, mode='nearest')[balsm:balsm+nf+1]
+            if (balsm % 2) == 0:    # Pour coller à fct IDL
+                c = ndimage.uniform_filter(a.astype(np.float32), balsm+1, mode='nearest')[balsm:balsm+nf+1]
+            else:
+                c = ndimage.uniform_filter(a.astype(np.float32), balsm, mode='nearest')[balsm:balsm+nf+1]
             tck = interpolate.splrep(indi, c, k=3)  # Cubic spline interpolation
             d = (interpolate.splev(ndeb + np.arange(nbal-ndeb), tck) 
                     - sdat0[k, ndeb:nbal])
@@ -479,7 +483,7 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path='_omega_bin
         #--------------------------
         # Bit error correction
         #--------------------------
-        vis = idat[:, 256:, :].astype(np.float64)
+        vis = idat[:, 256:, :].astype(np.float32)
         pixels, _, lines = idat.shape
         exptime = info[2] / 1000
 
@@ -538,7 +542,7 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path='_omega_bin
 
         lv = wvl[256:]
         xa, xb = lv[0], lv[95]
-        ya, yb = (percen*fper), (percen*fper + (percen*fper)/100*pend)
+        ya, yb = np.float32(percen*fper), np.float32(percen*fper + (percen*fper)/100*pend)
         a = (yb - ya) / (xb - xa)
         b = ya - a*xa
         Strl_nc = lv * a + b
@@ -566,7 +570,7 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path='_omega_bin
         vis = np.swapaxes(vis_tmp, 0, 1)        # On remet dans l'ordre
 
         # Smearing term
-        smear = np.ndarray(vis.shape, dtype=np.float64)
+        smear = np.ndarray(vis.shape, dtype=np.float32)
         for i in range(bands):
             smear[:, i, :] = np.sum(vis[:, i:, :], axis=1) * ft / time_int / bands
 
@@ -630,7 +634,7 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path='_omega_bin
             # k[1, :] = wavelengths correspondent to each spectral channel
             # k[2, :] = values of the coefficients for each channel
             nk = 17 # Total number of channels with the contamination
-            k = np.ndarray((3, nk))
+            k = np.ndarray((3, nk), dtype=np.float32)
             k[0] = np.arange(nk) + 79
             k[1] = np.array([952.100, 959.600, 967.000, 974.300, 981.700, 988.900, 
                     996.300, 1003.70, 1010.90, 1018.20, 1025.50, 1032.90, 1040.30, 
@@ -714,6 +718,7 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path='_omega_bin
         'longitude' : longitude.T,
         'emergence' : emergence.T,
         'incidence' : incidence.T,
+        'incidence_norm' : incidence_norm.T,
         'altitude'  : altitude.T,
         'ut_time'   : ut_time.T,
         'temperature'   : temperature,
@@ -923,6 +928,10 @@ class OMEGAdata:
             self.max_lon = None
             self.slant = None
             self.target = None
+            # Ajout pour correction position
+            self.inci2 = np.array([[]])
+            self.ecl2 = np.array([[]])
+            self.ref_C = np.array([[]])
 
         else:
             # obs_name = uf.myglob(os.path.join(data_path, '*' + obs + '*.QUB'))
@@ -1077,6 +1086,13 @@ class OMEGAdata:
                 self.quality = 0
                 i_obs = int(np.where(corrupted_orbits==nomfic0)[0])
                 self.add_infos = corrupted_orbits_comments[i_obs]
+            #--------------------------
+            # Ajout pour correction position
+            inci2 = geom_dict['incidence_norm']
+            self.inci2 = inci2
+            self.ecl2 = np.cos(inci2 * np.pi / 180)
+            i25, i26, i27 = uf.where_closer_array([1.270, 1.285, 1.299], lam)
+            self.ref_C = np.mean(deepcopy(cube_rf2.astype(np.float32))[:, :, i25:i27+1], axis=2)
             #--------------------------
             # End of data extraction & correction
             if disp:
