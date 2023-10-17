@@ -3,7 +3,7 @@
 
 ## useful_functions.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 19/07/2023
+## Last modified by Aurélien STCHERBININE : 16/10/2023
 
 ##-----------------------------------------------------------------------------------
 """Useful generics functions.
@@ -433,6 +433,117 @@ def test_security_overwrite(path):
             return True
     else:
         return True
+
+##-----------------------------------------------------------------------------------
+## Fonction similaires IDL
+def idl_spline(X, Y, T, sigma = 1.0):
+    """ Performs a cubic spline interpolation.
+
+    Parameters
+    ----------
+	X : ndarray
+        The abcissa vector. Values MUST be monotonically increasing.
+
+	Y : ndarray
+        The vector of ordinate values corresponding to X.
+
+	T : ndarray
+        The vector of abcissae values for which the ordinate is
+		desired. The values of T MUST be monotonically increasing.
+    
+	Sigma : float, default 1.0
+        The amount of "tension" that is applied to the curve. The
+		default value is 1.0. If sigma is close to 0, (e.g., .01),
+		then effectively there is a cubic spline fit. If sigma
+		is large, (e.g., greater than 10), then the fit will be like
+		a polynomial interpolation.
+    
+    Returns
+    -------
+    spl : ndarray
+	    Vector of interpolated ordinates.
+	    Result(i) = value of the function at T(i).
+    """
+    n = min(len(X), len(Y))
+    if n <= 2:
+        print('X and Y must be arrays of 3 or more elements.')
+    if sigma != 1.0:
+        sigma = min(sigma, 0.001)
+    yp = np.zeros(2*n)
+    delx1 = X[1]-X[0]
+    dx1 = (Y[1]-Y[0])/delx1
+    nm1 = n-1
+    nmp = n+1
+    delx2 = X[2]-X[1]
+    delx12 = X[2]-X[0]
+    c1 = -(delx12+delx1)/(delx12*delx1)
+    c2 = delx12/(delx1*delx2)
+    c3 = -delx1/(delx12*delx2)
+    slpp1 = c1*Y[0]+c2*Y[1]+c3*Y[2]
+    deln = X[nm1]-X[nm1-1]
+    delnm1 = X[nm1-1]-X[nm1-2]
+    delnn = X[nm1]-X[nm1-2]
+    c1 = (delnn+deln)/(delnn*deln)
+    c2 = -delnn/(deln*delnm1)
+    c3 = deln/(delnn*delnm1)
+    slppn = c3*Y[nm1-2]+c2*Y[nm1-1]+c1*Y[nm1]
+    sigmap = sigma*nm1/(X[nm1]-X[0])
+    dels = sigmap*delx1
+    exps = np.exp(dels)
+    sinhs = 0.5*(exps-1/exps)
+    sinhin = 1/(delx1*sinhs)
+    diag1 = sinhin*(dels*0.5*(exps+1/exps)-sinhs)
+    diagin = 1/diag1
+    yp[0] = diagin*(dx1-slpp1)
+    spdiag = sinhin*(sinhs-dels)
+    yp[n] = diagin*spdiag
+    delx2 = X[1:]-X[:-1]
+    dx2 = (Y[1:]-Y[:-1])/delx2
+    dels = sigmap*delx2
+    exps = np.exp(dels)
+    sinhs = 0.5*(exps-1/exps)
+    sinhin = 1/(delx2*sinhs)
+    diag2 = sinhin*(dels*(0.5*(exps+1/exps))-sinhs)
+    diag2 = np.concatenate([np.array([0]), diag2[:-1]+diag2[1:]])
+    dx2nm1 = dx2[nm1-1]
+    dx2 = np.concatenate([np.array([0]), dx2[1:]-dx2[:-1]])
+    spdiag = sinhin*(sinhs-dels)
+    for i in range(1, nm1):
+        diagin = 1/(diag2[i]-spdiag[i-1]*yp[i+n-1])
+        yp[i] = diagin*(dx2[i]-spdiag[i-1]*yp[i-1])
+        yp[i+n] = diagin*spdiag[i]
+    diagin = 1/(diag1-spdiag[nm1-1]*yp[n+nm1-1])
+    yp[nm1] = diagin*(slppn-dx2nm1-spdiag[nm1-1]*yp[nm1-1])
+    for i in range(n-2, -1, -1):
+        yp[i] = yp[i]-yp[i+n]*yp[i+1]
+    m = len(T)
+    subs = np.repeat(nm1, m)
+    s = X[nm1]-X[0]
+    sigmap = sigma*nm1/s
+    j = 0
+    for i in range(1, nm1+1):
+        while T[j] < X[i]:
+            subs[j] = i
+            j += 1
+            if j == m:
+                break
+        if j == m:
+            break
+    subs1 = subs-1
+    del1 = T-X[subs1]
+    del2 = X[subs]-T
+    dels = X[subs]-X[subs1]
+    exps1 = np.exp(sigmap*del1)
+    sinhd1 = 0.5*(exps1-1/exps1)
+    exps = np.exp(sigmap*del2)
+    sinhd2 = 0.5*(exps-1/exps)
+    exps = exps1*exps
+    sinhs = 0.5*(exps-1/exps)
+    spl = (yp[subs]*sinhd1+yp[subs1]*sinhd2)/sinhs+((Y[subs]-yp[subs])*del1+(Y[subs1]-yp[subs1])*del2)/dels
+    if m == 1:
+        return spl[0]
+    else:
+        return spl
 
 ##-----------------------------------------------------------------------------------
 ## End of code
