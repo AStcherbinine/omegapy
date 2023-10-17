@@ -665,8 +665,7 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path='_omega_bin
             ch_start = 16   # First spectral channel of the first order wavelength
             ch_end = 23     # Last spectral channel of the first order wavelength
             # Cubic spline interpolation
-            spl = interpolate.InterpolatedUnivariateSpline(lam[ch_start:ch_end+1], I_raw[ch_start:ch_end+1], k=3)
-            I_1 = spl(l1)
+            I_1 = uf.idl_spline(lam[ch_start:ch_end+1], I_raw[ch_start:ch_end+1], l1)
             I_1_raw[int(k[0, 0]):int(k[0, nl-1])+1] = I_1
             #_______________________________________________________________________
             # Assignment of kII
