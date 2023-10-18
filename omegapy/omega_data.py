@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 16/10/2023
+## Last modified by Aurélien STCHERBININE : 17/10/2023
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -808,6 +808,8 @@ class OMEGAdata:
         The number of bytes in each physical record in the data product file.
     nrec : int
         The number of physical records that make up the PDS product label.
+    sol_dist : float
+        The distance between the center of the observation and the Sun (km).
     sol_dist_au : float
         The distance between the center of the observation and the Sun (a.u.).
     npixel : int
@@ -1043,6 +1045,7 @@ class OMEGAdata:
             npixel, npara, nscan = np.array(hd_nav['CORE_ITEMS'][1:-1].split(','), dtype=np.int64)
             self.lrec = np.int64(hd_nav['RECORD_BYTES'])
             self.nrec = np.int64(hd_nav['LABEL_RECORDS'])
+            self.sol_dist = np.float64(hd_nav['SOLAR_DISTANCE'])
             self.sol_dist_au = np.float64(hd_nav['SOLAR_DISTANCE']) / 14960e4
             npixel, npara, nscan = np.array(hd_nav['CORE_ITEMS'][1:-1].split(','), dtype=np.int64)
             self.npixel = npixel
@@ -1284,7 +1287,8 @@ class OMEGAdata:
 
 ##-----------------------------------------------------------------------------------
 ## Recherche observation
-def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False, data_path='_omega_bin_path'):
+def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False, data_path='_omega_bin_path',
+              nadir_only=False):
     """Display the available OMEGA/MEx cubes with observations of the target
     latitude and longitude, Python translation of the IDL procedure `findcub.pro`.
 
@@ -1303,6 +1307,8 @@ def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False, data_path='_omega_bin_p
     data_path : str, default _omega_bin_path
         The path of the directory containing the data (.QUB) and 
         navigation (.NAV) files.
+    nadir_only : bool, default False
+        If `True` --> Only cubes with nadir pointing will be returned.
 
     Returns
     -------
@@ -1455,6 +1461,12 @@ def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False, data_path='_omega_bin_p
         nrec = np.int64(hd_nav['LABEL_RECORDS'])
         solong = np.float64(hd_nav['SOLAR_LONGITUDE'])
         sslong = np.float64(hd_nav['SUB_SOLAR_LONGITUDE'])
+        point_mode = hd_nav['SPACECRAFT_POINTING_MODE'][1:-1]
+        # Test nadir pointing
+        if nadir_only:
+            if point_mode != 'NADIR':
+                # print('{0:8s}{1:s}'.format(nomc[n], '\033[3m   Non-nadir pointing\033[0m'))
+                continue
         #--------------------------
         # Lecture géometrie
         class F_line_nav(ctypes.Structure):
