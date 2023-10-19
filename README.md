@@ -52,7 +52,7 @@ Institut d'Astrophysique Spatiale (IAS), Université Paris-Saclay, CNRS, Orsay, 
 
 LATMOS/IPSL, UVSQ Université Paris-Saclay, Sorbonne Université, CNRS, Guyancourt, France
 
-Department of Astronomy and Planetary Science, Northern Arizona University, Flagstaff, UZ, USA
+Department of Astronomy and Planetary Science, Northern Arizona University, Flagstaff, AZ, USA
 
 
 ## License
