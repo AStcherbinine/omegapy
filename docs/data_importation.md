@@ -91,6 +91,16 @@ omega_noVL = OMEGAdata('0967_3', corrV=False, corrL=False)
     [`OMEGAdata`](../reference/omega_data/#omega_data.OMEGAdata) object anyway, but they
     should not be used as they did not go over the entire instrumental correction process.
 
+!!! info "Checking the correction status of the channels"
+    It is possible to check the status of the corrections of the V & L channels of an
+    [`OMEGAdata`](../reference/omega_data/#omega_data.OMEGAdata) object via the values
+    of the booleans:
+    ~~~python
+    omega.corrV     # True if V-channel correction applied
+
+    omega.corrL     # True if L-channel correction applied
+    ~~~
+
 ## Accessing the file headers
 
 Even though many informations from the *.QUB* and *.NAV* files headers are accessible
