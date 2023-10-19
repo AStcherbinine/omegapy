@@ -1,4 +1,4 @@
-![version](https://img.shields.io/badge/version-2.4-blue)
+![version](https://img.shields.io/badge/version-3.0beta-blue)
 ![pythonversion](https://img.shields.io/badge/Python-3.7+-blue)
 [![DOI](https://zenodo.org/badge/349763849.svg)](https://zenodo.org/badge/latestdoi/349763849)
 

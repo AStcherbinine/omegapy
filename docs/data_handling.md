@@ -437,6 +437,13 @@ for the pixel of the cube which is the closest to the target coordinates (see fi
   </figcaption>
 </figure>
 
+!!! tip "Nadir-only filtering"
+    It is possible to filter the results so the search only returns the OMEGA cubes
+    acquired with a nadir viewing geometry with the `nadir_only` argument:
+
+    * `nadir_only = True` --> Only returns cubes acquired with nadir geometry.
+    * `nadir_only = False` (default) --> Returns all matching OMEGA cubes.
+
 ### JMARS
 Alternatively, as OMEGA data are included in [JMARS](https://jmars.mars.asu.edu) 
 it is possible to use this tool to perform a request to search for OMEGA observations

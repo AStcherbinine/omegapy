@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 19/07/2023
+## Last modified by Aurélien STCHERBININE : 18/10/2023
 
 ##----------------------------------------------------------------------------------------
 """Display of `OMEGAdata` cubes.
@@ -40,6 +40,32 @@ _py_file = 'omega_plots.py'
 ##----------------------------------------------------------------------------------------
 ## Initialisation variables globales
 picked_spectra = {}
+
+##----------------------------------------------------------------------------------------
+## Modifie géométrie par défaut
+def _switch_default_geom_to_V(omega):
+    """Replace the default geometry attributes of an OMEGAdata object (C/L-channels)
+    by the V-channel geometry.
+
+    Parameters
+    ----------
+    omega : OMEGAdata
+        The OMEGA/MEx observation.
+
+    Returns
+    -------
+    omega_Vgeom : OMEGAdata
+        The new OMEGAdata object, with the new default geometry set to the V-channel.
+    """
+    omega_Vgeom = deepcopy(omega)
+    omega_Vgeom.lat = omega_Vgeom.lat_v
+    omega_Vgeom.lon = omega_Vgeom.lon_v
+    omega_Vgeom.alt = omega_Vgeom.alt_v
+    omega_Vgeom.inci_n = omega_Vgeom.inci_n_v
+    omega_Vgeom.emer_n = omega_Vgeom.emer_n_v
+    omega_Vgeom.lon_grid = omega_Vgeom.lon_grid_v
+    omega_Vgeom.lat_grid = omega_Vgeom.lat_grid_v
+    return omega_Vgeom
 
 ##----------------------------------------------------------------------------------------
 ## Affichage cube
@@ -132,7 +158,7 @@ def show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, v
 def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None,
                   alpha=None, title='auto', lonlim=(None, None), latlim=(None, None), Nfig=None,
                   polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto',
-                  **kwargs):
+                  use_V_geom=False, **kwargs):
     """Display an OMEGA/MEx observation with respect of the lat/lon coordinates of the pixels,
     and allows to use a polar projection if desired.
 
@@ -181,9 +207,13 @@ def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None
         | `True` --> longitudes between 0° and 360°.</br>
         | `False` --> longitudes between -180° and 180°.</br>
         | `'auto'` --> automatic detection of the best case.
+    use_V_geom : bool, default False
+        If `True`, use the geometry of the V-channel instead of the C/L-channels.
     **kwargs:
         Optional arguments for the `plt.pcolormesh()` function.
     """
+    if use_V_geom:
+        omega = _switch_default_geom_to_V(omega)
     if ((lam_unit == 'm') or isinstance(lam, float)) and (lam < 10):
         i_lam = uf.where_closer(lam, omega.lam)
     else:
@@ -551,7 +581,7 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
                              vmin=None, vmax=None, autoyscale=True, ylim_sp=(None, None),
                              alpha=None, lonlim=(None, None), latlim=(None, None),
                              polar=False, cbar=True, grid=True, mask=None, lam_mask=None,
-                             negatives_longitudes='auto', **kwargs):
+                             negatives_longitudes='auto', use_V_geom=False, **kwargs):
     """Interactive display of an OMEGA/MEx data cube with respect of the lat/lon 
     coordinates of the pixels, and allows to use a polar projection if desired.
     
@@ -619,6 +649,8 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
         | `True` --> longitudes between 0° and 360°.</br>
         | `False` --> longitudes between -180° and 180°.</br>
         | `'auto'` --> automatic detection of the best case.
+    use_V_geom : bool, default False
+        If `True`, use the geometry of the V-channel instead of the C/L-channels.
     **kwargs:
         Optional arguments for the `plt.pcolormesh()` function.
     """
@@ -662,11 +694,11 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
     if data is None:
         show_omega_v2(omega, lam, refl, lam_unit, cmap, vmin, vmax, alpha, title, 
                       lonlim, latlim, nfig, polar, cbar, grid, mask, negatives_longitudes, 
-                      **kwargs)
+                      use_V_geom, **kwargs)
     else:
         show_data_v2(omega, data, cmap, vmin, vmax, alpha, title, cb_title, 
                      lonlim, latlim, nfig, polar, cbar, grid, mask, negatives_longitudes,
-                     **kwargs)
+                     use_V_geom, **kwargs)
     ax1 = fig1.gca()
     ax1.scatter(lon, lat, c=bij, marker='s', s=1, picker=True, alpha=0)
     sc_pos = []
@@ -768,7 +800,7 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
 def show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', 
                 cb_title = 'data', lonlim=(None, None), latlim=(None, None), Nfig=None, 
                 polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto',
-                **kwargs):
+                use_V_geom=False, **kwargs):
     """Display high-level data derived from an OMEGA/MEx observation with respect of the 
     lat/lon coordinates of the pixels, and allows to use a polar projection if desired.
 
@@ -812,9 +844,13 @@ def show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, 
         | `True` --> longitudes between 0° and 360°.</br>
         | `False` --> longitudes between -180° and 180°.</br>
         | `'auto'` --> automatic detection of the best case.
+    use_V_geom : bool, default False
+        If `True`, use the geometry of the V-channel instead of the C/L-channels.
     **kwargs:
         Optional arguments for the `plt.pcolormesh()` function.
     """
+    if use_V_geom:
+        omega = _switch_default_geom_to_V(omega)
     if isinstance(negatives_longitudes, str):
         mask_lat = (np.abs(omega.lat) < 85)
         if (omega.lon[mask_lat] < 10).any() and (omega.lon[mask_lat] > 350).any():
@@ -1215,7 +1251,7 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
                        title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto',
                        data_list=None, mask_list=None, negative_values=False, plot=True, 
                        grid=True, out=False, negatives_longitudes=False, proj_method=1,
-                       edgecolor='face', lw=0.1, **kwargs):
+                       use_V_geom=False, edgecolor='face', lw=0.1, **kwargs):
     """Display an composite map from a list OMEGA/MEx observations, sampled on a new lat/lon grid.
 
     Parameters
@@ -1278,6 +1314,8 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
                Faster but not adapted if the grid resolution is lower than the OMEGA pixels size.</br>
         | `2` --> Consider the entire spatial extent of each pixel.</br>
                More accurate, but take more time.
+    use_V_geom : bool, default False
+        If `True`, use the geometry of the V-channel instead of the C/L-channels.
     edgecolor : {'none', None, 'face', color', color sequence}, default 'face'
         The color of the edges, see documentation of `plt.pcolormesh` for more details.</br>
         *Added in version 2.2.8 to fix display due for new version of matplotlib.*</br>
@@ -1315,6 +1353,8 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
         check_list_mask_omega(omega_list, mask_list, disp=True)
     if data_list is None:
         for i, omega in enumerate(tqdm(omega_list)):
+            if use_V_geom:
+                omega = _switch_default_geom_to_V(omega)
             i_lam = uf.where_closer(lam, omega.lam)
             if mask_list is None:
                 data_tmp = omega.cube_rf[:,:,i_lam]     # Reflectance without mask
@@ -1332,6 +1372,8 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
     else:
         check_list_data_omega(omega_list, data_list, disp=True)
         for i, omega in enumerate(tqdm(omega_list)):
+            if use_V_geom:
+                omega = _switch_default_geom_to_V(omega)
             if mask_list is None:
                 data_tmp = data_list[i]     # Data without mask
             else:
@@ -1425,7 +1467,7 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
 def save_map_omega_list(omega_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
                         pas_lat=0.1, pas_lon=0.1, lam=1.085, data_list=None, data_desc='', 
                         mask_list=None, negative_values=False, proj_method=1, 
-                        sav_filename='auto', ext='',
+                        use_V_geom=False, sav_filename='auto', ext='',
                         base_folder='../data/OMEGA/sav_map_list_v2/', sub_folder=''):
     """Save the output of the `omega_plots.show_omega_list_v2()` function with the requested
     parameters as a dictionary.
@@ -1466,6 +1508,8 @@ def save_map_omega_list(omega_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=
                Faster but not adapted if the grid resolution is lower than the OMEGA pixels size.</br>
         | `2` --> Consider the entire spatial extent of each pixel.</br>
                More accurate, but take more time.
+    use_V_geom : bool, default False
+        If `True`, use the geometry of the V-channel instead of the C/L-channels.
     sav_filename : str, default 'auto'
         The saving file name.</br>
         | If `'auto'` --> Automatically generated.
@@ -1491,7 +1535,7 @@ def save_map_omega_list(omega_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=
     data, mask, grid_lat, grid_lon, mask_obs = show_omega_list_v2(omega_list,
                 lam, lat_min, lat_max, lon_min, lon_max, pas_lat, pas_lon,
                 data_list=data_list, mask_list=mask_list, negative_values=negative_values,
-                proj_method=proj_method, plot=False, out=True)
+                proj_method=proj_method, use_V_geom=use_V_geom, plot=False, out=True)
     # Sav file
     input_params = {
         'omega_list' : od.get_names(omega_list),

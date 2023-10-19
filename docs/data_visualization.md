@@ -108,6 +108,24 @@ op.show_omega_v2(omega, lam=1.085, polar=True)
      * `latlim = (90, 0)` for the entire North hemisphere
      * `latlim = (-90, 0)` for the entire South hemisphere
 
+### V-channel geometry
+
+The field of view of the V-channel is not perfectly co-aligned with the C & L-channels,
+so the geometry information (longitude, latitude, etc) is slightly different depending
+on the selected wavelength.
+The default behaviour of OMEGA-Py is to use the C/L-channels geometry, but all the
+data for the V-channel are available as well (e.g., `lat_v`, `lon_v`, ...).
+
+So, if you are displaying data from the V-channel (i.e., λ < 1 μm), it is possible
+to use the appropriate geometry information by setting the `use_V_geom` parameter
+to `True` (this option is available in all the display functions that use projection,
+i.e., all the `*_v2` functions).
+
+~~~python
+op.show_omega_v2(omega, lam=0.9, use_V_geom=True)
+~~~
+
+
 ## Applying masks
 
 Let's assume you have generated a mask associated with your OMEGA observation,
