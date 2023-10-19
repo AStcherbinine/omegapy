@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 17/10/2023
+## Last modified by Aurélien STCHERBININE : 18/10/2023
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -361,16 +361,26 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path='_omega_bin
 
     trans = np.pi / 180 * 1e-4
     # extraction données
+    ut_time = geocube[:, 1, :]
     ecl = np.cos(geocube[:, 2, :] * trans)
+    incidence = geocube[:, 2, :] * 1e-4
+    emergence = geocube[:, 3, :] * 1e-4
+    # {C+L}
     longitude = geocube[:, 6, :] * 1e-4
     latitude = geocube[:, 7, :] * 1e-4
     altitude = geocube[:, 12, :] * 1e-3
-    emergence = geocube[:, 3, :] * 1e-4
-    incidence = geocube[:, 2, :] * 1e-4
     incidence_norm = geocube[:, 8, :] * 1e-4
-    ut_time = geocube[:, 1, :]
+    emergence_norm = geocube[:, 9, :] * 1e-4
     lon_grid = np.swapaxes(geocube[:, 13:17, :], 1, 2) * 1e-4
     lat_grid = np.swapaxes(geocube[:, 17:21, :], 1, 2) * 1e-4
+    # {V}
+    longitude_V = geocube[:, 36, :] * 1e-4
+    latitude_V = geocube[:, 37, :] * 1e-4
+    altitude_V = geocube[:, 42, :] * 1e-3
+    incidence_norm_V = geocube[:, 38, :] * 1e-4
+    emergence_norm_V = geocube[:, 39, :] * 1e-4
+    lon_grid_V = np.swapaxes(geocube[:, 43:47, :], 1, 2) * 1e-4
+    lat_grid_V = np.swapaxes(geocube[:, 47:51, :], 1, 2) * 1e-4
     
     #--------------------------
     # Preliminary pipeline tool
@@ -698,9 +708,9 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path='_omega_bin
     # Voie visible
     saturation_vis = idat[:, 299, :] / summation
     # Temperature voie C
-    temperature = sdat1[0, 2, :] * 0.001
+    temperature_C = sdat1[0, 2, :] * 0.001
     # Temperature voie L
-    # temperature = sdat1[1, 2, :] * 0.001
+    temperature_L = sdat1[1, 2, :] * 0.001
 
     #--------------------------
     # Output data
@@ -716,15 +726,24 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path='_omega_bin
         'latitude'  : latitude.T,
         'longitude' : longitude.T,
         'emergence' : emergence.T,
+        'emergence_norm' : emergence_norm.T,
         'incidence' : incidence.T,
         'incidence_norm' : incidence_norm.T,
         'altitude'  : altitude.T,
         'ut_time'   : ut_time.T,
-        'temperature'   : temperature,
+        'temperature_c' : temperature_C,
+        'temperature_l' : temperature_L,
         'saturation_c'  : saturation_c.T,
         'saturation_vis': saturation_vis.T,
         'lat_grid'  : np.moveaxis(lat_grid, [0,1,2], [1,0,2]),
-        'lon_grid'  : np.moveaxis(lon_grid, [0,1,2], [1,0,2])
+        'lon_grid'  : np.moveaxis(lon_grid, [0,1,2], [1,0,2]),
+        'latitude_v'  : latitude_V.T,
+        'longitude_v' : longitude_V.T,
+        'altitude_v'  : altitude_V.T,
+        'incidence_norm_v' : incidence_norm_V.T,
+        'emergence_norm_v' : emergence_norm_V.T,
+        'lat_grid_v'  : np.moveaxis(lat_grid_V, [0,1,2], [1,0,2]),
+        'lon_grid_v'  : np.moveaxis(lon_grid_V, [0,1,2], [1,0,2]),
     }
     return out_data, out_geom
 
@@ -765,19 +784,34 @@ class OMEGAdata:
     ls : float
         The Solar longitude of the observation (deg).
     lat : 2D array
-        The latitude of each pixel (deg).
+        The latitude of each pixel (deg).</br>
+        *C & L channels*
     lon : 2D array
-        The longitude of each pixel (deg).
+        The longitude of each pixel (deg).</br>
+        *C & L channels*
     alt : 2D array
-        The elevation of the pixel footprint center point (km).
+        The elevation of the pixel footprint center point from MOMA topography (km).</br>
+        *C & L channels*
     loct : 2D array of floats
         The array of the local time for each pixel of the observation.
     my : int
         The Martian Year number at the time of the observation.
     emer : 2D array
-        The angle of emergent line (from the surface) (deg).
+        The angle of emergent line (from the surface) (deg).</br>
+        W.r.t. the outward normal to the reference ellipsoid.</br>
+        *C & L channels*
     inci : 2D array
-        The incidence angle at the surface (deg).
+        The incidence angle at the surface (deg).</br> 
+        W.r.t. the outward normal to the reference ellipsoid.</br>
+        *C & L channels*
+    emer_n : 2D array
+        The angle of emergent line (from the surface) (deg).</br>
+        W.r.t. the local normal.</br>
+        *C & L channels*
+    inci_n : 2D array
+        The incidence angle at the surface (deg).</br> 
+        W.r.t. the local normal.</br>
+        *C & L channels*
     specmars : 1D array
         The Solar radiation spectrum on Mars (W.m-2.sr-1.µm-1).
     utc : datetime.datetime
@@ -785,17 +819,47 @@ class OMEGAdata:
     ic : dict
         The index of the used spectral pixels for each channel.
     lat_grid : 2D array
-        The latitude grid of the observation (from the edge of the pixels).
+        The latitude grid of the observation (from the edge of the pixels).</br>
+        *C & L channels*
     lon_grid : 2D array
-        The longitude grid of the observation (from the edge of the pixels).
+        The longitude grid of the observation (from the edge of the pixels).</br>
+        *C & L channels*
     surf_temp : 2D array
         The retrieved surface temperature of each pixel (from the thermal correction).
     sensor_temp_c : 1D array
         The temperature of the sensor for each line of the (for the C-channel).
+    sensor_temp_l : 1D array
+        The temperature of the sensor for each line of the (for the L-channel).
     saturation_c : 2D array
         Information about the saturation of the C-channel.
     saturation_vis : 2D array
         Information about the saturation of the Vis-channel.
+    ref_C : 2D array
+        Average reflectance at λ = 1.285/1.299/1.314 μm, to be compared
+        with `ecl_n = cos(inci_n)` to check the geometry spatial calibration.
+    lat_v : 2D array
+        The latitude of each pixel (deg).</br>
+        *V channel*
+    lon_v : 2D array
+        The longitude of each pixel (deg).</br>
+        *V channel*
+    alt_v : 2D array
+        The elevation of the pixel footprint center point from MOMA topography (km).</br>
+        *V channel*
+    emer_n_v : 2D array
+        The angle of emergent line (from the surface) (deg).</br>
+        W.r.t. the local normal.</br>
+        *V channel*
+    inci_n_v : 2D array
+        The incidence angle at the surface (deg).</br> 
+        W.r.t. the local normal.</br>
+        *V channel*
+    lat_grid_v : 2D array
+        The latitude grid of the observation (from the edge of the pixels).</br>
+        *V channel*
+    lon_grid_v : 2D array
+        The longitude grid of the observation (from the edge of the pixels).</br>
+        *V channel*
     summation : int
         The downtrack summing.
     bits_per_data : float
@@ -840,6 +904,10 @@ class OMEGAdata:
         Westernmost longitude of the observation (deg).
     slant : float
         Distance from the spacecraft to the center of the observation along the line of sight (km).
+    focal_plane_temperatures : dict
+        Temperatures of the C, L, V detectors (K).
+    spectrometer_temperatures : dict
+        Temperatures of the C, L, V spectrometers (K).
     quality : int
         The quality level of the cube.</br>
         | `0`: corrupted</br>
@@ -855,6 +923,10 @@ class OMEGAdata:
         | `False` --> No atmospheric correction.
     atm_corr_infos : dict
         Information about the atmospheric correction (date, method).
+    corrV : bool
+        Correction state of the visible channel (Vis).
+    corrL : bool
+        Correction state of the long-IR channel (L).
     version : int
         The major release version of the `omegapy.omega_data.py` file used.
     add_infos : str
@@ -884,6 +956,8 @@ class OMEGAdata:
         if empty:
             # Data
             self.name = ''
+            self.corrV = None
+            self.corrL = None
             self.lam = np.array([])
             self.cube_i = np.array([[[]]])
             self.cube_rf = np.array([[[]]])
@@ -893,7 +967,9 @@ class OMEGAdata:
             self.alt = np.array([[]])
             self.loct = np.array([[]])
             self.emer = np.array([[]])
+            self.emer_n = np.array([[]])
             self.inci = np.array([[]])
+            self.inci_n = np.array([[]])
             self.specmars = np.array([])
             self.utc = datetime.datetime.now()
             self.my = np.nan
@@ -905,6 +981,7 @@ class OMEGAdata:
             self.lon_grid = np.array([[]])
             self.lat_grid = np.array([[]])
             self.sensor_temp_c = np.array([])
+            self.sensor_temp_l = np.array([])
             self.saturation_c = np.array([[]])
             self.saturation_vis = np.array([[]])
             self.surf_temp = np.array([[]])
@@ -912,9 +989,19 @@ class OMEGAdata:
             self.bits_per_data = None
             self.data_quality = None
             self.mode_channel = None
+            self.lat_v = np.array([[]])
+            self.lon_v = np.array([[]])
+            self.alt_v = np.array([[]])
+            self.emer_n_v = np.array([[]])
+            self.inci_n_v = np.array([[]])
+            self.lon_grid_v = np.array([[]])
+            self.lat_grid_v = np.array([[]])
+            self.focal_plane_temperatures = {'V' : None, 'C' : None, 'L' : None}
+            self.spectrometer_temperatures = {'V' : None, 'C' : None, 'L' : None}
             # Nav
             self.lrec = None
             self.nrec = None
+            self.sol_dist = None
             self.sol_dist_au = None
             self.npixel = None
             self.npara = None
@@ -930,8 +1017,6 @@ class OMEGAdata:
             self.slant = None
             self.target = None
             # Ajout pour correction position
-            self.inci2 = np.array([[]])
-            self.ecl2 = np.array([[]])
             self.ref_C = np.array([[]])
 
         else:
@@ -955,13 +1040,23 @@ class OMEGAdata:
             lon = geom_dict['longitude']
             alt = geom_dict['altitude']
             emer = geom_dict['emergence']
+            emer_n = geom_dict['emergence_norm']
             inci = geom_dict['incidence']
+            inci_n = geom_dict['incidence_norm']
             utc = geom_dict['ut_time']
-            temperature = geom_dict['temperature']
+            temperature_c = geom_dict['temperature_c']
+            temperature_l = geom_dict['temperature_l']
             saturation_c = geom_dict['saturation_c']
             saturation_vis = geom_dict['saturation_vis']
             lon_px = geom_dict['lon_grid']
             lat_px = geom_dict['lat_grid']
+            lat_V = geom_dict['latitude_v']
+            lon_V = geom_dict['longitude_v']
+            alt_V = geom_dict['altitude_v']
+            emer_n_V = geom_dict['emergence_norm_v']
+            inci_n_V = geom_dict['incidence_norm_v']
+            lon_px_V = geom_dict['lon_grid_v']
+            lat_px_V = geom_dict['lat_grid_v']
             # Correction of OMEGA data (same as clean_spec.pro)
             ic_C= ic[(ic >= 8) & (ic <= 122)]        # IR short (voie C)
             ic_L = ic[(ic >= 137) & (ic <= 255)]     # IR long (voie L)
@@ -994,12 +1089,22 @@ class OMEGAdata:
             lon_grid[1:,0] = lon_px[:,0,1]
             lon_grid[0,1:] = lon_px[0,:,3]
             lon_grid[0,0] = lon_px[0,0,2]
-            # Longitude pixels grid
+            lon_grid_V = np.zeros((ny+1, nx+1))
+            lon_grid_V[1:,1:] = lon_px_V[:,:,0]
+            lon_grid_V[1:,0] = lon_px_V[:,0,1]
+            lon_grid_V[0,1:] = lon_px_V[0,:,3]
+            lon_grid_V[0,0] = lon_px_V[0,0,2]
+            # Latitude pixels grid
             lat_grid = np.zeros((ny+1, nx+1))
             lat_grid[1:,1:] = lat_px[:,:,0]
             lat_grid[1:,0] = lat_px[:,0,1]
             lat_grid[0,1:] = lat_px[0,:,3]
             lat_grid[0,0] = lat_px[0,0,2]
+            lat_grid_V = np.zeros((ny+1, nx+1))
+            lat_grid_V[1:,1:] = lat_px_V[:,:,0]
+            lat_grid_V[1:,0] = lat_px_V[:,0,1]
+            lat_grid_V[0,1:] = lat_px_V[0,:,3]
+            lat_grid_V[0,0] = lat_px_V[0,0,2]
             # Storage as class arguments
             self.lam = lam.astype(np.float64)
             self.cube_i = cube_i2.astype(np.float64)
@@ -1008,7 +1113,9 @@ class OMEGAdata:
             self.lon = lon.astype(np.float64)
             self.alt = alt.astype(np.float64)
             self.emer = emer.astype(np.float64)
+            self.emer_n = emer_n.astype(np.float64)
             self.inci = inci.astype(np.float64)
+            self.inci_n = inci_n.astype(np.float64)
             self.specmars = specmars.astype(np.float64)
             self.name = nomfic0
             self.orbit = orbit_nb
@@ -1019,9 +1126,17 @@ class OMEGAdata:
             self.lam_ma = lam_mask
             self.lat_grid = lat_grid
             self.lon_grid = lon_grid
-            self.sensor_temp_c = temperature.astype(np.float64)
+            self.sensor_temp_c = temperature_c.astype(np.float64)
+            self.sensor_temp_l = temperature_l.astype(np.float64)
             self.saturation_c = saturation_c.astype(np.float64)
             self.saturation_vis = saturation_vis.astype(np.float64)
+            self.lat_v = lat_V.astype(np.float64)
+            self.lon_v = lon_V.astype(np.float64)
+            self.alt_v = alt_V.astype(np.float64)
+            self.emer_n_v = emer_n_V.astype(np.float64)
+            self.inci_n_v = inci_n_V.astype(np.float64)
+            self.lat_grid_v = lat_grid_V
+            self.lon_grid_v = lon_grid_V
             #--------------------------
             # Data from the .QUB header
             #--------------------------
@@ -1038,6 +1153,13 @@ class OMEGAdata:
                 self.mode_channel = 3
             else:
                 self.mode_channel = mode_channel_tmp
+
+            T_fp_C, T_fp_L, T_fp_V = np.array(
+                hd_qub['MEX:FOCAL_PLANE_TEMPERATURE'][1:-5].split(','), dtype=np.float64)
+            self.focal_plane_temperatures = {'V' : T_fp_V, 'C' : T_fp_C, 'L' : T_fp_L}
+            T_sp_C, T_sp_L, T_sp_V = np.array(
+                hd_qub['MEX:SPECTROMETER_TEMPERATURE'][1:-5].split(','), dtype=np.float64)
+            self.spectrometer_temperatures = {'V' : T_sp_V, 'C' : T_sp_C, 'L' : T_sp_L}
             #--------------------------
             # Data from the .NAV header
             #--------------------------
@@ -1090,11 +1212,22 @@ class OMEGAdata:
                 self.add_infos = corrupted_orbits_comments[i_obs]
             #--------------------------
             # Ajout pour correction position
-            inci2 = geom_dict['incidence_norm']
-            self.inci2 = inci2
-            self.ecl2 = np.cos(inci2 * np.pi / 180)
+            # self.ecl_n = np.cos(inci_n * np.pi / 180)
             i25, i26, i27 = uf.where_closer_array([1.270, 1.285, 1.299], lam)
             self.ref_C = np.mean(deepcopy(cube_rf2.astype(np.float32))[:, :, i25:i27+1], axis=2)
+            #--------------------------
+            # V & L corrections status
+            self.corrV = corrV
+            self.corrL = corrL
+            start = ''
+            if self.add_infos != '':
+                start = '\n        '
+            if (not corrV) and (not corrL):
+                self.add_infos += (start + 'No V & L channels correction')
+            elif (not corrV) and corrL:
+                self.add_infos += (start + 'No V channel correction')
+            elif corrV and (not corrL):
+                self.add_infos += (start + 'No L channel correction')
             #--------------------------
             # End of data extraction & correction
             if disp:
@@ -1105,6 +1238,8 @@ class OMEGAdata:
         new_omega = OMEGAdata(empty=True)
         # Data
         new_omega.name = self.name
+        new_omega.corrV = self.corrV
+        new_omega.corrL = self.corrL
         new_omega.lam = self.lam
         new_omega.cube_i = self.cube_i
         new_omega.cube_rf = self.cube_rf
@@ -1115,7 +1250,9 @@ class OMEGAdata:
         new_omega.loct = self.loct
         new_omega.my = self.my
         new_omega.emer = self.emer
+        new_omega.emer_n = self.emer_n
         new_omega.inci = self.inci
+        new_omega.inci_n = self.inci_n
         new_omega.specmars = self.specmars
         new_omega.utc = self.utc
         new_omega.orbit = self.orbit
@@ -1124,6 +1261,7 @@ class OMEGAdata:
         new_omega.lon_grid = self.lon_grid
         new_omega.lat_grid = self.lat_grid
         new_omega.sensor_temp_c = self.sensor_temp_c
+        new_omega.sensor_temp_l = self.sensor_temp_l
         new_omega.saturation_c = self.saturation_c
         new_omega.saturation_vis = self.saturation_vis
         new_omega.surf_temp = self.surf_temp
@@ -1131,9 +1269,20 @@ class OMEGAdata:
         new_omega.bits_per_data = self.bits_per_data
         new_omega.data_quality = self.data_quality
         new_omega.mode_channel = self.mode_channel
+        new_omega.ref_C = self.ref_C
+        new_omega.lat_v = self.lat_v
+        new_omega.lon_v = self.lon_v
+        new_omega.alt_v = self.alt_v
+        new_omega.emer_n_v = self.emer_n_v
+        new_omega.inci_n_v = self.inci_n_v
+        new_omega.lon_grid_v = self.lon_grid_v
+        new_omega.lat_grid_v = self.lat_grid_v
+        new_omega.focal_plane_temperatures = self.focal_plane_temperatures
+        new_omega.spectrometer_temperatures = self.spectrometer_temperatures
         # Nav
         new_omega.lrec = self.lrec
         new_omega.nrec = self.nrec
+        new_omega.sol_dist = self.sol_dist
         new_omega.sol_dist_au = self.sol_dist_au
         new_omega.npixel = self.npixel
         new_omega.npara = self.npara
@@ -1163,6 +1312,8 @@ class OMEGAdata:
         memo[id(self)] = new_omega
         # Data
         new_omega.name = deepcopy(self.name, memo)
+        new_omega.corrV = deepcopy(self.corrV, memo)
+        new_omega.corrL = deepcopy(self.corrL, memo)
         new_omega.lam = deepcopy(self.lam, memo)
         new_omega.cube_i = deepcopy(self.cube_i, memo)
         new_omega.cube_rf = deepcopy(self.cube_rf, memo)
@@ -1173,7 +1324,9 @@ class OMEGAdata:
         new_omega.loct = deepcopy(self.loct, memo)
         new_omega.my = deepcopy(self.my, memo)
         new_omega.emer = deepcopy(self.emer, memo)
+        new_omega.emer_n = deepcopy(self.emer_n, memo)
         new_omega.inci = deepcopy(self.inci, memo)
+        new_omega.inci_n = deepcopy(self.inci_n, memo)
         new_omega.specmars = deepcopy(self.specmars, memo)
         new_omega.utc = deepcopy(self.utc, memo)
         new_omega.orbit = deepcopy(self.orbit, memo)
@@ -1182,6 +1335,7 @@ class OMEGAdata:
         new_omega.lon_grid = deepcopy(self.lon_grid, memo)
         new_omega.lat_grid = deepcopy(self.lat_grid, memo)
         new_omega.sensor_temp_c = deepcopy(self.sensor_temp_c, memo)
+        new_omega.sensor_temp_l = deepcopy(self.sensor_temp_l, memo)
         new_omega.saturation_c = deepcopy(self.saturation_c, memo)
         new_omega.saturation_vis = deepcopy(self.saturation_vis, memo)
         new_omega.surf_temp = deepcopy(self.surf_temp, memo)
@@ -1189,9 +1343,20 @@ class OMEGAdata:
         new_omega.bits_per_data = deepcopy(self.bits_per_data, memo)
         new_omega.data_quality = deepcopy(self.data_quality, memo)
         new_omega.mode_channel = deepcopy(self.mode_channel, memo)
+        new_omega.ref_C = deepcopy(self.ref_C, memo)
+        new_omega.lat_v = deepcopy(self.lat_v, memo)
+        new_omega.lon_v = deepcopy(self.lon_v, memo)
+        new_omega.alt_v = deepcopy(self.alt_v, memo)
+        new_omega.emer_n_v = deepcopy(self.emer_n_v, memo)
+        new_omega.inci_n_v = deepcopy(self.inci_n_v, memo)
+        new_omega.lon_grid_v = deepcopy(self.lon_grid_v, memo)
+        new_omega.lat_grid_v = deepcopy(self.lat_grid_v, memo)
+        new_omega.focal_plane_temperatures = deepcopy(self.focal_plane_temperatures, memo)
+        new_omega.spectrometer_temperatures = deepcopy(self.spectrometer_temperatures, memo)
         # Nav
         new_omega.lrec = deepcopy(self.lrec, memo)
         new_omega.nrec = deepcopy(self.nrec, memo)
+        new_omega.sol_dist = deepcopy(self.sol_dist, memo)
         new_omega.sol_dist_au = deepcopy(self.sol_dist_au, memo)
         new_omega.npixel = deepcopy(self.npixel, memo)
         new_omega.npara = deepcopy(self.npara, memo)
@@ -1223,6 +1388,8 @@ class OMEGAdata:
                     (self.my == other.my) and
                     (self.therm_corr == other.therm_corr) and 
                     (self.atm_corr == other.atm_corr) and
+                    (self.corrV == other.corrV) and
+                    (self.corrL == other.corrL) and
                     (self.cube_rf == other.cube_rf).all())
         else:
             return False
