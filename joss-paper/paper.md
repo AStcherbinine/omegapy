@@ -75,6 +75,7 @@ team has provided 10 releases of the IDL software (`SOFT01` to `SOFT10`) to read
 level 1B binary files that can be downloaded from the ESA [PSA](https://archives.esac.esa.int/psa/#!Table%20View/OMEGA=instrument) 
 and generate level 2A data with reflectance spectra.
 However, the presence of an IDL solution only may raise some concerns:
+
  * The cost of an IDL license, as it is a proprietary language, makes it not accessible to everyone.
  * As the community (and especially the youngest generation) is moving to use mostly Python
    instead of IDL, the requirement to use the IDL language to access OMEGA data can limit its
