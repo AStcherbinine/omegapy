@@ -34,8 +34,8 @@ affiliations:
    index: 2
  - name: LAM, Université Aix-Marseille, CNRS, CNES, Marseille, France
    index: 3
- - name: German Aerospace Center (DLR), Institute of Planetary Research, Berlin, Germany
-   index: 4
+ - name: German Aerospace Center (DLR), Institute of Planetary Research, Berlin, Germany
+   index: 4
 date: 23 October 2023
 bibliography: paper.bib
 ---
