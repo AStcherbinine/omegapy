@@ -10,8 +10,8 @@
 
 <!--Importation and display of OMEGA/MEx observations in Python 3, based on the IDL *SOFT10* routines developped in the IAS planetary team.-->
 
-!!! warning "Disclaimer"
-    This module is not the official software distributed by the OMEGA team.
+<!--!!! warning "Disclaimer"-->
+<!--    This module is not the official software distributed by the OMEGA team.-->
 
 <!-- > **Disclaimer:** This module is not the official software distributed by the OMEGA team.-->
 

@@ -1,7 +1,8 @@
 ## Reading the binaries
 
-Similarly to the `readomega.pro` IDL routine of the *SOFT 10*, OMEGA-Py read the binary
-*.QUB* & *.NAV* files that can be downloaded from the ESA PSA to generate level 1B
+Similarly to the `readomega.pro` IDL routine of the *SOFT 10*, OMEGA-Py read the level 1B binary
+*.QUB* & *.NAV* files that can be downloaded from the ESA 
+[PSA](https://archives.esac.esa.int/psa/#!Table%20View/OMEGA=instrument) to generate level 2A
 data with reflectance spectra. 
 
 !!! warning "Attention"
