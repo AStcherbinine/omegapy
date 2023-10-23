@@ -25,7 +25,7 @@ BibTeX entry:
   year         = 2023,
   publisher    = {Zenodo},
   version      = {v3.0},
-  doi          = {10.5281/zenodo.8125436},
+  doi          = {10.5281/zenodo.10035061},
   url          = {https://doi.org/10.5281/zenodo.10035061}
 }
 ~~~
