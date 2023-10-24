@@ -48,7 +48,7 @@ It has been developed as an alternative to the historical [`SOFT 10` IDL routine
 of the OMEGA legacy software provided by the instrument team for the past 20 years.
 
 The module notably includes a re-implementation of the most recent release of the IDL OMEGA
-software but also contains several additional data reduction functions such as build-in
+software but also contains several additional data reduction functions such as built-in
 atmospheric and thermal corrections (using previously published methods) and graphics tools
 including interactive visualization of the data or generation of composite OMEGA maps using
 the `matplotlib` module [@hunter_2007].
@@ -60,7 +60,7 @@ aims at making the amazing OMEGA dataset (rich of 20 years of observations now) 
 easily accessible.
 
 Since its first release in 2020, `OMEGA-Py` has been used in published studies
-[@stcherbinine_2021b; @leseigneur_2023] as well as currently ongoing projects
+[@stcherbinine_2021b; @leseigneur_2023] as well as in currently ongoing projects
 [e.g., @barraud_2022a].
 
 `OMEGA-Py` can be installed from PyPI with `pip install omegapy`, and
