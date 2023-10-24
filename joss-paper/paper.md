@@ -12,7 +12,6 @@ authors:
  - name: Aurélien Stcherbinine
    orcid: 0000-0002-7086-5443
    affiliation: 1
-   corresponding: true
  - name: Yves Langevin
    orcid: 0000-0002-4492-215X
    affiliation: 2
@@ -44,7 +43,7 @@ bibliography: paper.bib
 `OMEGA-Py` is a Python 3 module dedicated to the scientific use of data provided by the 
 Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité (OMEGA) instrument onboard
 the ESA Mars Express (MEx) orbiter [@bibring_2004].
-It has been developed as an alternative to the historical [`SOFT 10` IDL routines](ftp://psa.esac.esa.int/pub/mirror/MARS-EXPRESS/OMEGA/MEX-M-OMEGA-2-EDR-FLIGHT-EXT7-V1.0/SOFTWARE/)
+It has been developed as an alternative to the historical [`SOFT 10` IDL routines](https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/OMEGA/MEX-M-OMEGA-2-EDR-FLIGHT-EXT8-V1.0/SOFTWARE/)
 of the OMEGA legacy software provided by the instrument team for the past 20 years.
 
 The module notably includes a re-implementation of the most recent release of the IDL OMEGA
