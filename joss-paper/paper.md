@@ -20,6 +20,7 @@ authors:
    affiliation: "2, 3"
  - name: Mathieu Vincendon
    affiliation: 2
+   orcid: 0000-0002-1072-7487
  - name: Yann Leseigneur
    orcid: 0000-0003-1787-2924
    affiliation: 2
@@ -35,7 +36,7 @@ affiliations:
    index: 3
  - name: German Aerospace Center (DLR), Institute of Planetary Research, Berlin, Germany
    index: 4
-date: 23 October 2023
+date: 24 October 2023
 bibliography: paper.bib
 ---
 
@@ -59,7 +60,8 @@ aims at making the amazing OMEGA dataset (rich of 20 years of observations now) 
 easily accessible.
 
 Since its first release in 2020, `OMEGA-Py` has been used in published studies
-[@stcherbinine_2021b; @leseigneur_2023] as well as currently ongoing projects.
+[@stcherbinine_2021b; @leseigneur_2023] as well as currently ongoing projects
+[e.g., @barraud_2022a].
 
 `OMEGA-Py` can be installed from PyPI with `pip install omegapy`, and
 is distributed as an official software by the OMEGA team
