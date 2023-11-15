@@ -121,10 +121,26 @@ to use the appropriate geometry information by setting the `use_V_geom` paramete
 to `True` (this option is available in all the display functions that use projection,
 i.e., all the `*_v2` functions).
 
-~~~python
-op.show_omega_v2(omega, lam=0.9, use_V_geom=True)
-~~~
+=== "C-channel reflectance with C-channel geometry"
+    ~~~python
+    op.show_omega_v2(omega, lam=2.26, mask=data_mask)
+    ~~~
 
+    ![C-channel reflectance (2.26μm) with C-channel geometry](img/ORB0979_3__show_omega_v2_alb226_noVgeom.png)
+
+=== "V-channel reflectance with C-channel geometry"
+    ~~~python
+    op.show_omega_v2(omega, lam=0.80, mask=data_mask)
+    ~~~
+
+    ![V-channel reflectance (0.8μm) with C-channel geometry](img/ORB0979_3__show_omega_v2_alb080_noVgeom.png)
+
+=== "V-channel reflectance with V-channel geometry"
+    ~~~python
+    op.show_omega_v2(omega, lam=0.80, mask=data_mask, use_V_geom=True)
+    ~~~
+
+    ![V-channel reflectance (0.8μm) with V-channel geometry](img/ORB0979_3__show_omega_v2_alb080_Vgeom.png)
 
 ## Applying masks
 
@@ -385,7 +401,7 @@ by passing them to the `data_list` argument of the function
 
 !!! danger "Important"
     The data in `mask_list` and `data_list` (if used) must be in the same order as `omega_list`.
-    Otherwise, if the dimensions of the content of all lists do not match, an `ValueError` will be
+    Otherwise, if the dimensions of the content of all lists do not match, a `ValueError` will be
     raised.
 
 ~~~python
