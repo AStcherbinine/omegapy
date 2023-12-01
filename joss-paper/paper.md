@@ -44,19 +44,20 @@ bibliography: paper.bib
 `OMEGA-Py` is a Python 3 module dedicated to the scientific use of data provided by the 
 Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité (OMEGA) instrument onboard
 the ESA Mars Express (MEx) orbiter [@bibring_2004].
-It has been developed as an alternative to the historical [`SOFT 10` IDL routines](https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/OMEGA/MEX-M-OMEGA-2-EDR-FLIGHT-EXT8-V1.0/SOFTWARE/)
+It has been developed as an alternative to the [IDL routines](https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/OMEGA/MEX-M-OMEGA-2-EDR-FLIGHT-EXT8-V1.0/SOFTWARE/)
 of the OMEGA legacy software provided by the instrument team for the past 20 years.
 
-The module notably includes a re-implementation of the most recent release of the IDL OMEGA
-software but also contains several additional data reduction functions such as built-in
-atmospheric and thermal corrections (using previously published methods) and graphics tools
-including interactive visualization of the data or generation of composite OMEGA maps using
-the `matplotlib` module [@hunter_2007].
+The module notably includes a re-implementation of the most recent release of
+the IDL OMEGA software (v10, `SOFT 10`) but also contains several additional
+data reduction functions such as built-in atmospheric and thermal corrections
+(using previously published methods) and graphics tools including interactive
+visualization of the data or generation of composite OMEGA maps using the
+`matplotlib` module, including geographic projection [@hunter_2007].
 
 The objective of the module is to facilitate the scientific exploitation of OMEGA observations,
 especially for the younger generation of planetary scientists who are more used to the Python
 language than IDL. Plus, the presence of built-in correction and visualization functions
-aims at making the amazing OMEGA dataset (rich of 20 years of observations now) more 
+aims at making the huge and very complete OMEGA dataset (rich of 20 years of observations now) more 
 easily accessible.
 
 Since its first release in 2020, `OMEGA-Py` has been used in published studies
@@ -69,8 +70,11 @@ since the release of version 3.0 deployed in October 2023.
 
 
 # Statement of need
-The accessibility of data returned by spatial missions is a crucial point to ensure the
+The accessibility of data returned by space missions is a crucial point to ensure the
 development of open science.
+While the OMEGA dataset is public with yearly releases as of 2023, the legacy pipeline uses
+a proprietary software and several crucial data reduction algorithms are not public,
+thus severely hindering its use.
 Since the beginning of the science phase of the OMEGA instrument in 2004, the instrument
 team has provided 10 releases of the IDL software (`SOFT01` to `SOFT10`) to read the
 level 1B binary files that can be downloaded from the ESA [PSA](https://archives.esac.esa.int/psa/#!Table%20View/OMEGA=instrument) 
