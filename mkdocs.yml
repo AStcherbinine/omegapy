@@ -11,7 +11,7 @@ repo_url: "https://github.com/AStcherbinine/omegapy"
 edit_uri: "edit/main/docs/"
 
 # Copyright
-copyright: Copyright &copy; 2023 Aurélien Stcherbinine
+copyright: Copyright &copy; 2024 Aurélien Stcherbinine
 
 # Configuration
 theme:
@@ -164,6 +164,7 @@ nav:
     - Band depth: example1_band_depth.md
     - Overplotting: example2_overplot.md
   - Code Reference: reference/
+  - Community guidelines: community.md
   - Litterature: litterature.md
   - Credits: credits.md
 

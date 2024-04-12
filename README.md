@@ -39,18 +39,25 @@ Full documentation of the OMEGA-Py module is available at [astcherbinine.github.
 
 Planetary Data Workshop 2023: [abstract](https://github.com/AStcherbinine/omegapy/blob/master/docs/Stcherbinine_PDW2023_7007_omegapy.pdf) & [slides](https://github.com/AStcherbinine/omegapy/blob/master/docs/PDW_Flagstaff_Stcherbinine_omegapy_upload.pdf)
 
+## Community guidelines
+To contribute to OMEGA-Py, report an issue or seek support, please refer to the community guidelines
+page of the documentation available [here](https://astcherbinine.github.io/omegapy/community/).
+
 ## Citing OMEGA-Py
 If you are using OMEGA-Py in your research, please cite it according to the guidelines available [here](https://astcherbinine.github.io/omegapy/credits/).
 
 ## Credits
 
-© Aurélien Stcherbinine (2020–2023)
+© Aurélien Stcherbinine (2020–2024)
 
 Institut d'Astrophysique Spatiale (IAS), Université Paris-Saclay, CNRS, Orsay, France
 
 LATMOS/IPSL, UVSQ Université Paris-Saclay, Sorbonne Université, CNRS, Guyancourt, France
 
 Department of Astronomy and Planetary Science, Northern Arizona University, Flagstaff, AZ, USA
+
+Institut de Recherche en Astrophysique et Planétologie (IRAP), CNES, Université Toulouse III,
+CNRS, Toulouse, France
 
 
 ## License
