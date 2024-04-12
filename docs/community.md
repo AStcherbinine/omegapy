@@ -28,7 +28,7 @@ To help us address the issue, please include at minimum:
 
 
 ## Support
-If you need support using PyBWE, you can either:
+If you need support using OMEGA-Py, you can either:
 
  * Look carefully at the [documentation](https://astcherbinine.github.io/omegapy/) 
    (first step = *RTFM*).
