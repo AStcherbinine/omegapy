@@ -44,7 +44,7 @@ bibliography: paper.bib
 `OMEGA-Py` is a Python 3 module dedicated to the scientific use of data provided by the 
 Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité (OMEGA) instrument onboard
 the ESA Mars Express (MEx) orbiter [@bibring_2004].
-It has been developed as an alternative to the [IDL routines](https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/OMEGA/MEX-M-OMEGA-2-EDR-FLIGHT-EXT8-V1.0/SOFTWARE/)
+It has been developed as an alternative to the IDL routines [@soft10]
 of the OMEGA legacy software provided by the instrument team for the past 20 years.
 
 The module notably includes a re-implementation of the most recent release of
