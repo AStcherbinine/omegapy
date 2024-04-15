@@ -154,7 +154,7 @@ data_mask = od.omega_mask(
     hide_128=True, 
     emer_lim=10, 
     inci_lim=70, 
-    temc_lim=-194, 
+    tempc_lim=-194, 
     limsat_c=500
     )
 ~~~

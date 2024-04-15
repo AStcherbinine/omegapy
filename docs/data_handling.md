@@ -370,7 +370,7 @@ a mask entirely filled with `NaN`.
         omega, 
         emer_lim=10,                # Emergence angles < 10°
         inci_lim=70,                # Incendence angles < 70°
-        temc_lim=-194,              # Detector temperature < -194°C
+        tempc_lim=-194,              # Detector temperature < -194°C
         limsat_c=500,               # Spectel #40 < 500 DN
         hide_128=True,              # Remove corrupted columns
         reject_low_quality=True     # Ignore low-quality observations
