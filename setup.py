@@ -26,7 +26,7 @@ setuptools.setup(
     },
     packages=setuptools.find_packages(),
     package_data=package_data,
-    python_requires='>=3.7',
+    python_requires='>='+data_json['python-version-min'],
     setup_requires=['wheel'],
     install_requires=requirements,
     classifiers=[
