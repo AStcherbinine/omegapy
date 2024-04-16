@@ -1,9 +1,12 @@
 import setuptools
+import json
 
 with open('README.md', 'r') as f:
     long_description = f.read()
 with open('requirements.txt', 'r') as f:
     requirements = f.read().strip('\n').split('\n')
+with open('module_infos.json', 'r') as f:
+    data_json = json.load(f)
 
 package_data = {
     '': ['OMEGA_dataref/*', 'res_findcube/*'],
@@ -11,7 +14,7 @@ package_data = {
 
 setuptools.setup(
     name='omegapy',
-    version='3.0.1',
+    version=data_json['version'],
     author='Aurélien Stcherbinine',
     author_email='aurelien@stcherbinine.net',
     description='Python tools for OMEGA/MEx observations analysis',
