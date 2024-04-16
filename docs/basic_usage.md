@@ -6,8 +6,8 @@ import omegapy.omega_data as od
 import omegapy.omega_plots as op
 import omegapy.useful_functions as uf
 
-# OMEGA file importation (ORB0964_2)
-omega = od.OMEGAdata('0964_2')
+# OMEGA file importation (ORB0979_3)
+omega = od.OMEGAdata('0979_3')
 
 # Atmospheric correction
 omega_corr_atm = od.corr_atm(omega_corr)
