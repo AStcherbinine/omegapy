@@ -1,7 +1,7 @@
 Here is an example on how to compute and display a band depth on an OMEGA observation using
 OMEGA-Py.
 
-Let's assume you have downloaded the OMEGA data cube *ORB0979_2* from the PSA
+Let's assume that you have downloaded the OMEGA data cube *ORB0979_2* from the PSA
 (or from these links: 
 [QUB](https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/OMEGA/MEX-M-OMEGA-2-EDR-FLIGHT-V1.0/DATA/ORB09/ORB0979_2.QUB),
 [NAV](https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/OMEGA/MEX-M-OMEGA-2-EDR-FLIGHT-V1.0/DATA/GEM09/ORB0979_2.NAV))
@@ -11,7 +11,7 @@ import omegapy.omega_data as od
 import omegapy.omega_plots as op
 ~~~
 
-## Step 1 - Loading the data
+## Step 1 – Loading the data
 Option 1: Load the binary files and apply the thermal and atmospheric corrections if needed.
 ~~~python
 # Load the data cube
@@ -27,7 +27,7 @@ Option 2: Load directly a previously saved [`OMEGAdata`](../reference/omega_data
 omega = od.autoload_omega('0979_2', therm_corr=True, atm_corr=True)
 ~~~
 
-## Step 2 - Generating the data mask (optional)
+## Step 2 – Generating the data mask (optional)
 
 ~~~python
 mask = od.omega_mask(
@@ -40,7 +40,7 @@ mask = od.omega_mask(
     )
 ~~~
 
-## Step 3 - Computing band depth at 1.5 μm
+## Step 3 – Computing band depth at 1.5 μm
 
 Let's compute the water ice 1.5 μm band depth as defined in Poulet et al. (2007)[^1]:
 
@@ -51,7 +51,7 @@ spacecraft (OMEGA/MEx): Global mineral maps.
 [doi:10.1029/2006JE002840](https://doi.org/10.1029/2006JE002840)
 
 ~~~python
-nbd_15 = BD_omega(omega, [1.5, 1.51], 1.30, 1.71, norm=True)
+bd_15 = BD_omega(omega, [1.5, 1.51], 1.30, 1.71, norm=True)
 ~~~
 
 ??? note "Source code for function `#!python BD_omega(omega, lam0, lamc1, lamc2, norm=True)`"
@@ -66,7 +66,7 @@ nbd_15 = BD_omega(omega, [1.5, 1.51], 1.30, 1.71, norm=True)
         If an array is passed as argument for a wavelength value, the average is used.
 
         Parameters
-        ==========
+        ----------
         omega : OMEGAdata
             The OMEGA/MEx observation.
         lam0 : float or array-like
@@ -80,7 +80,7 @@ nbd_15 = BD_omega(omega, [1.5, 1.51], 1.30, 1.71, norm=True)
             | False -> band_depth output is the BD values.
 
         Returns
-        =======
+        -------
         band_depth : 2D array
             The array of the band depth values for the observation 
             (normalized or not depending on norm).
@@ -122,7 +122,7 @@ nbd_15 = BD_omega(omega, [1.5, 1.51], 1.30, 1.71, norm=True)
         return band_depth
     ~~~
 
-## Step 4 - Displaying the band depth map
+## Step 4 – Displaying the band depth map
 
 Now that we have computed the band depth map, we can display it with
 the [`show_data_v2`](../reference/omega_plots/#omega_plots.show_data_v2) function,
@@ -137,11 +137,11 @@ as described in the [data visualization](../data_visualization/#reflectance-vs-p
 
 === "1.5μm Band Depth"
     ~~~python
-    op.show_data_v2(omega, data=nbd_15, cb_title="1.5μm BD", polar=True, cmap=cmo.ice, vmin=0, vmax=0.75)
+    op.show_data_v2(omega, data=bd_15, cb_title="1.5μm BD", polar=True, cmap=cmo.ice, vmin=0, vmax=0.75)
     ~~~
 
     <figure markdown>
-    ![ORB0979_2 show_data_v2 -1.5µm NBD polar](img/ORB0979_2__show_data_v2_nbd15_polar.png)
+    ![ORB0979_2 show_data_v2 -1.5µm BD polar](img/ORB0979_2__show_data_v2_nbd15_polar.png)
     <figcaption>
         ORB0979_2 1.5μm BD – Polar projection
     </figcaption>
