@@ -154,6 +154,7 @@ nav:
     - Installation: installation.md
     - Configuration: configuration.md
     - Basic usage: basic_usage.md
+    - Tests: tests.md
   - User Guide:
     - Data importation: data_importation.md
     - Data correction: data_correction.md
