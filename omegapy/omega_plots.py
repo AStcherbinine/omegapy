@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 15/04/2024
+## Last modified by Aurélien STCHERBININE : 16/04/2024
 
 ##----------------------------------------------------------------------------------------
 """Display of `OMEGAdata` cubes.
@@ -182,7 +182,7 @@ def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None
     vmax : float or None, default None
         The upper bound of the colorscale.
     alpha : float or None, default None
-        Opacity of the plot.
+        Opacity of the plot, from 0 (transparent) to 1 (opaque).
     title : str, default 'auto'
         The title of the figure.
     lonlim : tuple of int or None, default (None, None)
@@ -623,7 +623,7 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
         If autoyscale is False, can specify the bound values for the spectrum y-axis,
         other that `(vmin, vmax)`.
     alpha : float or None, default None
-        Opacity of the plot.
+        Opacity of the plot, from 0 (transparent) to 1 (opaque).
     lonlim : tuple of int or None, default (None, None)
         The longitude bounds of the figure.
     latlim : tuple of int or None, default (None, None)
@@ -817,7 +817,7 @@ def show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, 
     vmax : float or None, default None
         The upper bound of the colorscale.
     alpha : float or None, default None
-        Opacity of the plot.
+        Opacity of the plot, from 0 (transparent) to 1 (opaque).
     title : str, default 'auto'
         The title of the figure.
     cb_title : str, default 'data'
