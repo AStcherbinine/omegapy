@@ -1,5 +1,5 @@
 ![version-json](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FAStcherbinine%2Fomegapy%2Fmaster%2Fpackage.json&query=%24.version&label=version&labelColor=grey&color=blue)
-![pythonversion](https://img.shields.io/badge/Python-3.7+-blue)
+![pythonversion](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FAStcherbinine%2Fomegapy%2Fmaster%2Fpackage.json&query=%24.pythonVersionMin&suffix=%2B&logo=python&logoColor=white&label=python&labelColor=grey&color=blue)
 [![DOI](https://zenodo.org/badge/349763849.svg)](https://zenodo.org/doi/10.5281/zenodo.7818828)
 
 
