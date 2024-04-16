@@ -19,7 +19,7 @@ from . import omega_data, omega_plots, useful_functions
 
 import json
 
-with open('module_infos.json', 'r') as f:
+with open('package.json', 'r') as f:
     data_json = json.load(f)
 
 __version__ = data_json['version']
