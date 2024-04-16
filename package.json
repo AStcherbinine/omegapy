@@ -1,5 +1,5 @@
 {
     "name": "omegapy",
     "version": "3.0.1",
-    "PythonVersionMin": "3.7"
+    "pythonVersionMin": "3.7"
 }
