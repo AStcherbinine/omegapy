@@ -1,10 +1,10 @@
-![version-json](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FAStcherbinine%2Fomegapy%2Fmaster%2Fpackage.json&query=%24.version&label=version&labelColor=grey&color=blue)
+[![version-json](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FAStcherbinine%2Fomegapy%2Fmaster%2Fpackage.json&query=%24.version&label=version&labelColor=grey&color=blue)](https://pypi.org/project/omegapy)
 ![pythonversion](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FAStcherbinine%2Fomegapy%2Fmaster%2Fpackage.json&query=%24.pythonVersionMin&suffix=%2B&logo=python&logoColor=white&label=python&labelColor=grey&color=blue)
 [![DOI](https://zenodo.org/badge/349763849.svg)](https://zenodo.org/doi/10.5281/zenodo.7818828)
-
+[![status](https://joss.theoj.org/papers/15cf348a29d186e12f49a110f9f787f8/status.svg)](https://joss.theoj.org/papers/15cf348a29d186e12f49a110f9f787f8)
 
 <p align="center">
-<img width="250" height="250" src="https://github.com/AStcherbinine/omegapy/blob/master/docs/logo_omegapy_small2.png">
+<img width="250" height="250" src="https://raw.githubusercontent.com/AStcherbinine/omegapy/master/docs/logo_omegapy_small2.png">
 </p>
 
 # OMEGA-Py : Python tools for OMEGA data
