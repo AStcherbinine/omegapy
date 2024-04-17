@@ -9,7 +9,7 @@ with open('omegapy/package.json', 'r') as f:
     data_json = json.load(f)
 
 package_data = {
-    '': ['OMEGA_dataref/*', 'res_findcube/*'],
+    '': ['OMEGA_dataref/*', 'res_findcube/*', 'package.json'],
     }
 
 setuptools.setup(

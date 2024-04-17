@@ -18,8 +18,11 @@ name = 'omegapy'
 from . import omega_data, omega_plots, useful_functions
 
 import json
+import os
 
-with open('package.json', 'r') as f:
+package_path = os.path.abspath(os.path.dirname(__file__))
+
+with open(os.path.join(package_path, 'package.json'), 'r') as f:
     data_json = json.load(f)
 
 __version__ = data_json['version']
