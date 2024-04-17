@@ -48,7 +48,11 @@ It has been developed as an alternative to the IDL routines [@soft10]
 of the OMEGA legacy software provided by the instrument team for the past 20 years.
 
 The module notably includes a re-implementation of the most recent release of
-the IDL OMEGA software (v10, `SOFT 10`) but also contains several additional
+the IDL OMEGA software (v10, `SOFT 10`),
+which performs the reading, calibration and reduction of the level 1B data publicly
+available on the ESA [PSA](https://archives.esac.esa.int/psa/#!Table%20View/OMEGA=instrument)
+[@besse_2018] to produce level 2A data that can be used for the scientific analysis,
+but also contains several additional
 data reduction functions such as built-in atmospheric and thermal corrections
 (using previously published methods) and graphics tools including interactive
 visualization of the data or generation of composite OMEGA maps using the
