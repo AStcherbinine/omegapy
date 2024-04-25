@@ -30,7 +30,7 @@ If these commands do not raise any error, the *OMEGA-Py* module is installed in 
 
 You can also check that you have the latest version of the module installed:
 
-![omegapy-version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FAStcherbinine%2Fomegapy%2Fmaster%2Fpackage.json&query=%24.version&prefix=v&logoColor=white&label=omegapy&labelColor=grey&color=blue&link=https%3A%2F%2Fpypi.org%2Fproject%2Fomegapy%2F)
+![omegapy-version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FAStcherbinine%2Fomegapy%2Fmaster%2Fomegapy%2Fpackage.json&query=%24.version&prefix=v&logoColor=white&label=omegapy&labelColor=grey&color=blue&link=https%3A%2F%2Fpypi.org%2Fproject%2Fomegapy%2F)
 
 **From a Python console**
 ~~~python
