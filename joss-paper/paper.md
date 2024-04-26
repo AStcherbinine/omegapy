@@ -28,7 +28,7 @@ authors:
    orcid: 0000-0002-9985-1109
    affiliation: 4
 affiliations:
- - name: Department of Astronomy and Planetary Science, Northern Arizona University, Flagstaff, AZ USA
+ - name: Department of Astronomy and Planetary Science, Northern Arizona University, Flagstaff, AZ, USA
    index: 1
  - name: IAS, Université Paris-Saclay, CNRS, Orsay, France
    index: 2
