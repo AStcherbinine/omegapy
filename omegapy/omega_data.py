@@ -3389,15 +3389,15 @@ def BD_omega(omega, lam0, lamc1, lamc2, norm=True):
         The wavelength of the bluer point for the continuum determination.
     lamc2 : float or array-like
         The wavelength of the redder point for the continuum determination.
-    norm : bool, optional (default True)
-        | True -> band_depth output is the normalized BD values.
-        | False -> band_depth output is the BD values.
+    norm : bool, default True
+        | `True` --> band_depth output is the normalized BD values.</br>
+        | `False` --> band_depth output is the BD values.
     
     Returns
     -------
     band_depth : 2D array
         The array of the band depth values for the observation
-        (normalized or not depending on norm).
+        (normalized or not depending on `norm`).
     rf_c : 2D array
         The value of the continuum used to measure the band depth.
     """
