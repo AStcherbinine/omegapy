@@ -3,7 +3,7 @@
 
 ## useful_functions.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 16/10/2023
+## Last modified by Aurélien STCHERBININE : 15/05/2024
 
 ##-----------------------------------------------------------------------------------
 """Useful generics functions.
@@ -262,15 +262,16 @@ def where_closer_array(values, array):
 
 ##-----------------------------------------------------------------------------------
 ## Filename search
-def myglob(basename, exclude=[]):
+def myglob(basename, exclude=[], recursive=False):
     """Return the absolute path according to the input `basename`.
     If multiple files corresponds to `basename`, the user will be asked
     to choose one.
 
     --------------------------------------------
-    | `int` --> Select the corresponding filename.</br>
-    | `q`/`quit`/`exit` --> Return `None`.</br>
-    | `a`/`all` --> Return the list of all filenames.</br>
+    * `int` --> Select the corresponding filename.</br>
+    * `q`/`quit`/`exit` --> Return `None`.</br>
+    * `a`/`all` --> Return the list of all filenames.</br>
+
     --------------------------------------------
 
     Parameters
@@ -279,13 +280,16 @@ def myglob(basename, exclude=[]):
         The basename of the target file.
     exclude : array-like of str, default []
         List of sub-strings to exclude from the results.
+    recursive : bool, default False
+        If recursive is True, the pattern `**` will match any files and
+        zero or more directories and subdirectories.
 
     Returns
     -------
     fname : str
         The absolute path of the selected file.
     """
-    fnames = glob.glob(basename)
+    fnames = glob.glob(basename, recursive=recursive)
     if not isinstance(exclude, (list, np.ndarray)):
         raise ValueError("exclude parameter must be a list or numpy.ndarray")
     if len(exclude) > 0:

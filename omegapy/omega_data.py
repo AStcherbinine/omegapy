@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 18/10/2023
+## Last modified by Aurélien STCHERBININE : 15/05/2024
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -259,7 +259,8 @@ class CubeError(Exception):
     def __init__(self, message):
         self.message = message
 
-def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path='_omega_bin_path'):
+def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path_qub='_omega_bin_path',
+               data_path_nav='_omega_bin_path'):
     """Python implementation of the `readomega.pro` routine from the SOFT10 OMEGA pipeline.
     
     Parameters
@@ -273,26 +274,32 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path='_omega_bin
         If `True`, compute the correction on the visible channel (Vis).
     corrL : bool, default True
         If `True`, compute the correction on the long-IR channel (L).
-    data_path : str, default _omega_bin_path
-        The path of the directory containing the data (.QUB) and 
-        navigation (.NAV) files.
+    data_path_qub : str, default _omega_bin_path
+        The path of the directory containing the data files (.QUB).
+    data_path_nav : str, default _omega_bin_path
+        The path of the directory containing the navigation files (.NAV).
 
     Returns
     -------
     out_data : dict
         {'ldat', 'jdat', 'wvl', 'ic', 'specmars'}
     out_geom : dict
-        {'latitude', 'longitude', 'emergence', 'incidence', 'altitude', 'ut_time',
-         'temperature, 'saturation_C', 'saturation_vis', 'lat_grid', 'lon_grid'}
+        {'latitude', 'longitude', 'emergence', 'emergence_norm', 'incidence',
+        'incidence_norm', 'altitude', 'ut_time', 'temperature_c', 'temperature_l',
+        'saturation_c', 'saturation_vis', 'lat_grid', 'lon_grid', 'latitude_v',
+        'longitude_v', 'altitude_v', 'incidence_norm_v', 'emergence_norm_v',
+        'lat_grid_v', 'lon_grid_v'}
     """
     # Default path
-    if data_path == "_omega_bin_path":
-        data_path = _omega_bin_path
+    if data_path_qub == "_omega_bin_path":
+        data_path_qub = _omega_bin_path
+    if data_path_nav == "_omega_bin_path":
+        data_path_nav = _omega_bin_path
     # Filename
     nomgeo0 = cube_id + '.NAV'
     nomfic0 = cube_id + '.QUB'
-    nomfic = os.path.join(data_path, nomfic0)
-    nomgeo = os.path.join(data_path, nomgeo0)
+    nomfic = os.path.join(data_path_qub, nomfic0)
+    nomgeo = os.path.join(data_path_nav, nomgeo0)
     if disp:
         print('\n\033[1mComputing OMEGA observation {0:s}\033[0m'.format(cube_id))
     # Orbit number in base 10
@@ -948,7 +955,7 @@ class OMEGAdata:
         self.add_infos = ''
 
         if not empty:
-            obs_name = uf.myglob(os.path.join(data_path, '*' + obs + '*.QUB'))
+            obs_name = uf.myglob(os.path.join(data_path, '**', '*' + obs + '*.QUB'), recursive=True)
             if obs_name is None:
                 print("\033[1;33mAborted\033[0m")
                 empty = True
@@ -1020,13 +1027,19 @@ class OMEGAdata:
             self.ref_C = np.array([[]])
 
         else:
-            # obs_name = uf.myglob(os.path.join(data_path, '*' + obs + '*.QUB'))
-            # if obs_name is None:
-                # print("\033[1;33mAborted\033[0m")
-                # return None
-            nomfic0 = os.path.split(obs_name)[1][:-4]    # Récupération nom + décodage UTF-8
+            nomfic0 = os.path.split(obs_name)[1][:-4]   # Récupération nom + décodage UTF-8
+            data_path_qub = os.path.split(obs_name)[0]  # Récupération chemin dossier (utile si récursif)
+            nomgeo = obs_name[:-4] + '.NAV'
+            if os.path.exists(nomgeo):
+                data_path_nav = data_path_qub
+            else:
+                nomgeo = uf.myglob(os.path.join(data_path, '**', '*' + obs + '*.NAV'), recursive=True)
+                if nomgeo is None:
+                    raise CubeError('No corresponding NAV cube {0:s}'.format(nomfic0 + '.NAV'))
+                else:
+                    data_path_nav = os.path.split(nomgeo)[0]
             data_dict, geom_dict = _readomega(nomfic0, disp=disp, corrV=corrV, corrL=corrL, 
-                                              data_path=data_path)
+                                              data_path_qub=data_path_qub, data_path_nav=data_path_nav)
 
             if disp:
                 print("\n\033[01;34mComputing data extraction and correction...\033[0m", end=' ')
@@ -1163,7 +1176,7 @@ class OMEGAdata:
             #--------------------------
             # Data from the .NAV header
             #--------------------------
-            hd_nav = _read_header(obs_name[:-4] + '.NAV')
+            hd_nav = _read_header(nomgeo[:-4] + '.NAV')
             npixel, npara, nscan = np.array(hd_nav['CORE_ITEMS'][1:-1].split(','), dtype=np.int64)
             self.lrec = np.int64(hd_nav['RECORD_BYTES'])
             self.nrec = np.int64(hd_nav['LABEL_RECORDS'])
@@ -1408,7 +1421,7 @@ class OMEGAdata:
                                     self.therm_corr, self.atm_corr, self.add_infos)
         return description
     
-    def get_header_qub(self, data_path='_omega_bin_path'):
+    def get_header_qub(self, data_path='_omega_bin_path', recursive_search=True):
         """Return the data from the header of the .QUB file, as a dictionary.
 
         See the OMEGA ECAID for informations about the header entries.
@@ -1417,6 +1430,9 @@ class OMEGAdata:
         ----------
         data_path : str, default _omega_bin_path
             The path of the directory containing the data (.QUB) files.
+        recursive_search : bool, default True
+            If `True`, enable the search for the .QUB file in subdirectories
+            from `data_path`.
 
         Returns
         -------
@@ -1426,11 +1442,14 @@ class OMEGAdata:
         # Default path
         if data_path == "_omega_bin_path":
             data_path = _omega_bin_path
-        qub_path = os.path.join(data_path, self.name+'.QUB')
+        if recursive_search:
+            qub_path = uf.myglob(os.path.join(data_path, '**', self.name+'.QUB'), recursive=True)
+        else:
+            qub_path = os.path.join(data_path, self.name+'.QUB')
         hd_qub = _read_header(qub_path)
         return hd_qub
 
-    def get_header_nav(self, data_path='_omega_bin_path'):
+    def get_header_nav(self, data_path='_omega_bin_path', recursive_search=True):
         """Return the data from the header of the .NAV file, as a dictionary.
 
         See the OMEGA ECAID for informations about the header entries.
@@ -1439,6 +1458,9 @@ class OMEGAdata:
         ----------
         data_path : str, default _omega_bin_path
             The path of the directory containing the navigation (.NAV) files.
+        recursive_search : bool, default True
+            If `True`, enable the search for the .QUB file in subdirectories
+            from `data_path`.
 
         Returns
         -------
@@ -1448,14 +1470,17 @@ class OMEGAdata:
         # Default path
         if data_path == "_omega_bin_path":
             data_path = _omega_bin_path
-        nav_path = os.path.join(data_path, self.name+'.NAV')
+        if recursive_search:
+            nav_path = uf.myglob(os.path.join(data_path, '**', self.name+'.NAV'), recursive=True)
+        else:
+            nav_path = os.path.join(data_path, self.name+'.NAV')
         hd_nav = _read_header(nav_path)
         return hd_nav
 
 ##-----------------------------------------------------------------------------------
 ## Recherche observation
 def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False, data_path='_omega_bin_path',
-              nadir_only=False):
+              nadir_only=False, recursive_search=True):
     """Display the available OMEGA/MEx cubes with observations of the target
     latitude and longitude, Python translation of the IDL procedure `findcub.pro`.
 
@@ -1476,6 +1501,9 @@ def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False, data_path='_omega_bin_p
         navigation (.NAV) files.
     nadir_only : bool, default False
         If `True` --> Only cubes with nadir pointing will be returned.
+    recursive_search : bool, default True
+        If `True`, enable the search for the .NAV files in subdirectories
+        from `data_path`.
 
     Returns
     -------
@@ -1615,10 +1643,18 @@ def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False, data_path='_omega_bin_p
     print('{0:^10s} {1:^6s}{2:^6s}{3:^8s}{4:^9s}{5:^7s}{6:^8s}{7:^8s}{8:^8s}{9:^8s}{10:^4s}'.format(
             'orbit', 'x', 'y', 'dmin', 'altMEx', 'inci', 'emer', 'phas', 'loct', 'Ls', 'MY'))
     for n in range(nhits):
-        testfile = os.path.join(data_path, nomc[n]+'.NAV')
-        if os.path.exists(testfile) == False:
-            print('{0:8s}{1:s}'.format(nomc[n], '\033[3m   No corresponding .NAV file\033[0m'))
-            continue
+        if recursive_search:
+            testfile = glob.glob(os.path.join(data_path, '**', nomc[n]+'.NAV'), recursive=True)
+            if testfile == []:
+                print('{0:8s}{1:s}'.format(nomc[n], '\033[3m   No corresponding .NAV file\033[0m'))
+                continue
+            else:
+                testfile = testfile[0]
+        else:
+            testfile = os.path.join(data_path, nomc[n]+'.NAV')
+            if os.path.exists(testfile) == False:
+                print('{0:8s}{1:s}'.format(nomc[n], '\033[3m   No corresponding .NAV file\033[0m'))
+                continue
         #--------------------------
         # Data from the geometry .NAV file
         #--------------------------
@@ -1848,7 +1884,8 @@ def autosave_omega(omega, folder='auto', base_folder='_omega_py_path', security=
             print('\033[01;34mSaved as \033[0;03m' + target_path + '\033[0m')
 
 def autoload_omega(obs_name, folder='auto', version=_Version, base_folder='_omega_py_path',
-                   therm_corr=None, atm_corr=None, disp=True, bin_folder='_omega_bin_path'):
+                   therm_corr=None, atm_corr=None, disp=True, bin_folder='_omega_bin_path',
+                   recursive=False):
     """Load and return a previously saved `OMEGAdata` object using pickle (with `autosave_omega()`).
 
     Parameters
@@ -1877,6 +1914,13 @@ def autoload_omega(obs_name, folder='auto', version=_Version, base_folder='_omeg
     bin_folder : str, default _omega_bin_path
         The path of the directory containing the data (.QUB) and 
         navigation (.NAV) files.
+    recursive : bool, default False
+        Option passed to the `uf.myglob` function.</br>
+        If recursive is True, the pattern `**` will match any files and
+        zero or more directories and subdirectories.</br>
+        Note: The recursive search option is not compatible with the default
+        automatic paths, as they do not include the `**` pattern.
+        One should add it where needed (e.g., in the `folder` argument).
 
     Returns
     -------
@@ -1903,10 +1947,10 @@ def autoload_omega(obs_name, folder='auto', version=_Version, base_folder='_omeg
     if folder == 'auto':
         Mversion = int(version)
         folder = 'v' + str(Mversion)
-    filename2 = uf.myglob(os.path.join(base_folder, folder, filename), exclude=excl)
+    filename2 = uf.myglob(os.path.join(base_folder, folder, filename), exclude=excl, recursive=recursive)
     if filename2 is None:
         if (therm_corr in [None, False]) and (atm_corr in [None, False]):
-            obs_name_bin = glob.glob(os.path.join(bin_folder, '*' + obs_name + '*.QUB'))
+            obs_name_bin = glob.glob(os.path.join(bin_folder, '**', '*' + obs_name + '*.QUB'), recursive=True)
             if len(obs_name_bin) == 0 :
                 return None
             else:
@@ -2854,7 +2898,7 @@ def get_ls(omega_list):
 ##-----------------------------------------------------------------------------------
 ## Update cube quality
 def update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=_Version, 
-                        base_folder='_omega_py_path'):
+                        base_folder='_omega_py_path', recursive=False):
     """Update the quality attribute of previously saved OMEGAdata objects.
 
     Parameters
@@ -2869,6 +2913,13 @@ def update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=_Version,
         Default is the current code version.
     base_folder : str, default _omega_py_path
         The base folder path.
+    recursive : bool, default False
+        Option passed to the `uf.myglob` function.</br>
+        If recursive is True, the pattern `**` will match any files and
+        zero or more directories and subdirectories.</br>
+        Note: The recursive search option is not compatible with the default
+        automatic paths, as they do not include the `**` pattern.
+        One should add it where needed (e.g., in the `folder` argument).
     """
     # Default path
     if base_folder == "_omega_py_path":
@@ -2878,7 +2929,7 @@ def update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=_Version,
         obs_name += '.pkl'
     if folder == 'auto':
         folder = 'v' + str(int(version))
-    basename = uf.myglob(os.path.join(base_folder, folder, obs_name))
+    basename = uf.myglob(os.path.join(base_folder, folder, obs_name), recursive=recursive)
     # Load list corrupted obs
     OBC = readsav(os.path.join(package_path, 'OMEGA_dataref', 'OBC_OMEGA_OCT2017.sav'))
     good_orbits_OBC = np.array(OBC['good_orbits'][0], dtype=int)
@@ -2983,7 +3034,7 @@ def test_cube(obs):
     """
     # Recherhe nom de fichier
     data_path = _omega_bin_path
-    obs_name = uf.myglob(os.path.join(data_path, '*' + obs + '*.QUB'))
+    obs_name = uf.myglob(os.path.join(data_path, '**', '*' + obs + '*.QUB'), recursive=True)
     if obs_name is None:
         print("\033[1;33mAborted\033[0m")
         return False
