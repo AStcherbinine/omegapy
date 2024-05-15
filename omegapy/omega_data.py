@@ -3371,6 +3371,70 @@ def omega_mask(omega, emer_lim=None, inci_lim=None, tempc_lim=None, limsat_c=Non
     # Output
     return mask
 
+##----------------------------------------------------------------------------------------
+## OMEGA spectral creteria computation
+def BD_omega(omega, lam0, lamc1, lamc2, norm=True):
+    """Compute the band depth on an OMEGA observation cube.
+    Continuum linear between lamc1 and lamc2.
+
+    If an array is passed as argument for a wavelength value, the average is used.
+
+    Parameters
+    ----------
+    omega : OMEGAdata
+        The OMEGA/MEx observation.
+    lam0 : float or array-like
+        The wavelength of the center of the band.
+    lamc1 : float or array-like
+        The wavelength of the bluer point for the continuum determination.
+    lamc2 : float or array-like
+        The wavelength of the redder point for the continuum determination.
+    norm : bool, optional (default True)
+        | True -> band_depth output is the normalized BD values.
+        | False -> band_depth output is the BD values.
+
+    Returns
+    -------
+    band_depth : 2D array
+        The array of the band depth values for the observation
+        (normalized or not depending on norm).
+    rf_c : 2D array
+        The value of the continuum used to measure the band depth.
+    """
+    if not omega.therm_corr:
+        print("\033[01;33mWarning: No thermal correction applied.\033[0m")
+    # Initialisation
+    refl_cube = omega.cube_rf
+    nx, ny, nlam = refl_cube.shape
+    # Conversion floats -> list
+    if isinstance(lam0, (int, float)):
+        lam0 = [lam0]
+    if isinstance(lamc1, (int, float)):
+        lamc1 = [lamc1]
+    if isinstance(lamc2, (int, float)):
+        lamc2 = [lamc2]
+    # Search for wavelength indexes
+    i_lam0 = uf.where_closer_array(lam0, omega.lam)
+    i_lamc1 = uf.where_closer_array(lamc1, omega.lam)
+    i_lamc2 = uf.where_closer_array(lamc2, omega.lam)
+    # Average wavelengths
+    lam0 = np.mean(omega.lam[i_lam0])
+    lamc1 = np.mean(omega.lam[i_lamc1])
+    lamc2 = np.mean(omega.lam[i_lamc2])
+    # Average reflectances
+    rf_band = np.mean(refl_cube[:, :, i_lam0], axis=2)
+    rf_c1 = np.mean(refl_cube[:, :, i_lamc1], axis=2)
+    rf_c2 = np.mean(refl_cube[:, :, i_lamc2], axis=2)
+    # Average continuum
+    rf_c = rf_c1 + (rf_c2 - rf_c1) * (lam0 - lamc1) / (lamc2 - lamc1)
+    # Compute BD over the OMEGA cube
+    if norm:
+        band_depth = (rf_c - rf_band) / rf_c
+    else:
+        band_depth = rf_c - rf_band
+    # Output
+    return band_depth
+
 ##-----------------------------------------------------------------------------------
 ## End of code
 ##-----------------------------------------------------------------------------------
