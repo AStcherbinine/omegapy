@@ -51,7 +51,7 @@ spacecraft (OMEGA/MEx): Global mineral maps.
 [doi:10.1029/2006JE002840](https://doi.org/10.1029/2006JE002840)
 
 ~~~python
-bd_15 = BD_omega(omega, [1.5, 1.51], 1.30, 1.71, norm=True)
+bd_15 = od.BD_omega(omega, [1.5, 1.51], 1.30, 1.71, norm=True)
 ~~~
 
 ??? note "Source code for function `#!python BD_omega(omega, lam0, lamc1, lamc2, norm=True)`"

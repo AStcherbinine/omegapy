@@ -18,6 +18,14 @@ OMEGA observations. The loading of an OMEGA observation is done by calling the
 !!! example
     `#!py omega = OMEGAdata("0967_3")` to load the cube 0967_3. 
 
+!!! tip "OMEGA files stored in subdirectories"
+    OMEGA-Py can handle storage of the OMEGA binary files (*.QUB* & *.NAV*)
+    in subdirectories, similarly to how it is stored on the PSA, 
+    with also potentially data and geometry files in separate folders.
+    When calling `#!py omega = OMEGAdata("0967_3")` for instance, a recursive
+    search is performed from the parent directory defined by `omega_bin_path`,
+    independantly for the *.QUB* and *.NAV* files.
+
 The user can then access all
 the data (reflectance, geometry, wavelengths…) from the attributes of the newly
 created omega object. 

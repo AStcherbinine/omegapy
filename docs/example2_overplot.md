@@ -16,7 +16,7 @@ process the OMEGA data cube *ORB0979_2* and compute its 1.5μm band depth map.
     ~~~python
     omega = od.autoload_omega('0972_2')
 
-    bd_15 = BD_omega(omega, [1.5, 1.51], 1.30, 1.71, norm=True)
+    bd_15 = od.BD_omega(omega, [1.5, 1.51], 1.30, 1.71, norm=True)
     ~~~
 
 
