@@ -33,6 +33,32 @@ OMEGA : Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité.
 
 [^2]: [ftp://psa.esac.esa.int/pub/mirror/MARS-EXPRESS/OMEGA/MEX-M-OMEGA-2-EDR-FLIGHT-EXT7-V1.0/SOFTWARE/](ftp://psa.esac.esa.int/pub/mirror/MARS-EXPRESS/OMEGA/MEX-M-OMEGA-2-EDR-FLIGHT-EXT7-V1.0/SOFTWARE/)
 
+## Why this module?
+The accessibility of data returned by space missions is a crucial point to ensure the
+development of open science.
+While the OMEGA dataset is public with yearly releases as of 2024, the legacy pipeline uses
+a proprietary software and several crucial data reduction algorithms are not public,
+thus severely hindering its use.
+Since the beginning of the science phase of the OMEGA instrument in 2004, the instrument
+team has provided 10 releases of the IDL software (`SOFT01` to `SOFT10`) to read the
+level 1B binary files that can be downloaded from the ESA [PSA](https://archives.esac.esa.int/psa/#!Table%20View/OMEGA=instrument) 
+and generate level 2A data with reflectance spectra.
+
+However, the presence of an IDL solution only may raise some concerns:
+
+ * The cost of an IDL license, as it is a proprietary language, makes it not accessible to everyone.
+ * As the community (and especially the youngest generation) is moving to use mostly Python
+   instead of IDL, the requirement to use the IDL language to access OMEGA data can limit its
+   accessibility.
+
+In addition, over the past years, the OMEGA dataset had a reputation in the community
+for being challenging and requiring a lot of investment to use.
+With *OMEGA-Py* we aim to tackle this reputation by providing a free all-in-one toolbox
+to load, correct, analyze, and visualize the OMEGA data, and thus make the unique OMEGA dataset
+rich of 20 years of observations easily accessible to the community and especially to
+the younger generation of scientists and students.
+
+
 -------------
 ## Main features
  - Importation of raw PSA-format data.
@@ -47,5 +73,5 @@ OMEGA : Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité.
  - Optimization of the customization of display functions
  - Add slider to change the displayed wavelength for the reflectance for interactive plots
  - Simplify the use of the thermal and atmospheric correction functions --> only one with multiple arguments
- - Add filtering options in the `find_cube` function
+ - Add more filtering options in the `find_cube` function
 
