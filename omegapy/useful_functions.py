@@ -3,7 +3,7 @@
 
 ## useful_functions.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 15/05/2024
+## Last modified by Aurélien STCHERBININE : 29/05/2024
 
 ##-----------------------------------------------------------------------------------
 """Useful generics functions.
@@ -441,21 +441,18 @@ def test_security_overwrite(path):
 ##-----------------------------------------------------------------------------------
 ## Fonction similaires IDL
 def idl_spline(X, Y, T, sigma = 1.0):
-    """ Performs a cubic spline interpolation.
+    """Performs a cubic spline interpolation.
 
     Parameters
     ----------
-	X : ndarray
+    X : ndarray
         The abcissa vector. Values MUST be monotonically increasing.
-
-	Y : ndarray
+    Y : ndarray
         The vector of ordinate values corresponding to X.
-
-	T : ndarray
+    T : ndarray
         The vector of abcissae values for which the ordinate is
-		desired. The values of T MUST be monotonically increasing.
-    
-	Sigma : float, default 1.0
+        desired. The values of T MUST be monotonically increasing.
+    Sigma : float, default 1.0
         The amount of "tension" that is applied to the curve. The
 		default value is 1.0. If sigma is close to 0, (e.g., .01),
 		then effectively there is a cubic spline fit. If sigma
@@ -465,7 +462,7 @@ def idl_spline(X, Y, T, sigma = 1.0):
     Returns
     -------
     spl : ndarray
-	    Vector of interpolated ordinates.
+	    Vector of interpolated ordinates.</br>
 	    Result(i) = value of the function at T(i).
     """
     n = min(len(X), len(Y))
