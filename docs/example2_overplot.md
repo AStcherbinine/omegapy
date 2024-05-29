@@ -27,6 +27,8 @@ with a 1.5μm BD > 10%.
 We will create a mask to hide the pixels with no water ice / lower BD:
 
 ~~~python
+import numpy as np
+
 mask_bd15 = np.ones(bd_15.shape)    # Initialisation with array of 1
 mask_bd15[bd_15 < 0.1] = np.nan     # NaN for the pixels with no ice that we want to hide
 ~~~
