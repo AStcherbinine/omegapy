@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 15/05/2024
+## Last modified by Aurélien STCHERBININE : 29/05/2024
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -1077,9 +1077,6 @@ class OMEGAdata:
             ic2 = np.concatenate([ic_V, ic_C, ic_L])
             lam = wvl[ic2]
             specmars = specmars[ic2]
-            lam_mask_all = deepcopy(lam)
-            lam_mask_all[:] = True
-            lam_mask = {'all' : lam_mask_all}
             # orbit_nb = int(nomfic0[3:-2])
             orbnum = int.from_bytes(str.encode(nomfic0[3]), byteorder='big') - 48
             if orbnum > 9:
@@ -1136,7 +1133,6 @@ class OMEGAdata:
             self.ic = {'V' : ic_V.astype(int), 
                        'C' : ic_C.astype(int), 
                        'L' : ic_L.astype(int)}
-            self.lam_ma = lam_mask
             self.lat_grid = lat_grid
             self.lon_grid = lon_grid
             self.sensor_temp_c = temperature_c.astype(np.float64)
@@ -1270,7 +1266,6 @@ class OMEGAdata:
         new_omega.utc = self.utc
         new_omega.orbit = self.orbit
         new_omega.ic = self.ic
-        new_omega.lam_ma = self.lam_ma
         new_omega.lon_grid = self.lon_grid
         new_omega.lat_grid = self.lat_grid
         new_omega.sensor_temp_c = self.sensor_temp_c
@@ -1344,7 +1339,6 @@ class OMEGAdata:
         new_omega.utc = deepcopy(self.utc, memo)
         new_omega.orbit = deepcopy(self.orbit, memo)
         new_omega.ic = deepcopy(self.ic, memo)
-        new_omega.lam_ma = deepcopy(self.lam_ma, memo)
         new_omega.lon_grid = deepcopy(self.lon_grid, memo)
         new_omega.lat_grid = deepcopy(self.lat_grid, memo)
         new_omega.sensor_temp_c = deepcopy(self.sensor_temp_c, memo)
@@ -2588,8 +2582,6 @@ def corr_mode_128(omega):
                 omega_corr.cube_rf = cube_rf_corr
         else:
             print('\033[01;33;41mCube not in list\033[0m')
-        # lam_mask['mode128'] = 
-        # omega_corr.add_infos += '\nWarning: Corrupted 128 pixel cube'
     return omega_corr
     
 ##-----------------------------------------------------------------------------------
