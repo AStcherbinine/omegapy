@@ -74,13 +74,39 @@ You can check the values stored in them by displaying the output of
 
 The final test would be to actually download and process an OMEGA observation.
 
-For instance, download the data from cube 3 of orbit 0979:
+For instance, download the data from cube 2 of orbit 0979:
 
- * [ORB0979.QUB](https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/OMEGA/MEX-M-OMEGA-2-EDR-FLIGHT-V1.0/DATA/ORB09/ORB0979_3.QUB)
- * [ORB0979.NAV](https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/OMEGA/MEX-M-OMEGA-2-EDR-FLIGHT-V1.0/DATA/GEM09/ORB0979_3.NAV)
+ * [ORB0979_2.QUB](https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/OMEGA/MEX-M-OMEGA-2-EDR-FLIGHT-V1.0/DATA/ORB09/ORB0979_2.QUB)
+ * [ORB0979_2.NAV](https://archives.esac.esa.int/psa/ftp/MARS-EXPRESS/OMEGA/MEX-M-OMEGA-2-EDR-FLIGHT-V1.0/DATA/GEM09/ORB0979_2.NAV)
 
-Then run the code of the [basic usage](../basic_usage/) example. 
-You should be able to load, process, and display this OMEGA observation.
+Then download the [`example_test_script.py`](example_test_script.py) Python file and run it
+to load, process, and display this OMEGA observation.
+
+??? abstract "Source code for [`example_test_script.py`](example_test_script.py)"
+    ~~~python title="example_test_script.py"
+    --8<-- "docs/example_test_script.py"
+    ~~~
+
+This example script will:
+
+ * load the binary files;
+ * apply the atmospheric and thermal corrections to the OMEGA observation;
+ * compute the 1.5μm band depth criteria (see the [band depth example](../example1_band_depth));
+ * display and save the reflectance, 1.5μm BD, and overplotted maps 
+   (see the [overplotting example](../example2_overplot));
+ * display the interactive visualization tool (if running the code in an IPython shell).
+
+You can then check that you have reproduced the figures shown in the examples.
+
+!!! tip "Notes"
+    If running the code directly from a bash terminal (with `python3 example_test_script.py`),
+    the data will be processed, and the figures saved in your current directory.
+    But you will not have access to the interactive visualization of the cube.
+
+    To use the interactive aspect of *OMEGA-Py*, open an IPython terminal to run the code
+    with `#!python run example_test_script.py` (or execute it from your favorite IDE with
+    a IPython console).
+
 
 !!! failure
     * If encountering an error in the data loading/processing, check your installation with the above steps.
