@@ -264,6 +264,27 @@ to select multiple spectra.
     ~~~
     (put this line at the beginning of your Jupyter notebook, or in your IDE console)
 
+    ??? warning "Additional point if using a Google Colab notebook"
+        It seems that Google Colab notebooks are blocking non inline backends diplay, so you cannot
+        enable the Qt backend as described above.
+        One workaround is to install and use the `ipympl` backend with:
+        
+        Install `ipympl`
+        ~~~bash
+        pip install ipympl
+        ~~~
+
+        And allow third-party Jupyter
+        widgets as described [here](https://colab.research.google.com/notebooks/snippets/advanced_outputs.ipynb#scrollTo=-zTqxvNYbgZU) by putting these lines at the beginning of your notebook (instead of `#!py %matplotlib qt`):
+        ~~~python
+        # Allow for third-party Jupyter widgets
+        from google.colab import output
+        output.enable_custom_widget_manager()
+        
+        # Activate the ipympl interactive backend
+        %matplotlib ipympl
+        ~~~
+
 This is done by calling the [`show_omega_interactif_v2`](../reference/omega_plots/#omega_plots.show_omega_interactif_v2)
 function, which requires an [`OMEGAdata`](../reference/omega_data/#omega_data.OMEGAdata) object
 and either a wavelength (`lam`, in μm) or a data array to display (`data`):
