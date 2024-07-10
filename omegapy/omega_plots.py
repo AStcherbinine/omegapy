@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 16/04/2024
+## Last modified by Aurélien STCHERBININE : 10/07/2024
 
 ##----------------------------------------------------------------------------------------
 """Display of `OMEGAdata` cubes.
@@ -658,6 +658,8 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
         print("\033[1m\nWarning: The pointing mode of this cube is not NADIR, "
          + "thus it may be a better idea to use a non-projected display "
          + "(e.g., show_omega_interactif()).\033[0m")
+    if use_V_geom:
+        omega = _switch_default_geom_to_V(omega)
     # Initialisation
     if refl:
         yaxis = 'Reflectance'
