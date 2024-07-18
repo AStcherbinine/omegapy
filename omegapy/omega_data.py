@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 29/05/2024
+## Last modified by Aurélien STCHERBININE : 18/07/2024
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -35,7 +35,7 @@ from . import useful_functions as uf
 
 # Name of the current file
 _py_file = 'omega_data.py'
-_Version = 3.0
+_Version = 3.1
 
 # Path of the package files
 package_path = os.path.abspath(os.path.dirname(__file__))
