@@ -1,31 +1,56 @@
-cff-version: 1.2.0
-title: 'OMEGA-Py: Python tools for OMEGA data'
-message: >-
-  If you use this software, please cite it using the
-  metadata from this file.
-type: software
+cff-version: "1.2.0"
 authors:
-  - given-names: Aurélien
-    family-names: Stcherbinine
-    email: aurelien@stcherbinine.net
-    orcid: 'https://orcid.org/0000-0002-7086-5443'
-    affiliation: IAS/LATMOS/NAU
-identifiers:
-  - type: doi
-    value: 10.5281/zenodo.7818829
-repository-code: 'https://github.com/AStcherbinine/omegapy'
-url: 'https://astcherbinine.github.io/omegapy'
-repository: 'https://pypi.org/project/omegapy'
-keywords:
-  - Science
-  - Mars
-  - Astronomy
-  - Planetary Science
-  - OMEGA
-  - Mars Express
-  - Hyperspectral
-  - Physics
-  - Python 3
-license: MIT
-version: '3.0'
-date-released: '2023-10-23'
+- family-names: Stcherbinine
+  given-names: Aurélien
+  orcid: "https://orcid.org/0000-0002-7086-5443"
+- family-names: Langevin
+  given-names: Yves
+  orcid: "https://orcid.org/0000-0002-4492-215X"
+- family-names: Carter
+  given-names: John
+  orcid: "https://orcid.org/0000-0002-2698-6926"
+- family-names: Vincendon
+  given-names: Mathieu
+  orcid: "https://orcid.org/0000-0002-1072-7487"
+- family-names: Leseigneur
+  given-names: Yann
+  orcid: "https://orcid.org/0000-0003-1787-2924"
+- family-names: Barraud
+  given-names: Océane
+  orcid: "https://orcid.org/0000-0002-9985-1109"
+doi: 10.5281/zenodo.7818828
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
+  - family-names: Stcherbinine
+    given-names: Aurélien
+    orcid: "https://orcid.org/0000-0002-7086-5443"
+  - family-names: Langevin
+    given-names: Yves
+    orcid: "https://orcid.org/0000-0002-4492-215X"
+  - family-names: Carter
+    given-names: John
+    orcid: "https://orcid.org/0000-0002-2698-6926"
+  - family-names: Vincendon
+    given-names: Mathieu
+    orcid: "https://orcid.org/0000-0002-1072-7487"
+  - family-names: Leseigneur
+    given-names: Yann
+    orcid: "https://orcid.org/0000-0003-1787-2924"
+  - family-names: Barraud
+    given-names: Océane
+    orcid: "https://orcid.org/0000-0002-9985-1109"
+  date-published: 2024-07-20
+  doi: 10.21105/joss.06566
+  issn: 2475-9066
+  issue: 99
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 6566
+  title: "OMEGA-Py: Python Tools for OMEGA Data"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.06566"
+  volume: 9
+title: "OMEGA-Py: Python Tools for OMEGA Data"
