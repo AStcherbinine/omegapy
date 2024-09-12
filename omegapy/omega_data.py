@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 18/07/2024
+## Last modified by Aurélien STCHERBININE : 12/09/2024
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -579,10 +579,13 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path_qub='_omega
         ft = 0.87
         time_int = info[2] - ft
 
-        # Check for saturation in the 90:95 channels
+        # Check for saturation in the 85:95 channels
         vis_tmp = np.swapaxes(vis, 0, 1)    # Inversions axes pour calcul (lam, npix, nscan)
         means = np.mean(vis_tmp[0:85], axis=0)
         i_sat = np.where(vis_tmp[85:] > means)
+        i_sat1, i_sat2, i_sat3 = i_sat
+        i_sat1 += 85
+        i_sat = (i_sat1, i_sat2, i_sat3)
         vis_tmp[i_sat] = 0
         vis = np.swapaxes(vis_tmp, 0, 1)        # On remet dans l'ordre
 
