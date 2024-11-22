@@ -378,8 +378,8 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path_qub='_omega
     altitude = geocube[:, 12, :] * 1e-3
     incidence_norm = geocube[:, 8, :] * 1e-4
     emergence_norm = geocube[:, 9, :] * 1e-4 
-    phase_norm = geocube[:, 10, :] * 1e-4       #add
-    dist = geocube[:, 11, :] * 1e-3             #add
+    phase_norm = geocube[:, 10, :] * 1e-4
+    dist = geocube[:, 11, :] * 1e-3
     lon_grid = np.swapaxes(geocube[:, 13:17, :], 1, 2) * 1e-4
     lat_grid = np.swapaxes(geocube[:, 17:21, :], 1, 2) * 1e-4
     # {L} +15
@@ -388,8 +388,8 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path_qub='_omega
     altitude_L = geocube[:, 27, :] * 1e-3
     incidence_norm_L = geocube[:, 23, :] * 1e-4
     emergence_norm_L = geocube[:, 24, :] * 1e-4
-    phase_norm_L = geocube[:, 25, :] * 1e-4       #add
-    dist_L = geocube[:, 26, :] * 1e-3             #add
+    phase_norm_L = geocube[:, 25, :] * 1e-4
+    dist_L = geocube[:, 26, :] * 1e-3
     lon_grid_L = np.swapaxes(geocube[:, 28:32, :], 1, 2) * 1e-4
     lat_grid_L = np.swapaxes(geocube[:, 32:36, :], 1, 2) * 1e-4
     # {V} +30
@@ -398,8 +398,8 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path_qub='_omega
     altitude_V = geocube[:, 42, :] * 1e-3
     incidence_norm_V = geocube[:, 38, :] * 1e-4
     emergence_norm_V = geocube[:, 39, :] * 1e-4
-    phase_norm_V = geocube[:, 10, :] * 1e-4       #add
-    dist_V = geocube[:, 11, :] * 1e-3             #add
+    phase_norm_V = geocube[:, 10, :] * 1e-4
+    dist_V = geocube[:, 11, :] * 1e-3
     lon_grid_V = np.swapaxes(geocube[:, 43:47, :], 1, 2) * 1e-4
     lat_grid_V = np.swapaxes(geocube[:, 47:51, :], 1, 2) * 1e-4
     
@@ -1079,28 +1079,44 @@ class OMEGAdata:
             wvl = data_dict['wvl']
             ic = data_dict['ic']
             specmars = data_dict['specmars']
-            lat = geom_dict['latitude']
-            lon = geom_dict['longitude']
-            alt = geom_dict['altitude']
-            emer = geom_dict['emergence']
-            emer_n = geom_dict['emergence_norm']
-            phase = geom_dict['phase_norm']
-            inci = geom_dict['incidence']
-            inci_n = geom_dict['incidence_norm']
             utc = geom_dict['ut_time']
             temperature_c = geom_dict['temperature_c']
             temperature_l = geom_dict['temperature_l']
             saturation_c = geom_dict['saturation_c']
             saturation_vis = geom_dict['saturation_vis']
+            
+            lat = geom_dict['latitude']
+            lon = geom_dict['longitude']
+            alt = geom_dict['altitude']
+            dist = geom_dict['dist']            
+            emer = geom_dict['emergence']
+            emer_n = geom_dict['emergence_norm']
+            phase_n = geom_dict['phase_norm']
+            inci = geom_dict['incidence']
+            inci_n = geom_dict['incidence_norm']
             lon_px = geom_dict['lon_grid']
             lat_px = geom_dict['lat_grid']
+            
+            lat_L = geom_dict['latitude_l']
+            lon_L = geom_dict['longitude_l']
+            alt_L = geom_dict['altitude_l']
+            dist_L = geom_dict['dist_l']
+            emer_n_L = geom_dict['emergence_norm_l']
+            phase_n_L = geom_dict['phase_norm_l']
+            inci_n_L = geom_dict['incidence_norm_l']
+            lon_px_L = geom_dict['lon_grid_l']
+            lat_px_L = geom_dict['lat_grid_l']
+
             lat_V = geom_dict['latitude_v']
             lon_V = geom_dict['longitude_v']
             alt_V = geom_dict['altitude_v']
+            dist_V = geom_dict['dist_v']
             emer_n_V = geom_dict['emergence_norm_v']
+            phase_n_V = geom_dict['phase_norm_v']
             inci_n_V = geom_dict['incidence_norm_v']
             lon_px_V = geom_dict['lon_grid_v']
-            lat_px_V = geom_dict['lat_grid_v']
+            lat_px_V = geom_dict['lat_grid_v']            
+            
             # Correction of OMEGA data (same as clean_spec.pro)
             ic_C= ic[(ic >= 8) & (ic <= 122)]        # IR short (voie C)
             ic_L = ic[(ic >= 137) & (ic <= 255)]     # IR long (voie L)
@@ -1130,6 +1146,11 @@ class OMEGAdata:
             lon_grid[1:,0] = lon_px[:,0,1]
             lon_grid[0,1:] = lon_px[0,:,3]
             lon_grid[0,0] = lon_px[0,0,2]
+            lon_grid_L = np.zeros((ny+1, nx+1))
+            lon_grid_L[1:,1:] = lon_px_L[:,:,0]
+            lon_grid_L[1:,0] = lon_px_L[:,0,1]
+            lon_grid_L[0,1:] = lon_px_L[0,:,3]
+            lon_grid_L[0,0] = lon_px_L[0,0,2]
             lon_grid_V = np.zeros((ny+1, nx+1))
             lon_grid_V[1:,1:] = lon_px_V[:,:,0]
             lon_grid_V[1:,0] = lon_px_V[:,0,1]
@@ -1141,11 +1162,17 @@ class OMEGAdata:
             lat_grid[1:,0] = lat_px[:,0,1]
             lat_grid[0,1:] = lat_px[0,:,3]
             lat_grid[0,0] = lat_px[0,0,2]
+            lat_grid_L = np.zeros((ny+1, nx+1))
+            lat_grid_L[1:,1:] = lat_px_L[:,:,0]
+            lat_grid_L[1:,0] = lat_px_L[:,0,1]
+            lat_grid_L[0,1:] = lat_px_L[0,:,3]
+            lat_grid_L[0,0] = lat_px_L[0,0,2]
             lat_grid_V = np.zeros((ny+1, nx+1))
             lat_grid_V[1:,1:] = lat_px_V[:,:,0]
             lat_grid_V[1:,0] = lat_px_V[:,0,1]
             lat_grid_V[0,1:] = lat_px_V[0,:,3]
             lat_grid_V[0,0] = lat_px_V[0,0,2]
+            
             # Storage as class arguments
             self.lam = lam.astype(np.float64)
             self.cube_i = cube_i2.astype(np.float64)
@@ -1153,9 +1180,10 @@ class OMEGAdata:
             self.lat = lat.astype(np.float64)
             self.lon = lon.astype(np.float64)
             self.alt = alt.astype(np.float64)
+            self.dist = dist.astype(np.float64)
             self.emer = emer.astype(np.float64)
             self.emer_n = emer_n.astype(np.float64)
-            self.phase = phase.astype(np.float64)
+            self.phase_n = phase_n.astype(np.float64)
             self.inci = inci.astype(np.float64)
             self.inci_n = inci_n.astype(np.float64)
             self.specmars = specmars.astype(np.float64)
@@ -1171,11 +1199,24 @@ class OMEGAdata:
             self.sensor_temp_l = temperature_l.astype(np.float64)
             self.saturation_c = saturation_c.astype(np.float64)
             self.saturation_vis = saturation_vis.astype(np.float64)
+
+            self.lat_l = lat_L.astype(np.float64)
+            self.lon_l = lon_L.astype(np.float64)
+            self.alt_l = alt_L.astype(np.float64)
+            self.dist_l = dist_L.astype(np.float64)
+            self.emer_n_l = emer_n_L.astype(np.float64)
+            self.inci_n_l = inci_n_L.astype(np.float64)
+            self.phase_n_l = phase_n_L.astype(np.float64)
+            self.lat_grid_l = lat_grid_L
+            self.lon_grid_l = lon_grid_L
+            
             self.lat_v = lat_V.astype(np.float64)
             self.lon_v = lon_V.astype(np.float64)
             self.alt_v = alt_V.astype(np.float64)
+            self.dist_v = dist_V.astype(np.float64)
             self.emer_n_v = emer_n_V.astype(np.float64)
             self.inci_n_v = inci_n_V.astype(np.float64)
+            self.phase_n_v = phase_n_V.astype(np.float64)
             self.lat_grid_v = lat_grid_V
             self.lon_grid_v = lon_grid_V
             #--------------------------
@@ -1360,21 +1401,40 @@ class OMEGAdata:
         new_omega.cube_rf = deepcopy(self.cube_rf, memo)
         new_omega.ls = deepcopy(self.ls, memo)
         new_omega.lat = deepcopy(self.lat, memo)
+        new_omega.lat_l = deepcopy(self.lat_l, memo)
+        new_omega.lat_v = deepcopy(self.lat_v, memo)
         new_omega.lon = deepcopy(self.lon, memo)
+        new_omega.lon_l = deepcopy(self.lon_l, memo)
+        new_omega.lon_v = deepcopy(self.lon_v, memo)
         new_omega.alt = deepcopy(self.alt, memo)
+        new_omega.alt_l = deepcopy(self.alt_l, memo)
+        new_omega.alt_v = deepcopy(self.alt_v, memo)
+        new_omega.dist = deepcopy(self.alt, memo)
+        new_omega.dist_l = deepcopy(self.dist_l, memo)
+        new_omega.dist_v = deepcopy(self.dist_v, memo)
         new_omega.loct = deepcopy(self.loct, memo)
         new_omega.my = deepcopy(self.my, memo)
         new_omega.emer = deepcopy(self.emer, memo)
         new_omega.emer_n = deepcopy(self.emer_n, memo)
-        new_omega.phase = self.phase
+        new_omega.emer_n_v = deepcopy(self.emer_n_v, memo)
+        new_omega.emer_n_l = deepcopy(self.emer_n_l, memo)
+        new_omega.phase_n = deepcopy(self.phase_n, memo)
+        new_omega.phase_n_v = deepcopy(self.phase_n_v, memo)
+        new_omega.phase_n_l = deepcopy(self.phase_n_l, memo)
         new_omega.inci = deepcopy(self.inci, memo)
         new_omega.inci_n = deepcopy(self.inci_n, memo)
+        new_omega.inci_n_v = deepcopy(self.inci_n_v, memo)
+        new_omega.inci_n_l = deepcopy(self.inci_n_l, memo)
         new_omega.specmars = deepcopy(self.specmars, memo)
         new_omega.utc = deepcopy(self.utc, memo)
         new_omega.orbit = deepcopy(self.orbit, memo)
         new_omega.ic = deepcopy(self.ic, memo)
         new_omega.lon_grid = deepcopy(self.lon_grid, memo)
         new_omega.lat_grid = deepcopy(self.lat_grid, memo)
+        new_omega.lon_grid_v = deepcopy(self.lon_grid_v, memo)
+        new_omega.lat_grid_v = deepcopy(self.lat_grid_v, memo)
+        new_omega.lon_grid_l = deepcopy(self.lon_grid_l, memo)
+        new_omega.lat_grid_l = deepcopy(self.lat_grid_l, memo)
         new_omega.sensor_temp_c = deepcopy(self.sensor_temp_c, memo)
         new_omega.sensor_temp_l = deepcopy(self.sensor_temp_l, memo)
         new_omega.saturation_c = deepcopy(self.saturation_c, memo)
@@ -1385,13 +1445,6 @@ class OMEGAdata:
         new_omega.data_quality = deepcopy(self.data_quality, memo)
         new_omega.mode_channel = deepcopy(self.mode_channel, memo)
         new_omega.ref_C = deepcopy(self.ref_C, memo)
-        new_omega.lat_v = deepcopy(self.lat_v, memo)
-        new_omega.lon_v = deepcopy(self.lon_v, memo)
-        new_omega.alt_v = deepcopy(self.alt_v, memo)
-        new_omega.emer_n_v = deepcopy(self.emer_n_v, memo)
-        new_omega.inci_n_v = deepcopy(self.inci_n_v, memo)
-        new_omega.lon_grid_v = deepcopy(self.lon_grid_v, memo)
-        new_omega.lat_grid_v = deepcopy(self.lat_grid_v, memo)
         new_omega.focal_plane_temperatures = deepcopy(self.focal_plane_temperatures, memo)
         new_omega.spectrometer_temperatures = deepcopy(self.spectrometer_temperatures, memo)
         # Nav
