@@ -110,17 +110,17 @@ def _compute_local_time(lon, subsol_lon):
     ----------
     lon : 2D array
         The longitude of each pixel (in deg).
-    subsol_lon : float
+    subsol_lon : float
         The longitude of the sub-solar point at observation time.
 
     Returns
     -------
-    loct : 2D array of floats
+    loct : 2D array of floats
         The array of the local time for each pixel of the observation.
     """
     # Initialisation
     loct = -np.ones(lon.shape)
-    # Note : sub_solar_longitude = longitude du midi au moment de l'orbite
+    # Note : sub_solar_longitude = longitude du midi au moment de l'orbite
     # Calcul écart au point sub-solaire
     delta_lon = subsol_lon - lon    # en longitude
     delta_loct = np.abs(delta_lon * 12/180)     # conversion en heure
@@ -142,12 +142,12 @@ def _utc_to_my(dt):
 
     Parameters
     ----------
-    dt : datetime.datetime
+    dt : datetime.datetime
         The UTC datetime object.
 
     Returns
     -------
-    my : int
+    my : int
         The corresponding Martian Year.
     """
     datetime_my1 = datetime.datetime(1955, 4, 11)   # Start MY 1
@@ -173,11 +173,11 @@ def _read_cube(filename_qub, disp=True):
     -------
     idat : 3D ndarray
 
-    sdat0 : 2D ndarray
+    sdat0 : 2D ndarray
 
-    sdat1 : 3D ndarray
+    sdat1 : 3D ndarray
 
-    info : 1D ndarray
+    info : 1D ndarray
 
     """
     # Initialisation
@@ -265,14 +265,14 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path_qub='_omega
     
     Parameters
     ----------
-    cube_id : str
+    cube_id : str
         The observation ID (format ORBXXXX_X).
     disp : bool, default True
         Enable or disable the display of informations during the file reading.
         | `True` --> Enable display.
-    corrV : bool, default True
+    corrV : bool, default True
         If `True`, compute the correction on the visible channel (Vis).
-    corrL : bool, default True
+    corrL : bool, default True
         If `True`, compute the correction on the long-IR channel (L).
     data_path_qub : str, default _omega_bin_path
         The path of the directory containing the data files (.QUB).
@@ -377,15 +377,29 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path_qub='_omega
     latitude = geocube[:, 7, :] * 1e-4
     altitude = geocube[:, 12, :] * 1e-3
     incidence_norm = geocube[:, 8, :] * 1e-4
-    emergence_norm = geocube[:, 9, :] * 1e-4
+    emergence_norm = geocube[:, 9, :] * 1e-4 
+    phase_norm = geocube[:, 10, :] * 1e-4
+    dist = geocube[:, 11, :] * 1e-3
     lon_grid = np.swapaxes(geocube[:, 13:17, :], 1, 2) * 1e-4
     lat_grid = np.swapaxes(geocube[:, 17:21, :], 1, 2) * 1e-4
-    # {V}
+    # {L} +15
+    longitude_L = geocube[:, 21, :] * 1e-4
+    latitude_L = geocube[:, 22, :] * 1e-4
+    altitude_L = geocube[:, 27, :] * 1e-3
+    incidence_norm_L = geocube[:, 23, :] * 1e-4
+    emergence_norm_L = geocube[:, 24, :] * 1e-4
+    phase_norm_L = geocube[:, 25, :] * 1e-4
+    dist_L = geocube[:, 26, :] * 1e-3
+    lon_grid_L = np.swapaxes(geocube[:, 28:32, :], 1, 2) * 1e-4
+    lat_grid_L = np.swapaxes(geocube[:, 32:36, :], 1, 2) * 1e-4
+    # {V} +30
     longitude_V = geocube[:, 36, :] * 1e-4
     latitude_V = geocube[:, 37, :] * 1e-4
     altitude_V = geocube[:, 42, :] * 1e-3
     incidence_norm_V = geocube[:, 38, :] * 1e-4
     emergence_norm_V = geocube[:, 39, :] * 1e-4
+    phase_norm_V = geocube[:, 10, :] * 1e-4
+    dist_V = geocube[:, 11, :] * 1e-3
     lon_grid_V = np.swapaxes(geocube[:, 43:47, :], 1, 2) * 1e-4
     lat_grid_V = np.swapaxes(geocube[:, 47:51, :], 1, 2) * 1e-4
     
@@ -734,12 +748,28 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path_qub='_omega
     }
     out_geom = {
         'latitude'  : latitude.T,
+        'latitude_l'  : latitude_L.T,
+        'latitude_v'  : latitude_V.T,
         'longitude' : longitude.T,
+        'longitude_l' : longitude_L.T,
+        'longitude_v' : longitude_V.T,
         'emergence' : emergence.T,
         'emergence_norm' : emergence_norm.T,
+        'emergence_norm_l' : emergence_norm_L.T,
+        'emergence_norm_v' : emergence_norm_V.T,
         'incidence' : incidence.T,
         'incidence_norm' : incidence_norm.T,
+        'incidence_norm_l' : incidence_norm_L.T,
+        'incidence_norm_v' : incidence_norm_V.T,
+        'phase_norm' : phase_norm.T,
+        'phase_norm_l' : phase_norm_L.T,        
+        'phase_norm_v' : phase_norm_V.T,
         'altitude'  : altitude.T,
+        'altitude_l'  : altitude_L.T,
+        'altitude_v'  : altitude_V.T,
+        'dist'  : dist.T,
+        'dist_l'  : dist_L.T,
+        'dist_v'  : dist_V.T,
         'ut_time'   : ut_time.T,
         'temperature_c' : temperature_C,
         'temperature_l' : temperature_L,
@@ -747,11 +777,8 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path_qub='_omega
         'saturation_vis': saturation_vis.T,
         'lat_grid'  : np.moveaxis(lat_grid, [0,1,2], [1,0,2]),
         'lon_grid'  : np.moveaxis(lon_grid, [0,1,2], [1,0,2]),
-        'latitude_v'  : latitude_V.T,
-        'longitude_v' : longitude_V.T,
-        'altitude_v'  : altitude_V.T,
-        'incidence_norm_v' : incidence_norm_V.T,
-        'emergence_norm_v' : emergence_norm_V.T,
+        'lat_grid_l'  : np.moveaxis(lat_grid_L, [0,1,2], [1,0,2]),
+        'lon_grid_l'  : np.moveaxis(lon_grid_L, [0,1,2], [1,0,2]),
         'lat_grid_v'  : np.moveaxis(lat_grid_V, [0,1,2], [1,0,2]),
         'lon_grid_v'  : np.moveaxis(lon_grid_V, [0,1,2], [1,0,2]),
     }
@@ -771,9 +798,9 @@ class OMEGAdata:
     data_path : str, default _omega_bin_path
         The path of the directory containing the data (.QUB) and 
         navigation (.NAV) files.
-    corrV : bool, default True
+    corrV : bool, default True
         If `True`, compute the correction on the visible channel (Vis).
-    corrL : bool, default True
+    corrL : bool, default True
         If `True`, compute the correction on the long-IR channel (L).
     disp : bool, default True
         Enable or disable the display of informations during the file reading.</br>
@@ -802,7 +829,7 @@ class OMEGAdata:
     alt : 2D array
         The elevation of the pixel footprint center point from MOMA topography (km).</br>
         *C & L channels*
-    loct : 2D array of floats
+    loct : 2D array of floats
         The array of the local time for each pixel of the observation.
     my : int
         The Martian Year number at the time of the observation.
@@ -844,7 +871,7 @@ class OMEGAdata:
         Information about the saturation of the C-channel.
     saturation_vis : 2D array
         Information about the saturation of the Vis-channel.
-    ref_C : 2D array
+    ref_C : 2D array
         Average reflectance at λ = 1.285/1.299/1.314 μm, to be compared
         with `ecl_n = cos(inci_n)` to check the geometry spatial calibration.
     lat_v : 2D array
@@ -916,7 +943,7 @@ class OMEGAdata:
         Distance from the spacecraft to the center of the observation along the line of sight (km).
     focal_plane_temperatures : dict
         Temperatures of the C, L, V detectors (K).
-    spectrometer_temperatures : dict
+    spectrometer_temperatures : dict
         Temperatures of the C, L, V spectrometers (K).
     quality : int
         The quality level of the cube.</br>
@@ -933,9 +960,9 @@ class OMEGAdata:
         | `False` --> No atmospheric correction.
     atm_corr_infos : dict
         Information about the atmospheric correction (date, method).
-    corrV : bool
+    corrV : bool
         Correction state of the visible channel (Vis).
-    corrL : bool
+    corrL : bool
         Correction state of the long-IR channel (L).
     version : int
         The major release version of the `omegapy.omega_data.py` file used.
@@ -1052,27 +1079,44 @@ class OMEGAdata:
             wvl = data_dict['wvl']
             ic = data_dict['ic']
             specmars = data_dict['specmars']
-            lat = geom_dict['latitude']
-            lon = geom_dict['longitude']
-            alt = geom_dict['altitude']
-            emer = geom_dict['emergence']
-            emer_n = geom_dict['emergence_norm']
-            inci = geom_dict['incidence']
-            inci_n = geom_dict['incidence_norm']
             utc = geom_dict['ut_time']
             temperature_c = geom_dict['temperature_c']
             temperature_l = geom_dict['temperature_l']
             saturation_c = geom_dict['saturation_c']
             saturation_vis = geom_dict['saturation_vis']
+            
+            lat = geom_dict['latitude']
+            lon = geom_dict['longitude']
+            alt = geom_dict['altitude']
+            dist = geom_dict['dist']            
+            emer = geom_dict['emergence']
+            emer_n = geom_dict['emergence_norm']
+            phase_n = geom_dict['phase_norm']
+            inci = geom_dict['incidence']
+            inci_n = geom_dict['incidence_norm']
             lon_px = geom_dict['lon_grid']
             lat_px = geom_dict['lat_grid']
+            
+            lat_L = geom_dict['latitude_l']
+            lon_L = geom_dict['longitude_l']
+            alt_L = geom_dict['altitude_l']
+            dist_L = geom_dict['dist_l']
+            emer_n_L = geom_dict['emergence_norm_l']
+            phase_n_L = geom_dict['phase_norm_l']
+            inci_n_L = geom_dict['incidence_norm_l']
+            lon_px_L = geom_dict['lon_grid_l']
+            lat_px_L = geom_dict['lat_grid_l']
+
             lat_V = geom_dict['latitude_v']
             lon_V = geom_dict['longitude_v']
             alt_V = geom_dict['altitude_v']
+            dist_V = geom_dict['dist_v']
             emer_n_V = geom_dict['emergence_norm_v']
+            phase_n_V = geom_dict['phase_norm_v']
             inci_n_V = geom_dict['incidence_norm_v']
             lon_px_V = geom_dict['lon_grid_v']
-            lat_px_V = geom_dict['lat_grid_v']
+            lat_px_V = geom_dict['lat_grid_v']            
+            
             # Correction of OMEGA data (same as clean_spec.pro)
             ic_C= ic[(ic >= 8) & (ic <= 122)]        # IR short (voie C)
             ic_L = ic[(ic >= 137) & (ic <= 255)]     # IR long (voie L)
@@ -1102,6 +1146,11 @@ class OMEGAdata:
             lon_grid[1:,0] = lon_px[:,0,1]
             lon_grid[0,1:] = lon_px[0,:,3]
             lon_grid[0,0] = lon_px[0,0,2]
+            lon_grid_L = np.zeros((ny+1, nx+1))
+            lon_grid_L[1:,1:] = lon_px_L[:,:,0]
+            lon_grid_L[1:,0] = lon_px_L[:,0,1]
+            lon_grid_L[0,1:] = lon_px_L[0,:,3]
+            lon_grid_L[0,0] = lon_px_L[0,0,2]
             lon_grid_V = np.zeros((ny+1, nx+1))
             lon_grid_V[1:,1:] = lon_px_V[:,:,0]
             lon_grid_V[1:,0] = lon_px_V[:,0,1]
@@ -1113,11 +1162,17 @@ class OMEGAdata:
             lat_grid[1:,0] = lat_px[:,0,1]
             lat_grid[0,1:] = lat_px[0,:,3]
             lat_grid[0,0] = lat_px[0,0,2]
+            lat_grid_L = np.zeros((ny+1, nx+1))
+            lat_grid_L[1:,1:] = lat_px_L[:,:,0]
+            lat_grid_L[1:,0] = lat_px_L[:,0,1]
+            lat_grid_L[0,1:] = lat_px_L[0,:,3]
+            lat_grid_L[0,0] = lat_px_L[0,0,2]
             lat_grid_V = np.zeros((ny+1, nx+1))
             lat_grid_V[1:,1:] = lat_px_V[:,:,0]
             lat_grid_V[1:,0] = lat_px_V[:,0,1]
             lat_grid_V[0,1:] = lat_px_V[0,:,3]
             lat_grid_V[0,0] = lat_px_V[0,0,2]
+            
             # Storage as class arguments
             self.lam = lam.astype(np.float64)
             self.cube_i = cube_i2.astype(np.float64)
@@ -1125,8 +1180,10 @@ class OMEGAdata:
             self.lat = lat.astype(np.float64)
             self.lon = lon.astype(np.float64)
             self.alt = alt.astype(np.float64)
+            self.dist = dist.astype(np.float64)
             self.emer = emer.astype(np.float64)
             self.emer_n = emer_n.astype(np.float64)
+            self.phase_n = phase_n.astype(np.float64)
             self.inci = inci.astype(np.float64)
             self.inci_n = inci_n.astype(np.float64)
             self.specmars = specmars.astype(np.float64)
@@ -1142,11 +1199,24 @@ class OMEGAdata:
             self.sensor_temp_l = temperature_l.astype(np.float64)
             self.saturation_c = saturation_c.astype(np.float64)
             self.saturation_vis = saturation_vis.astype(np.float64)
+
+            self.lat_l = lat_L.astype(np.float64)
+            self.lon_l = lon_L.astype(np.float64)
+            self.alt_l = alt_L.astype(np.float64)
+            self.dist_l = dist_L.astype(np.float64)
+            self.emer_n_l = emer_n_L.astype(np.float64)
+            self.inci_n_l = inci_n_L.astype(np.float64)
+            self.phase_n_l = phase_n_L.astype(np.float64)
+            self.lat_grid_l = lat_grid_L
+            self.lon_grid_l = lon_grid_L
+            
             self.lat_v = lat_V.astype(np.float64)
             self.lon_v = lon_V.astype(np.float64)
             self.alt_v = alt_V.astype(np.float64)
+            self.dist_v = dist_V.astype(np.float64)
             self.emer_n_v = emer_n_V.astype(np.float64)
             self.inci_n_v = inci_n_V.astype(np.float64)
+            self.phase_n_v = phase_n_V.astype(np.float64)
             self.lat_grid_v = lat_grid_V
             self.lon_grid_v = lon_grid_V
             #--------------------------
@@ -1263,6 +1333,7 @@ class OMEGAdata:
         new_omega.my = self.my
         new_omega.emer = self.emer
         new_omega.emer_n = self.emer_n
+        new_omega.phase = self.phase
         new_omega.inci = self.inci
         new_omega.inci_n = self.inci_n
         new_omega.specmars = self.specmars
@@ -1330,20 +1401,40 @@ class OMEGAdata:
         new_omega.cube_rf = deepcopy(self.cube_rf, memo)
         new_omega.ls = deepcopy(self.ls, memo)
         new_omega.lat = deepcopy(self.lat, memo)
+        new_omega.lat_l = deepcopy(self.lat_l, memo)
+        new_omega.lat_v = deepcopy(self.lat_v, memo)
         new_omega.lon = deepcopy(self.lon, memo)
+        new_omega.lon_l = deepcopy(self.lon_l, memo)
+        new_omega.lon_v = deepcopy(self.lon_v, memo)
         new_omega.alt = deepcopy(self.alt, memo)
+        new_omega.alt_l = deepcopy(self.alt_l, memo)
+        new_omega.alt_v = deepcopy(self.alt_v, memo)
+        new_omega.dist = deepcopy(self.alt, memo)
+        new_omega.dist_l = deepcopy(self.dist_l, memo)
+        new_omega.dist_v = deepcopy(self.dist_v, memo)
         new_omega.loct = deepcopy(self.loct, memo)
         new_omega.my = deepcopy(self.my, memo)
         new_omega.emer = deepcopy(self.emer, memo)
         new_omega.emer_n = deepcopy(self.emer_n, memo)
+        new_omega.emer_n_v = deepcopy(self.emer_n_v, memo)
+        new_omega.emer_n_l = deepcopy(self.emer_n_l, memo)
+        new_omega.phase_n = deepcopy(self.phase_n, memo)
+        new_omega.phase_n_v = deepcopy(self.phase_n_v, memo)
+        new_omega.phase_n_l = deepcopy(self.phase_n_l, memo)
         new_omega.inci = deepcopy(self.inci, memo)
         new_omega.inci_n = deepcopy(self.inci_n, memo)
+        new_omega.inci_n_v = deepcopy(self.inci_n_v, memo)
+        new_omega.inci_n_l = deepcopy(self.inci_n_l, memo)
         new_omega.specmars = deepcopy(self.specmars, memo)
         new_omega.utc = deepcopy(self.utc, memo)
         new_omega.orbit = deepcopy(self.orbit, memo)
         new_omega.ic = deepcopy(self.ic, memo)
         new_omega.lon_grid = deepcopy(self.lon_grid, memo)
         new_omega.lat_grid = deepcopy(self.lat_grid, memo)
+        new_omega.lon_grid_v = deepcopy(self.lon_grid_v, memo)
+        new_omega.lat_grid_v = deepcopy(self.lat_grid_v, memo)
+        new_omega.lon_grid_l = deepcopy(self.lon_grid_l, memo)
+        new_omega.lat_grid_l = deepcopy(self.lat_grid_l, memo)
         new_omega.sensor_temp_c = deepcopy(self.sensor_temp_c, memo)
         new_omega.sensor_temp_l = deepcopy(self.sensor_temp_l, memo)
         new_omega.saturation_c = deepcopy(self.saturation_c, memo)
@@ -1354,13 +1445,6 @@ class OMEGAdata:
         new_omega.data_quality = deepcopy(self.data_quality, memo)
         new_omega.mode_channel = deepcopy(self.mode_channel, memo)
         new_omega.ref_C = deepcopy(self.ref_C, memo)
-        new_omega.lat_v = deepcopy(self.lat_v, memo)
-        new_omega.lon_v = deepcopy(self.lon_v, memo)
-        new_omega.alt_v = deepcopy(self.alt_v, memo)
-        new_omega.emer_n_v = deepcopy(self.emer_n_v, memo)
-        new_omega.inci_n_v = deepcopy(self.inci_n_v, memo)
-        new_omega.lon_grid_v = deepcopy(self.lon_grid_v, memo)
-        new_omega.lat_grid_v = deepcopy(self.lat_grid_v, memo)
         new_omega.focal_plane_temperatures = deepcopy(self.focal_plane_temperatures, memo)
         new_omega.spectrometer_temperatures = deepcopy(self.spectrometer_temperatures, memo)
         # Nav
@@ -1483,20 +1567,20 @@ def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False, data_path='_omega_bin_p
 
     Parameters
     ----------
-    lon0 : float
+    lon0 : float
         The target longitude (in degrees).
     lat0 : float
         The target latitude (in degrees).
     cmin : float, default 0
         The minimum orbit number.
-    cmax : float, default 10000
+    cmax : float, default 10000
         The maximum orbit number.
     out : bool, default False
         If `True` --> return output
     data_path : str, default _omega_bin_path
         The path of the directory containing the data (.QUB) and 
         navigation (.NAV) files.
-    nadir_only : bool, default False
+    nadir_only : bool, default False
         If `True` --> Only cubes with nadir pointing will be returned.
     recursive_search : bool, default True
         If `True`, enable the search for the .NAV files in subdirectories
@@ -1523,7 +1607,7 @@ def find_cube(lon0, lat0, cmin=0, cmax=10000, out=False, data_path='_omega_bin_p
             X-coordinate of the point.
         y0 : float
             Y-coordinate of the point.
-        x1 : 1D array
+        x1 : 1D array
             X-coordinates of the observation.
         y1 : 1D array
             Y-coordinates of the observations.
@@ -1892,7 +1976,7 @@ def autoload_omega(obs_name, folder='auto', version=_Version, base_folder='_omeg
     folder : str, default 'auto'
         The subfolder where the data is.</br>
         | If `'auto'` --> `folder = 'vX'`, where `X` is the major release version of the used code.
-    version : float, default _Version
+    version : float, default _Version
         The version of the target file (if folder is `'auto'`).
     base_folder : str, default _omega_py_path
         The base folder path.
@@ -2055,7 +2139,7 @@ def corr_therm(omega, npool=1):
     ----------
     omega : OMEGAdata
         The OMEGA observation data.
-    npool : int, default 1
+    npool : int, default 1
         Number of parallelized worker process to use.
 
     Returns
@@ -2468,7 +2552,7 @@ def corr_therm_atm(omega, npool=1):
     ----------
     omega : OMEGAdata
         The OMEGA observation data.
-    npool : int, default 1
+    npool : int, default 1
         Number of parallelized worker process to use.
 
     Returns
@@ -2615,7 +2699,7 @@ def corr_save_omega(obsname, folder='auto', base_folder='_omega_py_path', securi
     compress : bool, default True
         If `True`, the radiance cube after correction is removed (i.e. set to `None`)
         in order to reduce the size of the saved file.
-    npool : int, default 1
+    npool : int, default 1
         Number of parallelized worker process to use.
     """
     if folder == 'auto':
@@ -2673,7 +2757,7 @@ def corr_save_omega_list(liste_obs, folder='auto', base_folder='_omega_py_path',
     compress : bool, default True
         If `True`, the radiance cube after correction is removed (i.e. set to `None`)
         in order to reduce the size of the saved file.
-    npool : int, default 1
+    npool : int, default 1
         Number of parallelized worker process to use.
     """
     # Default path
@@ -2715,7 +2799,7 @@ def corr_save_omega2(obsname, folder='auto', base_folder='_omega_py_path', secur
     compress : bool, default True
         If `True`, the radiance cube after correction is removed (i.e. set to `None`)
         in order to reduce the size of the saved file.
-    npool : int, default 1
+    npool : int, default 1
         Number of parallelized worker process to use.
     """
     if folder == 'auto':
@@ -2770,7 +2854,7 @@ def corr_save_omega2_list(liste_obs, folder='auto', base_folder='_omega_py_path'
     compress : bool, default True
         If `True`, the radiance cube after correction is removed (i.e. set to `None`)
         in order to reduce the size of the saved file.
-    npool : int, default 1
+    npool : int, default 1
         Number of parallelized worker process to use.
     """
     # Default path
@@ -2796,7 +2880,7 @@ def import_list_obs_csv(filename):
 
     Returns
     -------
-    liste_obs : array of str
+    liste_obs : array of str
         The list of observations ID from the csv file.
     """
     df = pd.read_csv(filename)
@@ -2903,7 +2987,7 @@ def update_cube_quality(obs_name='ORB*.pkl', folder='auto', version=_Version,
     folder : str, default 'auto'
         The subfolder where the data is.</br>
         | If `'auto'` --> `folder = 'vX'`, where `X` is the major release version of the used code.
-    version : float, default _Version
+    version : float, default _Version
         The version of the target file (if folder is `'auto'`).</br>
         Default is the current code version.
     base_folder : str, default _omega_py_path
@@ -2960,7 +3044,7 @@ def load_omega_list2(liste_obs, therm_corr=True, atm_corr=True, **kwargs):
 
     Parameters
     ----------
-    liste_obs : array of str
+    liste_obs : array of str
         List of OMEGA/MEx observations ID.
     therm_corr : bool or None, default None
         | `True` --> Only results with thermal correction.</br>
@@ -3175,12 +3259,12 @@ def utc_to_my(dt):
 
     Parameters
     ----------
-    dt : datetime.datetime
+    dt : datetime.datetime
         The UTC datetime object.
 
     Returns
     -------
-    my : int
+    my : int
         The corresponding Martian Year.
     """
     datetime_my1 = datetime.datetime(1955, 4, 11)   # Start MY 1
@@ -3256,17 +3340,17 @@ def omega_mask(omega, emer_lim=None, inci_lim=None, tempc_lim=None, limsat_c=Non
     ----------
     omega : OMEGAdata
         The OMEGA observation data.
-    emer_lim : float or None, default None
+    emer_lim : float or None, default None
         The maximum emergence angle.
-    inci_lim : float or None, default None
+    inci_lim : float or None, default None
         The maximum incidence angle.
     tempc_lim : float or None, default None
         The maximum temperature for the C-channel.
-    limsat_c : float or None, default None
+    limsat_c : float or None, default None
         The maximum value of the C-channel saturation [DN].
         The maximum value in DN for the spectel #40 (*i.e., λ=1.486μm*).
         > See Vincendon et al. (2015) or Stcherbinine et al. (2021).
-    hide_128 : bool, default True
+    hide_128 : bool, default True
         If `True`, hide the corrupted columns for 128-px wide cubes affected.
     reject_low_quality : bool, default False
         Reject observations flagged as low quality, as defined in Stcherbinine et al. (2021).</br>
@@ -3384,7 +3468,7 @@ def BD_omega(omega, lam0, lamc1, lamc2, norm=True):
         The wavelength of the bluer point for the continuum determination.
     lamc2 : float or array-like
         The wavelength of the redder point for the continuum determination.
-    norm : bool, default True
+    norm : bool, default True
         | `True` --> band_depth output is the normalized BD values.</br>
         | `False` --> band_depth output is the BD values.
     
