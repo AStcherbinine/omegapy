@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 10/07/2024
+## Last modified by Aurélien STCHERBININE : 08/01/2025
 
 ##----------------------------------------------------------------------------------------
 """Display of `OMEGAdata` cubes.
@@ -44,7 +44,7 @@ picked_spectra = {}
 ##----------------------------------------------------------------------------------------
 ## Modifie géométrie par défaut
 def _switch_default_geom_to_V(omega):
-    """Replace the default geometry attributes of an OMEGAdata object (C/L-channels)
+    """Replace the default geometry attributes of an OMEGAdata object (C-channel)
     by the V-channel geometry.
 
     Parameters
@@ -61,17 +61,16 @@ def _switch_default_geom_to_V(omega):
     omega_Vgeom.lat = omega_Vgeom.lat_v
     omega_Vgeom.lon = omega_Vgeom.lon_v
     omega_Vgeom.alt = omega_Vgeom.alt_v
+    omega_Vgeom.dist = omega_Vgeom.dist_v
     omega_Vgeom.inci_n = omega_Vgeom.inci_n_v
     omega_Vgeom.emer_n = omega_Vgeom.emer_n_v
+    omega_Vgeom.phase_n = omega_Vgeom.phase_n_v
     omega_Vgeom.lon_grid = omega_Vgeom.lon_grid_v
     omega_Vgeom.lat_grid = omega_Vgeom.lat_grid_v
     return omega_Vgeom
 
-
-##----------------------------------------------------------------------------------------
-## Modifie géométrie par défaut
 def _switch_default_geom_to_L(omega):
-    """Replace the default geometry attributes of an OMEGAdata object (C/L-channels)
+    """Replace the default geometry attributes of an OMEGAdata object (C-channel)
     by the L-channel geometry.
 
     Parameters
@@ -88,13 +87,13 @@ def _switch_default_geom_to_L(omega):
     omega_Lgeom.lat = omega_Lgeom.lat_l
     omega_Lgeom.lon = omega_Lgeom.lon_l
     omega_Lgeom.alt = omega_Lgeom.alt_l
+    omega_Lgeom.dist = omega_Lgeom.dist_l
     omega_Lgeom.inci_n = omega_Lgeom.inci_n_l
     omega_Lgeom.emer_n = omega_Lgeom.emer_n_l
+    omega_Lgeom.phase_n = omega_Lgeom.phase_n_l
     omega_Lgeom.lon_grid = omega_Lgeom.lon_grid_l
     omega_Lgeom.lat_grid = omega_Lgeom.lat_grid_l
     return omega_Lgeom
-
-
 
 ##----------------------------------------------------------------------------------------
 ## Affichage cube
@@ -239,10 +238,12 @@ def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None
     use_V_geom : bool, default False
         If `True`, use the geometry of the V-channel instead of the C-channel.
     use_L_geom : bool, default False
-        If `True`, use the geometry of the V-channel instead of the C-channel.
+        If `True`, use the geometry of the L-channel instead of the C-channel.
     **kwargs:
         Optional arguments for the `plt.pcolormesh()` function.
     """
+    if use_V_geom and use_L_geom:
+        raise ValueError("Cannot use both V and L geometries at the same time.")
     if use_V_geom:
         omega = _switch_default_geom_to_V(omega)
     if use_L_geom:
@@ -685,14 +686,16 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
     use_V_geom : bool, default False
         If `True`, use the geometry of the V-channel instead of the C-channel.
     use_L_geom : bool, default False
-        If `True`, use the geometry of the V-channel instead of the L-channels.
-        **kwargs:
+        If `True`, use the geometry of the L-channel instead of the C-channel.
+    **kwargs:
         Optional arguments for the `plt.pcolormesh()` function.
     """
     if omega.point_mode != 'NADIR':
         print("\033[1m\nWarning: The pointing mode of this cube is not NADIR, "
          + "thus it may be a better idea to use a non-projected display "
          + "(e.g., show_omega_interactif()).\033[0m")
+    if use_V_geom and use_L_geom:
+        raise ValueError("Cannot use both V and L geometries at the same time.")
     if use_V_geom:
         omega = _switch_default_geom_to_V(omega)
     if use_L_geom:
@@ -886,10 +889,12 @@ def show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, 
     use_V_geom : bool, default False
         If `True`, use the geometry of the V-channel instead of the C-channel.
     use_L_geom : bool, default False
-        If `True`, use the geometry of the L-channel instead of the L-channels.
+        If `True`, use the geometry of the L-channel instead of the C-channel.
     **kwargs:
         Optional arguments for the `plt.pcolormesh()` function.
     """
+    if use_V_geom and use_L_geom:
+        raise ValueError("Cannot use both V and L geometries at the same time.")
     if use_V_geom:
         omega = _switch_default_geom_to_V(omega)
     if use_L_geom:
@@ -1394,6 +1399,8 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
     """
     if proj_method not in [1, 2]:
         raise ValueError("`proj_method` must be 1 (pixel centers) or 2 (polygons).")
+    if use_V_geom and use_L_geom:
+        raise ValueError("Cannot use both V and L geometries at the same time.")
     # Sampling on same grid
     lat_array = np.arange(lat_min, lat_max+pas_lat, pas_lat)
     lon_array = np.arange(lon_min, lon_max+pas_lon, pas_lon)

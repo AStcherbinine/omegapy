@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 12/09/2024
+## Last modified by Aurélien STCHERBININE : 08/01/2025
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -35,7 +35,7 @@ from . import useful_functions as uf
 
 # Name of the current file
 _py_file = 'omega_data.py'
-_Version = 3.1
+_Version = 3.2
 
 # Path of the package files
 package_path = os.path.abspath(os.path.dirname(__file__))
@@ -284,10 +284,13 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path_qub='_omega
     out_data : dict
         {'ldat', 'jdat', 'wvl', 'ic', 'specmars'}
     out_geom : dict
-        {'latitude', 'longitude', 'emergence', 'emergence_norm', 'incidence',
-        'incidence_norm', 'altitude', 'ut_time', 'temperature_c', 'temperature_l',
-        'saturation_c', 'saturation_vis', 'lat_grid', 'lon_grid', 'latitude_v',
-        'longitude_v', 'altitude_v', 'incidence_norm_v', 'emergence_norm_v',
+        {'latitude', 'latitude_l', 'latitude_v', 'longitude', 'longitude_l',
+        'longitude_v', 'emergence', 'emergence_norm', 'emergence_norm_l',
+        'emergence_norm_v', 'incidence', 'incidence_norm', 'incidence_norm_l',
+        'incidence_norm_v', 'phase_norm', 'phase_norm_l', 'phase_norm_v',
+        'altitude', 'altitude_l', 'altitude_v', 'dist', 'dist_l', 'dist_v',
+        'ut_time', 'temperature_c', 'temperature_l', 'saturation_c',
+        'saturation_vis', 'lat_grid', 'lon_grid', 'lat_grid_l', 'lon_grid_l',
         'lat_grid_v', 'lon_grid_v'}
     """
     # Default path
@@ -375,31 +378,31 @@ def _readomega(cube_id, disp=True, corrV=True, corrL=True, data_path_qub='_omega
     # {C+L}
     longitude = geocube[:, 6, :] * 1e-4
     latitude = geocube[:, 7, :] * 1e-4
-    altitude = geocube[:, 12, :] * 1e-3
     incidence_norm = geocube[:, 8, :] * 1e-4
     emergence_norm = geocube[:, 9, :] * 1e-4 
     phase_norm = geocube[:, 10, :] * 1e-4
     dist = geocube[:, 11, :] * 1e-3
+    altitude = geocube[:, 12, :] * 1e-3
     lon_grid = np.swapaxes(geocube[:, 13:17, :], 1, 2) * 1e-4
     lat_grid = np.swapaxes(geocube[:, 17:21, :], 1, 2) * 1e-4
     # {L} +15
     longitude_L = geocube[:, 21, :] * 1e-4
     latitude_L = geocube[:, 22, :] * 1e-4
-    altitude_L = geocube[:, 27, :] * 1e-3
     incidence_norm_L = geocube[:, 23, :] * 1e-4
     emergence_norm_L = geocube[:, 24, :] * 1e-4
     phase_norm_L = geocube[:, 25, :] * 1e-4
     dist_L = geocube[:, 26, :] * 1e-3
+    altitude_L = geocube[:, 27, :] * 1e-3
     lon_grid_L = np.swapaxes(geocube[:, 28:32, :], 1, 2) * 1e-4
     lat_grid_L = np.swapaxes(geocube[:, 32:36, :], 1, 2) * 1e-4
     # {V} +30
     longitude_V = geocube[:, 36, :] * 1e-4
     latitude_V = geocube[:, 37, :] * 1e-4
-    altitude_V = geocube[:, 42, :] * 1e-3
     incidence_norm_V = geocube[:, 38, :] * 1e-4
     emergence_norm_V = geocube[:, 39, :] * 1e-4
-    phase_norm_V = geocube[:, 10, :] * 1e-4
-    dist_V = geocube[:, 11, :] * 1e-3
+    phase_norm_V = geocube[:, 40, :] * 1e-4
+    dist_V = geocube[:, 41, :] * 1e-3
+    altitude_V = geocube[:, 42, :] * 1e-3
     lon_grid_V = np.swapaxes(geocube[:, 43:47, :], 1, 2) * 1e-4
     lat_grid_V = np.swapaxes(geocube[:, 47:51, :], 1, 2) * 1e-4
     
@@ -820,35 +823,42 @@ class OMEGAdata:
         `dim : [X, Y, wvl]`
     ls : float
         The Solar longitude of the observation (deg).
-    lat : 2D array
-        The latitude of each pixel (deg).</br>
-        *C & L channels*
-    lon : 2D array
-        The longitude of each pixel (deg).</br>
-        *C & L channels*
-    alt : 2D array
-        The elevation of the pixel footprint center point from MOMA topography (km).</br>
-        *C & L channels*
-    loct : 2D array of floats
-        The array of the local time for each pixel of the observation.
     my : int
         The Martian Year number at the time of the observation.
+    loct : 2D array of floats
+        The array of the local time for each pixel of the observation.
+    lat : 2D array
+        The latitude of each pixel (deg).</br>
+        *C channel*
+    lon : 2D array
+        The longitude of each pixel (deg).</br>
+        *C channel*
+    alt : 2D array
+        The elevation of the pixel footprint center point from MOMA topography (km).</br>
+        *C channel*
+    dist : 2D array
+        The slant distance from the spacecraft to the pixel footprint center point (km).</br>
+        *C channel*
     emer : 2D array
         The angle of emergent line (from the surface) (deg).</br>
         W.r.t. the outward normal to the reference ellipsoid.</br>
-        *C & L channels*
+        *C channel*
     inci : 2D array
         The incidence angle at the surface (deg).</br> 
         W.r.t. the outward normal to the reference ellipsoid.</br>
-        *C & L channels*
+        *C channel*
     emer_n : 2D array
         The angle of emergent line (from the surface) (deg).</br>
         W.r.t. the local normal.</br>
-        *C & L channels*
+        *C channel*
     inci_n : 2D array
         The incidence angle at the surface (deg).</br> 
         W.r.t. the local normal.</br>
-        *C & L channels*
+        *C channel*
+    phase_n : 2D array
+        The phase angle at the surface (deg).</br>
+        W.r.t. the local normal.</br>
+        *C channel*
     specmars : 1D array
         The Solar radiation spectrum on Mars (W.m-2.sr-1.µm-1).
     utc : datetime.datetime
@@ -883,6 +893,9 @@ class OMEGAdata:
     alt_v : 2D array
         The elevation of the pixel footprint center point from MOMA topography (km).</br>
         *V channel*
+    dist_v : 2D array
+        The slant distance from the spacecraft to the pixel footprint center point (km).</br>
+        *V channel*
     emer_n_v : 2D array
         The angle of emergent line (from the surface) (deg).</br>
         W.r.t. the local normal.</br>
@@ -891,12 +904,46 @@ class OMEGAdata:
         The incidence angle at the surface (deg).</br> 
         W.r.t. the local normal.</br>
         *V channel*
+    phase_n_v : 2D array
+        The phase angle at the surface (deg).</br>
+        W.r.t. the local normal.</br>
+        *V channel*
     lat_grid_v : 2D array
         The latitude grid of the observation (from the edge of the pixels).</br>
         *V channel*
     lon_grid_v : 2D array
         The longitude grid of the observation (from the edge of the pixels).</br>
         *V channel*
+    lat_l : 2D array
+        The latitude of each pixel (deg).</br>
+        *L channel*
+    lon_l : 2D array
+        The longitude of each pixel (deg).</br>
+        *L channel*
+    alt_l : 2D array
+        The elevation of the pixel footprint center point from MOMA topography (km).</br>
+        *L channel*
+    dist_l : 2D array
+        The slant distance from the spacecraft to the pixel footprint center point (km).</br>
+        *L channel*
+    emer_n_l : 2D array
+        The angle of emergent line (from the surface) (deg).</br>
+        W.r.t. the local normal.</br>
+        *L channel*
+    inci_n_l : 2D array
+        The incidence angle at the surface (deg).</br> 
+        W.r.t. the local normal.</br>
+        *L channel*
+    phase_n_l : 2D array
+        The phase angle at the surface (deg).</br>
+        W.r.t. the local normal.</br>
+        *L channel*
+    lat_grid_l : 2D array
+        The latitude grid of the observation (from the edge of the pixels).</br>
+        *L channel*
+    lon_grid_l : 2D array
+        The longitude grid of the observation (from the edge of the pixels).</br>
+        *L channel*
     summation : int
         The downtrack summing.
     bits_per_data : float
@@ -1115,8 +1162,8 @@ class OMEGAdata:
             phase_n_V = geom_dict['phase_norm_v']
             inci_n_V = geom_dict['incidence_norm_v']
             lon_px_V = geom_dict['lon_grid_v']
-            lat_px_V = geom_dict['lat_grid_v']            
-            
+            lat_px_V = geom_dict['lat_grid_v']       
+
             # Correction of OMEGA data (same as clean_spec.pro)
             ic_C= ic[(ic >= 8) & (ic <= 122)]        # IR short (voie C)
             ic_L = ic[(ic >= 137) & (ic <= 255)]     # IR long (voie L)
@@ -1329,11 +1376,12 @@ class OMEGAdata:
         new_omega.lat = self.lat
         new_omega.lon = self.lon
         new_omega.alt = self.alt
+        new_omega.dist = self.dist
         new_omega.loct = self.loct
         new_omega.my = self.my
         new_omega.emer = self.emer
         new_omega.emer_n = self.emer_n
-        new_omega.phase = self.phase
+        new_omega.phase_n = self.phase_n
         new_omega.inci = self.inci
         new_omega.inci_n = self.inci_n
         new_omega.specmars = self.specmars
@@ -1355,10 +1403,21 @@ class OMEGAdata:
         new_omega.lat_v = self.lat_v
         new_omega.lon_v = self.lon_v
         new_omega.alt_v = self.alt_v
+        new_omega.dist_v = self.dist_v
         new_omega.emer_n_v = self.emer_n_v
         new_omega.inci_n_v = self.inci_n_v
+        new_omega.phase_n_v = self.phase_n_v
         new_omega.lon_grid_v = self.lon_grid_v
         new_omega.lat_grid_v = self.lat_grid_v
+        new_omega.lat_l = self.lat_l
+        new_omega.lon_l = self.lon_l
+        new_omega.alt_l = self.alt_l
+        new_omega.dist_l = self.dist_l
+        new_omega.emer_n_l = self.emer_n_l
+        new_omega.inci_n_l = self.inci_n_l
+        new_omega.phase_n_l = self.phase_n_l
+        new_omega.lon_grid_l = self.lon_grid_l
+        new_omega.lat_grid_l = self.lat_grid_l
         new_omega.focal_plane_temperatures = self.focal_plane_temperatures
         new_omega.spectrometer_temperatures = self.spectrometer_temperatures
         # Nav
