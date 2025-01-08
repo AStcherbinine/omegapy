@@ -1316,7 +1316,10 @@ class OMEGAdata:
             self.npara = npara
             self.nscan = nscan
             self.point_mode = hd_nav['SPACECRAFT_POINTING_MODE'][1:-1]
-            self.orient = np.array(hd_nav['SPACECRAFT_ORIENTATION'][1:-1].split(','), dtype=np.int64)
+            try:
+                self.orient = np.array(hd_nav['SPACECRAFT_ORIENTATION'][1:-1].split(','), dtype=np.int64)
+            except ValueError:
+                self.orient = hd_nav['SPACECRAFT_ORIENTATION'][1:-1]
             self.ls = np.float64(hd_nav['SOLAR_LONGITUDE'])
             self.subsol_lon = np.float64(hd_nav['SUB_SOLAR_LONGITUDE'])
             self.subsol_lat = np.float64(hd_nav['SUB_SOLAR_LATITUDE'])
