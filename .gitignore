@@ -4,3 +4,11 @@
 __pycache__/
 *.py[cod]
 *$py.class
+.DS_Store
+
+.venv*
+venv*
+
+.eggs/
+build/
+omegapy.egg-info/

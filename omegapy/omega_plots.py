@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 10/07/2024
+## Last modified by Aurélien STCHERBININE : 08/01/2025
 
 ##----------------------------------------------------------------------------------------
 """Display of `OMEGAdata` cubes.
@@ -44,28 +44,56 @@ picked_spectra = {}
 ##----------------------------------------------------------------------------------------
 ## Modifie géométrie par défaut
 def _switch_default_geom_to_V(omega):
-    """Replace the default geometry attributes of an OMEGAdata object (C/L-channels)
+    """Replace the default geometry attributes of an OMEGAdata object (C-channel)
     by the V-channel geometry.
 
     Parameters
     ----------
-    omega : OMEGAdata
+    omega : OMEGAdata
         The OMEGA/MEx observation.
 
     Returns
     -------
-    omega_Vgeom : OMEGAdata
+    omega_Vgeom : OMEGAdata
         The new OMEGAdata object, with the new default geometry set to the V-channel.
     """
     omega_Vgeom = deepcopy(omega)
     omega_Vgeom.lat = omega_Vgeom.lat_v
     omega_Vgeom.lon = omega_Vgeom.lon_v
     omega_Vgeom.alt = omega_Vgeom.alt_v
+    omega_Vgeom.dist = omega_Vgeom.dist_v
     omega_Vgeom.inci_n = omega_Vgeom.inci_n_v
     omega_Vgeom.emer_n = omega_Vgeom.emer_n_v
+    omega_Vgeom.phase_n = omega_Vgeom.phase_n_v
     omega_Vgeom.lon_grid = omega_Vgeom.lon_grid_v
     omega_Vgeom.lat_grid = omega_Vgeom.lat_grid_v
     return omega_Vgeom
+
+def _switch_default_geom_to_L(omega):
+    """Replace the default geometry attributes of an OMEGAdata object (C-channel)
+    by the L-channel geometry.
+
+    Parameters
+    ----------
+    omega : OMEGAdata
+        The OMEGA/MEx observation.
+
+    Returns
+    -------
+    omega_Lgeom : OMEGAdata
+        The new OMEGAdata object, with the new default geometry set to the L-channel.
+    """
+    omega_Lgeom = deepcopy(omega)
+    omega_Lgeom.lat = omega_Lgeom.lat_l
+    omega_Lgeom.lon = omega_Lgeom.lon_l
+    omega_Lgeom.alt = omega_Lgeom.alt_l
+    omega_Lgeom.dist = omega_Lgeom.dist_l
+    omega_Lgeom.inci_n = omega_Lgeom.inci_n_l
+    omega_Lgeom.emer_n = omega_Lgeom.emer_n_l
+    omega_Lgeom.phase_n = omega_Lgeom.phase_n_l
+    omega_Lgeom.lon_grid = omega_Lgeom.lon_grid_l
+    omega_Lgeom.lat_grid = omega_Lgeom.lat_grid_l
+    return omega_Lgeom
 
 ##----------------------------------------------------------------------------------------
 ## Affichage cube
@@ -74,7 +102,7 @@ def show_cube(cube, i_lam, cmap='Greys_r', vmin=None, vmax=None, cb_title='', Nf
 
     Parameters
     ----------
-    cube : 3D array
+    cube : 3D array
         The data cube (X, Y, wvl).
     i_lam : int
         The index of the selected wavelength.
@@ -102,14 +130,14 @@ def show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, v
 
     Parameters
     ----------
-    omega : OMEGAdata
+    omega : OMEGAdata
         The OMEGA/MEx observation
     lam : float
         The selected wavelength.
     refl : bool, default True
         | `True` --> The reflectance is displayed.</br>
         | `False` --> The radiance is displayed.
-    lam_unit : str, default 'm'
+    lam_unit : str, default 'm'
         The unit of the `lam` parameter:</br>
         | `'m'` --> `lam` is the wavelength value (in µm).</br>
         | else --> `lam` is the index of the wavelength in the `omega.lam` array (must be `int`).
@@ -121,9 +149,9 @@ def show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, v
         The upper bound of the colorscale.
     title : str, default 'auto'
         The title of the figure.
-    xlim : tuple of int or None, default (None, None)
+    xlim : tuple of int or None, default (None, None)
         The bounds of the x-axis of the figure.
-    ylim : tuple of int or None, default (None, None)
+    ylim : tuple of int or None, default (None, None)
         The bounds of the y-axis of the figure.
     Nfig : int or str or None, default None
         The target figure ID.
@@ -158,20 +186,20 @@ def show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, v
 def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None,
                   alpha=None, title='auto', lonlim=(None, None), latlim=(None, None), Nfig=None,
                   polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto',
-                  use_V_geom=False, **kwargs):
+                  use_V_geom=False, use_L_geom=False, **kwargs):
     """Display an OMEGA/MEx observation with respect of the lat/lon coordinates of the pixels,
     and allows to use a polar projection if desired.
 
     Parameters
     ----------
-    omega : OMEGAdata
+    omega : OMEGAdata
         The OMEGA/MEx observation
     lam : float
         The selected wavelength.
     refl : bool, default True
         | `True` --> The reflectance is displayed.</br>
         | `False` --> The radiance is displayed.
-    lam_unit : str, default 'm'
+    lam_unit : str, default 'm'
         The unit of the `lam` parameter:</br>
         | `'m'` --> `lam` is the wavelength value (in µm).</br>
         | else --> `lam` is the index of the wavelength in the `omega.lam` array (must be `int`).
@@ -181,13 +209,13 @@ def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None
         The lower bound of the colorscale.
     vmax : float or None, default None
         The upper bound of the colorscale.
-    alpha : float or None, default None
+    alpha : float or None, default None
         Opacity of the plot, from 0 (transparent) to 1 (opaque).
     title : str, default 'auto'
         The title of the figure.
-    lonlim : tuple of int or None, default (None, None)
+    lonlim : tuple of int or None, default (None, None)
         The longitude bounds of the figure.
-    latlim : tuple of int or None, default (None, None)
+    latlim : tuple of int or None, default (None, None)
         The latitude bounds of the y-axis of the figure.
     Nfig : int or str or None, default None
         The target figure ID.
@@ -195,25 +223,31 @@ def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None
         If `True` --> Use a polar projection for the plot.
     cbar : bool, default True
         If `True` --> Diplay the colorbar.
-    grid : bool, default True
+    grid : bool, default True
         Enable the display of the lat/lon grid.
     mask : 2D array or None, default None
         The array that identify the bad/corrupted pixels to remove.</br>
         If None, all the pixels are conserved.</br>
         | `1` --> Good pixel</br>
         | `NaN` --> Bad pixel
-    negatives_longitudes : str or bool, default 'auto'
+    negatives_longitudes : str or bool, default 'auto'
         Argument for non-polar plots.</br>
         | `True` --> longitudes between 0° and 360°.</br>
         | `False` --> longitudes between -180° and 180°.</br>
         | `'auto'` --> automatic detection of the best case.
-    use_V_geom : bool, default False
-        If `True`, use the geometry of the V-channel instead of the C/L-channels.
+    use_V_geom : bool, default False
+        If `True`, use the geometry of the V-channel instead of the C-channel.
+    use_L_geom : bool, default False
+        If `True`, use the geometry of the L-channel instead of the C-channel.
     **kwargs:
         Optional arguments for the `plt.pcolormesh()` function.
     """
+    if use_V_geom and use_L_geom:
+        raise ValueError("Cannot use both V and L geometries at the same time.")
     if use_V_geom:
         omega = _switch_default_geom_to_V(omega)
+    if use_L_geom:
+        omega = _switch_default_geom_to_L(omega)
     if ((lam_unit == 'm') or isinstance(lam, float)) and (lam < 10):
         i_lam = uf.where_closer(lam, omega.lam)
     else:
@@ -310,14 +344,14 @@ def show_omega_interactif(omega, lam, refl=True, lam_unit='m', cmap='Greys_r',
 
     Parameters
     ----------
-    omega : OMEGAdata
+    omega : OMEGAdata
         The OMEGA/MEx observation
     lam : float
         The selected wavelength.
     refl : bool, default True
         | `True` --> The reflectance is displayed.</br>
         | `False` --> The radiance is displayed.
-    lam_unit : str, default 'm'
+    lam_unit : str, default 'm'
         The unit of the `lam` parameter:</br>
         | `'m'` --> `lam` is the wavelength value (in µm).</br>
         | else --> `lam` is the index of the wavelength in the `omega.lam` array (must be `int`).
@@ -329,9 +363,9 @@ def show_omega_interactif(omega, lam, refl=True, lam_unit='m', cmap='Greys_r',
         The upper bound of the colorscale.
     title : str, default 'auto'
         The title of the figure.
-    xlim : tuple of int or None, default (None, None)
+    xlim : tuple of int or None, default (None, None)
         The bounds of the x-axis of the figure.
-    ylim : tuple of int or None, default (None, None)
+    ylim : tuple of int or None, default (None, None)
         The bounds of the y-axis of the figure.
     """
     # Initialisation
@@ -440,14 +474,14 @@ def show_omega_interactif2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r',
 
     Parameters
     ----------
-    omega : OMEGAdata
+    omega : OMEGAdata
         The OMEGA/MEx observation
     lam : float
         The selected wavelength.
     refl : bool, default True
         | `True` --> The reflectance is displayed.</br>
         | `False` --> The radiance is displayed.
-    lam_unit : str, default 'm'
+    lam_unit : str, default 'm'
         The unit of the `lam` parameter:</br>
         | `'m'` --> `lam` is the wavelength value (in µm).</br>
         | else --> `lam` is the index of the wavelength in the `omega.lam` array (must be `int`).
@@ -459,9 +493,9 @@ def show_omega_interactif2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r',
         The upper bound of the colorscale.
     title : str, default 'auto'
         The title of the figure.
-    xlim : tuple of int or None, default (None, None)
+    xlim : tuple of int or None, default (None, None)
         The bounds of the x-axis of the figure.
-    ylim : tuple of int or None, default (None, None)
+    ylim : tuple of int or None, default (None, None)
         The bounds of the y-axis of the figure.
     """
     # Initialisation
@@ -581,7 +615,7 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
                              vmin=None, vmax=None, autoyscale=True, ylim_sp=(None, None),
                              alpha=None, lonlim=(None, None), latlim=(None, None),
                              polar=False, cbar=True, grid=True, mask=None, lam_mask=None,
-                             negatives_longitudes='auto', use_V_geom=False, **kwargs):
+                             negatives_longitudes='auto', use_V_geom=False, use_L_geom=False, **kwargs):
     """Interactive display of an OMEGA/MEx data cube with respect of the lat/lon 
     coordinates of the pixels, and allows to use a polar projection if desired.
     
@@ -592,14 +626,14 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
 
     Parameters
     ----------
-    omega : OMEGAdata
+    omega : OMEGAdata
         The OMEGA/MEx observation
     lam : float, default 1.085
         The selected wavelength.
     refl : bool, default True
         | `True` --> The reflectance is displayed.</br>
         | `False` --> The radiance is displayed.
-    lam_unit : str, default 'm'
+    lam_unit : str, default 'm'
         The unit of the `lam` parameter:</br>
         | `'m'` --> `lam` is the wavelength value (in µm).</br>
         | else --> `lam` is the index of the wavelength in the `omega.lam` array (must be `int`).
@@ -609,7 +643,7 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
         The matplotlib colormap.
     cb_title : str, default 'data'
         The title of the colorbar.</br>
-        Note : Only for the `data` plots.
+        Note : Only for the `data` plots.
     title : str, default 'auto'
         The title of the figure.
     vmin : float or None, default None
@@ -619,20 +653,20 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
     autoyscale : bool, default True
         | `True` --> Enable the auto-scaling of the spectra y-axis.</br>
         | `False` --> Force use of the (vmin, vmax) bounds for the spectra plots.
-    ylim_sp : tuple of float or None, default (None, None)
+    ylim_sp : tuple of float or None, default (None, None)
         If autoyscale is False, can specify the bound values for the spectrum y-axis,
         other that `(vmin, vmax)`.
-    alpha : float or None, default None
+    alpha : float or None, default None
         Opacity of the plot, from 0 (transparent) to 1 (opaque).
-    lonlim : tuple of int or None, default (None, None)
+    lonlim : tuple of int or None, default (None, None)
         The longitude bounds of the figure.
-    latlim : tuple of int or None, default (None, None)
+    latlim : tuple of int or None, default (None, None)
         The latitude bounds of the y-axis of the figure.
     polar : bool, default False
         If `True` --> Use a polar projection for the plot.
     cbar : bool, default True
         If `True` --> Diplay the colorbar.
-    grid : bool, default True
+    grid : bool, default True
         Enable the display of the lat/lon grid.
     mask : 2D array or None, default None
         The array that identify the bad/corrupted pixels to remove.</br>
@@ -644,13 +678,15 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
         If `None`, all the spectels are conserved.</br>
         | `True` --> Good spectel</br>
         | `False` --> Bad spectel
-    negatives_longitudes : str or bool, default 'auto'
+    negatives_longitudes : str or bool, default 'auto'
         Argument for non-polar plots.</br>
         | `True` --> longitudes between 0° and 360°.</br>
         | `False` --> longitudes between -180° and 180°.</br>
         | `'auto'` --> automatic detection of the best case.
-    use_V_geom : bool, default False
-        If `True`, use the geometry of the V-channel instead of the C/L-channels.
+    use_V_geom : bool, default False
+        If `True`, use the geometry of the V-channel instead of the C-channel.
+    use_L_geom : bool, default False
+        If `True`, use the geometry of the L-channel instead of the C-channel.
     **kwargs:
         Optional arguments for the `plt.pcolormesh()` function.
     """
@@ -658,8 +694,12 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
         print("\033[1m\nWarning: The pointing mode of this cube is not NADIR, "
          + "thus it may be a better idea to use a non-projected display "
          + "(e.g., show_omega_interactif()).\033[0m")
+    if use_V_geom and use_L_geom:
+        raise ValueError("Cannot use both V and L geometries at the same time.")
     if use_V_geom:
         omega = _switch_default_geom_to_V(omega)
+    if use_L_geom:
+        omega = _switch_default_geom_to_L(omega)
     # Initialisation
     if refl:
         yaxis = 'Reflectance'
@@ -696,11 +736,11 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
     if data is None:
         show_omega_v2(omega, lam, refl, lam_unit, cmap, vmin, vmax, alpha, title, 
                       lonlim, latlim, nfig, polar, cbar, grid, mask, negatives_longitudes, 
-                      use_V_geom, **kwargs)
+                      use_V_geom, use_L_geom, **kwargs)
     else:
         show_data_v2(omega, data, cmap, vmin, vmax, alpha, title, cb_title, 
                      lonlim, latlim, nfig, polar, cbar, grid, mask, negatives_longitudes,
-                     use_V_geom, **kwargs)
+                     use_V_geom, use_L_geom, **kwargs)
     ax1 = fig1.gca()
     ax1.scatter(lon, lat, c=bij, marker='s', s=1, picker=True, alpha=0)
     sc_pos = []
@@ -802,15 +842,15 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
 def show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', 
                 cb_title = 'data', lonlim=(None, None), latlim=(None, None), Nfig=None, 
                 polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto',
-                use_V_geom=False, **kwargs):
+                use_V_geom=False, use_L_geom=False, **kwargs):
     """Display high-level data derived from an OMEGA/MEx observation with respect of the 
     lat/lon coordinates of the pixels, and allows to use a polar projection if desired.
 
     Parameters
     ----------
-    omega : OMEGAdata
+    omega : OMEGAdata
         The OMEGA/MEx observation
-    data : 2D array
+    data : 2D array
         The array of the computed data values from the OMEGA observation
     cmap : str, default 'Greys_r'
         The matplotlib colormap.
@@ -818,15 +858,15 @@ def show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, 
         The lower bound of the colorscale.
     vmax : float or None, default None
         The upper bound of the colorscale.
-    alpha : float or None, default None
+    alpha : float or None, default None
         Opacity of the plot, from 0 (transparent) to 1 (opaque).
     title : str, default 'auto'
         The title of the figure.
     cb_title : str, default 'data'
         The title of the colorbar.
-    lonlim : tuple of int or None, default (None, None)
+    lonlim : tuple of int or None, default (None, None)
         The longitude bounds of the figure.
-    latlim : tuple of int or None, default (None, None)
+    latlim : tuple of int or None, default (None, None)
         The latitude bounds of the y-axis of the figure.
     Nfig : int or str or None, default None
         The target figure ID.
@@ -834,25 +874,31 @@ def show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, 
         If `True` --> Use a polar projection for the plot.
     cbar : bool, default True
         If `True` --> Display the colorbar.
-    grid : bool, default True
+    grid : bool, default True
         Enable the display of the lat/lon grid.
     mask : 2D array or None, default None
         The array that identify the bad/corrupted pixels to remove.</br>
         If `None`, all the pixels are conserved.</br>
         | `1` --> Good pixel</br>
         | `NaN` --> Bad pixel
-    negatives_longitudes : str or bool, default 'auto'
+    negatives_longitudes : str or bool, default 'auto'
         Argument for non-polar plots.</br>
         | `True` --> longitudes between 0° and 360°.</br>
         | `False` --> longitudes between -180° and 180°.</br>
         | `'auto'` --> automatic detection of the best case.
-    use_V_geom : bool, default False
-        If `True`, use the geometry of the V-channel instead of the C/L-channels.
+    use_V_geom : bool, default False
+        If `True`, use the geometry of the V-channel instead of the C-channel.
+    use_L_geom : bool, default False
+        If `True`, use the geometry of the L-channel instead of the C-channel.
     **kwargs:
         Optional arguments for the `plt.pcolormesh()` function.
     """
+    if use_V_geom and use_L_geom:
+        raise ValueError("Cannot use both V and L geometries at the same time.")
     if use_V_geom:
         omega = _switch_default_geom_to_V(omega)
+    if use_L_geom:
+        omega = _switch_default_geom_to_L(omega)
     if isinstance(negatives_longitudes, str):
         mask_lat = (np.abs(omega.lat) < 85)
         if (omega.lon[mask_lat] < 10).any() and (omega.lon[mask_lat] > 350).any():
@@ -931,7 +977,7 @@ def proj_grid(omega, data, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
 
     Parameters
     ----------
-    omega : OMEGAdata
+    omega : OMEGAdata
         The OMEGA/MEx observation
     data : 2D array
         The initial array of values associated to the OMEGAdata observation.</br>
@@ -958,9 +1004,9 @@ def proj_grid(omega, data, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
         `dim = (Nlon x Nlat)`
     mask : 2D array
         The array indicating where the new grid has been filled by the OMEGA data.
-    grid_lat : 2D array
+    grid_lat : 2D array
         The new latitude grid.
-    grid_lon : 2D array
+    grid_lon : 2D array
         The new longitude grid.
     """
     # Initialisation
@@ -1019,18 +1065,18 @@ def point_in_poly4(x0, y0, X4, Y4):
 
     Parameters
     ----------
-    x0 : float or array-like
+    x0 : float or array-like
         The x-coordinate of the point to test.
-    y0 : float or array-like
+    y0 : float or array-like
         The y-coordinate of the point to test.
-    X4 : 4-tuple of floats
+    X4 : 4-tuple of floats
         The x-coordinates of the polygon corners.
-    Y4 : 4-tuple of floats
+    Y4 : 4-tuple of floats
         The y-coordinates of the polygon corners.
 
     Returns
     -------
-    testin : bool or array-like of bool
+    testin : bool or array-like of bool
         `True` if `(x0, y0)` is within the polygon.
     """
     # Extraction
@@ -1077,7 +1123,7 @@ def proj_grid2(omega, data, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
 
     Parameters
     ----------
-    omega : OMEGAdata
+    omega : OMEGAdata
         The OMEGA/MEx observation
     data : 2D array
         The initial array of values associated to the OMEGAdata observation.</br>
@@ -1104,9 +1150,9 @@ def proj_grid2(omega, data, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
         `dim = (Nlon x Nlat)`
     mask : 2D array
         The array indicating where the new grid has been filled by the OMEGA data.
-    grid_lat : 2D array
+    grid_lat : 2D array
         The new latitude grid.
-    grid_lon : 2D array
+    grid_lon : 2D array
         The new longitude grid.
     """
     # Initialisation
@@ -1261,12 +1307,12 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
                        title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto',
                        data_list=None, mask_list=None, negative_values=False, plot=True, 
                        grid=True, out=False, negatives_longitudes=False, proj_method=1,
-                       use_V_geom=False, edgecolor='face', lw=0.1, **kwargs):
+                       use_V_geom=False, use_L_geom=False, edgecolor='face', lw=0.1, **kwargs):
     """Display an composite map from a list OMEGA/MEx observations, sampled on a new lat/lon grid.
 
     Parameters
     ----------
-    omega_list : array of OMEGAdata
+    omega_list : array of OMEGAdata
         The list of OMEGA/MEx observations.
     lam : float, default 1.085
         The selected wavelength (in µm).
@@ -1308,24 +1354,26 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
         Each mask is a 2D array, filled with 1 for good pixels and NaN for bad ones.
     negative_values : bool, default False
         Set if the negative values are considered as relevant data or not.
-    plot : bool, default True
+    plot : bool, default True
         If `True` --> Diplay the final figure.
-    grid : bool, default True
+    grid : bool, default True
         Enable the display of the lat/lon grid.
     out : bool, default False
         If `True` --> Return output.
-    negatives_longitudes : bool, default False
+    negatives_longitudes : bool, default False
         Argument for non-polar plots.</br>
         | `True` --> longitudes between 0° and 360°.</br>
         | `False` --> longitudes between -180° and 180°.
-    proj_method : int, default 1
+    proj_method : int, default 1
         Select the projection method used (1 or 2).</br>
         | `1` --> Consider only the center point of each pixel.<br>
                Faster but not adapted if the grid resolution is lower than the OMEGA pixels size.</br>
         | `2` --> Consider the entire spatial extent of each pixel.</br>
                More accurate, but take more time.
-    use_V_geom : bool, default False
-        If `True`, use the geometry of the V-channel instead of the C/L-channels.
+    use_V_geom : bool, default False
+        If `True`, use the geometry of the V-channel instead of the C-channel.
+    use_L_geom : bool, default False
+        If `True`, use the geometry of the L-channel instead of the C-channel.
     edgecolor : {'none', None, 'face', color', color sequence}, default 'face'
         The color of the edges, see documentation of `plt.pcolormesh` for more details.</br>
         *Added in version 2.2.8 to fix display due for new version of matplotlib.*</br>
@@ -1342,15 +1390,17 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
         The omega reflectance at lam, sampled on the new lat/lon grid.
     mask : 2D array
         The array indicating where the new grid has been filled by the OMEGA data.
-    grid_lat : 2D array
+    grid_lat : 2D array
         The new latitude grid.
-    grid_lon : 2D array
+    grid_lon : 2D array
         The new longitude grid.
     mask_obs : 2D array of str
         The array indicating which observations have been used to fill each grid position.
     """
     if proj_method not in [1, 2]:
         raise ValueError("`proj_method` must be 1 (pixel centers) or 2 (polygons).")
+    if use_V_geom and use_L_geom:
+        raise ValueError("Cannot use both V and L geometries at the same time.")
     # Sampling on same grid
     lat_array = np.arange(lat_min, lat_max+pas_lat, pas_lat)
     lon_array = np.arange(lon_min, lon_max+pas_lon, pas_lon)
@@ -1365,6 +1415,8 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
         for i, omega in enumerate(tqdm(omega_list)):
             if use_V_geom:
                 omega = _switch_default_geom_to_V(omega)
+            if use_L_geom:
+                omega = _switch_default_geom_to_L(omega)
             i_lam = uf.where_closer(lam, omega.lam)
             if mask_list is None:
                 data_tmp = omega.cube_rf[:,:,i_lam]     # Reflectance without mask
@@ -1384,6 +1436,8 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
         for i, omega in enumerate(tqdm(omega_list)):
             if use_V_geom:
                 omega = _switch_default_geom_to_V(omega)
+            if use_L_geom:
+                omega = _switch_default_geom_to_L(omega)
             if mask_list is None:
                 data_tmp = data_list[i]     # Data without mask
             else:
@@ -1477,14 +1531,14 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
 def save_map_omega_list(omega_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=360,
                         pas_lat=0.1, pas_lon=0.1, lam=1.085, data_list=None, data_desc='', 
                         mask_list=None, negative_values=False, proj_method=1, 
-                        use_V_geom=False, sav_filename='auto', ext='',
+                        use_V_geom=False, use_L_geom=False, sav_filename='auto', ext='',
                         base_folder='../data/OMEGA/sav_map_list_v2/', sub_folder=''):
     """Save the output of the `omega_plots.show_omega_list_v2()` function with the requested
     parameters as a dictionary.
 
     Parameters
     ----------
-    omega_list : array of OMEGAdata
+    omega_list : array of OMEGAdata
         The list of OMEGA/MEx observations.
     lat_min : float, default -90
         The minimal latitude of the grid.
@@ -1512,20 +1566,22 @@ def save_map_omega_list(omega_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=
         Each mask is a 2D array, filled with 1 for good pixels and NaN for bad ones.
     negative_values : bool, default False
         Set if the negative values are considered as relevant data or not.
-    proj_method : int, default 1
+    proj_method : int, default 1
         Select the projection method used (1 or 2).</br>
         | `1` --> Consider only the center point of each pixel.</br>
                Faster but not adapted if the grid resolution is lower than the OMEGA pixels size.</br>
         | `2` --> Consider the entire spatial extent of each pixel.</br>
                More accurate, but take more time.
-    use_V_geom : bool, default False
-        If `True`, use the geometry of the V-channel instead of the C/L-channels.
+    use_V_geom : bool, default False
+        If `True`, use the geometry of the V-channel instead of the C-channel.
+    use_L_geom : bool, default False
+        If `True`, use the geometry of the L-channel instead of the C-channel.
     sav_filename : str, default 'auto'
         The saving file name.</br>
         | If `'auto'` --> Automatically generated.
     ext : str, default ''
         Extension to add at the end of the filename (useful in case of automatic generation).
-    base_folder : str, default '../data/OMEGA/sav_map_list_v2/'
+    base_folder : str, default '../data/OMEGA/sav_map_list_v2/'
         The base folder to save the data.
     sub_folder : str, default ''
         The subfolder to save the data.</br>
@@ -1545,7 +1601,7 @@ def save_map_omega_list(omega_list, lat_min=-90, lat_max=90, lon_min=0, lon_max=
     data, mask, grid_lat, grid_lon, mask_obs = show_omega_list_v2(omega_list,
                 lam, lat_min, lat_max, lon_min, lon_max, pas_lat, pas_lon,
                 data_list=data_list, mask_list=mask_list, negative_values=negative_values,
-                proj_method=proj_method, use_V_geom=use_V_geom, plot=False, out=True)
+                proj_method=proj_method, use_V_geom=use_V_geom, use_L_geom=use_L_geom, plot=False, out=True)
     # Sav file
     input_params = {
         'omega_list' : od.get_names(omega_list),
@@ -1585,9 +1641,9 @@ def load_map_omega_list(filename):
         The omega reflectance at lam, sampled on the new lat/lon grid.
     mask : 2D array
         The array indicating where the new grid has been filled by the OMEGA data.
-    grid_lat : 2D array
+    grid_lat : 2D array
         The new latitude grid.
-    grid_lon : 2D array
+    grid_lon : 2D array
         The new longitude grid.
     mask_obs : 2D array of str
         The array indicating which observations have been used to fill each grid position.
@@ -1609,9 +1665,9 @@ def show_omega_list_v2_man(data, grid_lat, grid_lon, infos, cmap='Greys_r', vmin
     ----------
     data : 2D array
         The omega reflectance at lam, sampled on the new lat/lon grid.
-    grid_lat : 2D array
+    grid_lat : 2D array
         The new latitude grid.
-    grid_lon : 2D array
+    grid_lon : 2D array
         The new longitude grid.
     infos : dict
         The informations about the computation of the data.
@@ -1631,9 +1687,9 @@ def show_omega_list_v2_man(data, grid_lat, grid_lon, infos, cmap='Greys_r', vmin
         If `True` --> Diplay the colorbar.
     cb_title : str, default 'auto'
         The title of the colorbar.
-    grid : bool, default True
+    grid : bool, default True
         Enable the display of the lat/lon grid.
-    negatives_longitudes : bool, default False
+    negatives_longitudes : bool, default False
         Argument for non-polar plots.</br>
         | `True` --> longitudes between 0° and 360°.</br>
         | `False` --> longitudes between -180° and 180°.
