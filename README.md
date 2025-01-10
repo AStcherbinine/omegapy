@@ -48,7 +48,7 @@ If you are using OMEGA-Py in your research, please cite it according to the guid
 
 ## Credits
 
-© Aurélien Stcherbinine (2020–2024)
+© Aurélien Stcherbinine (2020–2025)
 
 Institut d'Astrophysique Spatiale (IAS), Université Paris-Saclay, CNRS, Orsay, France
 

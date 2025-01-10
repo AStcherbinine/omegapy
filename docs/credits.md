@@ -1,6 +1,6 @@
 # Credits
 
-© Aurélien Stcherbinine (2020–2024)
+© Aurélien Stcherbinine (2020–2025)
 
 Institut d'Astrophysique Spatiale (IAS), Université Paris-Saclay, CNRS, Orsay, France
 
@@ -47,26 +47,27 @@ OMEGA-Py: Python Tools for OMEGA data. *Journal of Open Source Software, 9(99)*,
     ~~~
 
 ### Zenodo archive repository
-A. Stcherbinine, Y. Langevin, J. Carter, M. Vincendon, Y. Leseigneur, O. Barraud (2024). 
-OMEGA-Py: Python Tools for OMEGA data (v3.1). *Zenodo*. 
-[doi:10.5281/zenodo.12775561](https://doi.org/10.5281/zenodo.12775561)
+A. Stcherbinine, Y. Langevin, J. Carter, M. Vincendon, Y. Leseigneur, O. Barraud, F. Schmidt (2025). 
+OMEGA-Py: Python Tools for OMEGA data (v3.2). *Zenodo*. 
+[doi:10.5281/zenodo.12775568](https://doi.org/10.5281/zenodo.12775568)
 
 !!! note "BibTeX entry"
     ~~~bibtex
-    @software{omegapy_v3-1,
+    @software{omegapy_v3-2,
     author       = {Stcherbinine, Aurélien and
                     Langevin, Yves and
                     Carter, John and
                     Vincendon, Mathieu and
                     Leseigneur, Yann and
-                    Barraud, Océane},
+                    Barraud, Océane and
+                    Schmidt, Frédéric},
     title        = {OMEGA-Py: Python Tools for OMEGA data},
-    year         = 2024,
-    month        = jul,
+    year         = 2025,
+    month        = jan,
     publisher    = {Zenodo},
-    version      = {v3.1},
-    doi          = {10.5281/zenodo.12775561},
-    url          = {https://doi.org/10.5281/zenodo.12775561}
+    version      = {v3.2},
+    doi          = {10.5281/zenodo.12775568},
+    url          = {https://doi.org/10.5281/zenodo.12775568}
     }
     ~~~
 
