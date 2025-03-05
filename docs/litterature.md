@@ -16,6 +16,11 @@ OMEGA-Py: Python Tools for OMEGA Data – v2.3.
 
 ## Articles using OMEGA-Py
 
+F. Brasil, P. Machado, G. Gilli, et al. (2025).
+Atmospheric Gravity Waves in Mars' Lower Atmosphere: Nadir Observations From OMEGA/Mars Express Data.
+*JGR: Planets, 130*, e2024JE008726.
+[doi:10.1029/2024JE008726](https://doi.org/10.1029/2024JE008726)
+
 Y. Leseigneur & M. Vincendon (2023). 
 OMEGA/Mars Express: A new martian atmospheric dust hunter.
 *Icarus, 392*, 115366. 
