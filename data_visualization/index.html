@@ -1,0 +1,1856 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="OMEGA-Py: Python tools for OMEGA data">
+      
+      
+        <meta name="author" content="Aurélien Stcherbinine">
+      
+      
+        <link rel="canonical" href="https://astcherbinine.github.io/omegapy/data_visualization/">
+      
+      
+        <link rel="prev" href="../data_handling/">
+      
+      
+        <link rel="next" href="../example1_band_depth/">
+      
+      
+      <link rel="icon" href="../img/favicon_omegapy.ico">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.18">
+    
+    
+      
+        <title>Data visualization - OMEGA-Py</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.7e37652d.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="red" data-md-color-accent="orange">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#unprojected-data" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="OMEGA-Py" class="md-header__button md-logo" aria-label="OMEGA-Py" data-md-component="logo">
+      
+  <img src="../img/logo_omegapy.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            OMEGA-Py
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Data visualization
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="red" data-md-color-accent="orange"  aria-label="Dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="red" data-md-color-accent="orange"  aria-label="Light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/AStcherbinine/omegapy" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    AStcherbinine/omegapy
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="OMEGA-Py" class="md-nav__button md-logo" aria-label="OMEGA-Py" data-md-component="logo">
+      
+  <img src="../img/logo_omegapy.svg" alt="logo">
+
+    </a>
+    OMEGA-Py
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/AStcherbinine/omegapy" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    AStcherbinine/omegapy
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Getting started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Installation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Configuration
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../basic_usage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Basic usage
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Tests
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    User Guide
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            User Guide
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_importation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Data importation
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_correction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Data correction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_handling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Data handling
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Data visualization
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Data visualization
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#unprojected-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Unprojected data
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-projection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data projection
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data projection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#equatorial-projection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Equatorial projection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#polar-projection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Polar projection
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v-channel-geometry" class="md-nav__link">
+    <span class="md-ellipsis">
+      V-channel geometry
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#applying-masks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Applying masks
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reflectance-vs-previously-computed-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reflectance vs previously computed data
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interactive-visualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interactive visualization
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#composite-maps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Composite maps
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Composite maps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#reflectance" class="md-nav__link">
+    <span class="md-ellipsis">
+      Reflectance
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-masks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Data &amp; Masks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#projection-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      Projection methods
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Projection methods">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 1
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Method 2
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#illustration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Illustration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#saving-loading-composite-maps" class="md-nav__link">
+    <span class="md-ellipsis">
+      Saving &amp; Loading composite maps
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Saving &amp; Loading composite maps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#saving-composite-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      Saving composite map
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#loading-displaying-previously-saved-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      Loading &amp; displaying previously saved map
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Examples
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Examples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../example1_band_depth/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Band depth
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../example2_overplot/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Overplotting
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Code Reference
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Code Reference
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/omega_data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    omega_data
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/omega_plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    omega_plots
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../reference/useful_functions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    useful_functions
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../community/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Community guidelines
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../litterature/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Litterature
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../credits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Credits
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Data visualization</h1>
+
+<p><abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr>-Py comes with a series of visualization functions specifically developed.
+All of them are packed in <a href="../reference/omega_plots/"><code>omegapy.omega_plots</code></a>,
+the user can choose to project the data on a lat/lon grid or a polar view, or
+display the image without projection.</p>
+<p>In the following, we assume that we have already loaded the module and a corrected <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> observation
+as follows:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">omegapy.omega_data</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">od</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">omegapy.omega_plots</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">op</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">omega</span> <span class="o">=</span> <span class="n">od</span><span class="o">.</span><span class="n">autoload_omega</span><span class="p">(</span><span class="s1">&#39;0979_3&#39;</span><span class="p">,</span> <span class="n">therm_corr</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">atm_corr</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></code></pre></div></p>
+<h2 id="unprojected-data">Unprojected data</h2>
+<p>The first way to display <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> data is to show one slice of the cube using <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.imshow.html#matplotlib-axes-axes-imshow">matplotlib.pyplot.imshow</a>.
+The figure axes are here the X, Y axes of the data cube, in pixels, 
+without considering the geometry.</p>
+<p>This is done by calling the <a href="../reference/omega_plots/#omega_plots.show_omega">show_omega</a>
+function, which requires an <a href="../reference/omega_data/#omega_data.OMEGAdata"><code>OMEGAdata</code></a> object
+and a given wavelength (in μm).</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">op</span><span class="o">.</span><span class="n">show_omega</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">lam</span><span class="o">=</span><span class="mf">1.085</span><span class="p">)</span>
+</span></code></pre></div>
+<figure>
+<p><img alt="ORB0979 3 show_omega" src="../img/ORB0979_3__show_omega_croped.png" />
+  </p>
+<figcaption>
+    ORB0979_3 reflectance – Non-projected
+  </figcaption>
+</figure>
+<h2 id="data-projection">Data projection</h2>
+<p>The other way to display an <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> observation is to use the geometry information for
+each pixel to project the image on a longitude/latitude grid.
+Here we use the coordinates of the corners of the <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> pixels to plot the image
+with <a href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.pcolormesh.html">matplotlib.pyplot.pcolormesh</a>.</p>
+<p>The advantage of this visualization is that it gives a direct access to the
+geographic coordinates of the observed features, and it render the actual
+shape of the <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> pixels, instead of assuming that they are all squares
+with the same size.</p>
+<p>This is done by all the <code>*_v2</code> functions of <a href="../reference/omega_plots/"><code>omega_plots</code></a>.</p>
+<h3 id="equatorial-projection">Equatorial projection</h3>
+<p>The display of an <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> observation on a regular equatorial longitude/latitude
+grid can be obtain by using the <a href="../reference/omega_plots/#omega_plots.show_omega_v2"><code>show_omega_v2</code></a> function.
+Similarly to <a href="../reference/omega_plots/#omega_plots.show_omega"><code>show_omega</code></a>,
+all it needs is an <a href="../reference/omega_data/#omega_data.OMEGAdata"><code>OMEGAdata</code></a> object
+and a wavelength (in μm).</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>Several other parameters to customize the plot are available, see the <a href="../reference/omega_plots/#omega_plots.show_omega_v2">API documentation
+of the function</a>.</p>
+</div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">op</span><span class="o">.</span><span class="n">show_omega_v2</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">lam</span><span class="o">=</span><span class="mf">1.085</span><span class="p">)</span>
+</span></code></pre></div>
+<figure>
+<p><img alt="ORB0979 3 show_omega_v2" src="../img/ORB0979_3__show_omega_v2.png" />
+  </p>
+<figcaption>
+    ORB0979_3 reflectance – Equatorial projection
+  </figcaption>
+</figure>
+<div class="admonition tip">
+<p class="admonition-title">Longitude range</p>
+<p>Two options are possible to display the longitudes and can be selected
+with the <code>negatives_longitudes</code> argument (valid for all functions
+that use equatorial projection, including composite maps):</p>
+<ul>
+<li><code>negatives_longitudes = False</code> &rarr; Longitudes between 0°E and 360°E</li>
+<li><code>negatives_longitudes = True</code> &rarr; Longitudes between -180°E and 180°E</li>
+</ul>
+<p>By default, it will pick the one that seems the most adapted to the min/max
+longitudes of the observation. Especially in order to avoid splitting it
+on both edges of the figure.</p>
+</div>
+<h3 id="polar-projection">Polar projection</h3>
+<p>For observations that are located at high latitudes, close to the poles, it may
+be preferred to use a polar projection for the axes instead of an equatorial projection.
+This can be done simply by adding <code class="language-py highlight"><span class="n">polar</span><span class="o">=</span><span class="kc">True</span></code> in the call of the function.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">op</span><span class="o">.</span><span class="n">show_omega_v2</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">lam</span><span class="o">=</span><span class="mf">1.085</span><span class="p">,</span> <span class="n">polar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></code></pre></div>
+<figure>
+<p><img alt="ORB0979 3 show_omega_v2 - polar projection" src="../img/ORB0979_3__show_omega_v2_polar.png" />
+  </p>
+<figcaption>
+    ORB0979_3 reflectance – Polar projection
+  </figcaption>
+</figure>
+<div class="admonition tip">
+<p class="admonition-title">Selecting the pole</p>
+<p>By default, the function will automatically select the hemisphere and latitude
+range to have the best rendering of the observation.
+But the hemisphere can also be selected manually but setting the latitude bounds
+of the figure with the <code>latlim</code> argument:</p>
+<ul>
+<li><code>latlim = (90, 0)</code> for the entire North hemisphere</li>
+<li><code>latlim = (-90, 0)</code> for the entire South hemisphere</li>
+</ul>
+</div>
+<h3 id="v-channel-geometry">V-channel geometry</h3>
+<p>The field of view of the V-channel is not perfectly co-aligned with the C &amp; L-channels,
+so the geometry information (longitude, latitude, etc) is slightly different depending
+on the selected wavelength.
+The default behaviour of <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr>-Py is to use the C/L-channels geometry, but all the
+data for the V-channel are available as well (e.g., <code>lat_v</code>, <code>lon_v</code>, ...).</p>
+<p>So, if you are displaying data from the V-channel (i.e., λ &lt; 1 μm), it is possible
+to use the appropriate geometry information by setting the <code>use_V_geom</code> parameter
+to <code>True</code> (this option is available in all the display functions that use projection,
+i.e., all the <code>*_v2</code> functions).</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">C-channel reflectance with C-channel geometry</label><label for="__tabbed_1_2">V-channel reflectance with C-channel geometry</label><label for="__tabbed_1_3">V-channel reflectance with V-channel geometry</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">op</span><span class="o">.</span><span class="n">show_omega_v2</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">lam</span><span class="o">=</span><span class="mf">2.26</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">data_mask</span><span class="p">)</span>
+</span></code></pre></div>
+<p><img alt="C-channel reflectance (2.26μm) with C-channel geometry" src="../img/ORB0979_3__show_omega_v2_alb226_noVgeom.png" /></p>
+</div>
+<div class="tabbed-block">
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">op</span><span class="o">.</span><span class="n">show_omega_v2</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">lam</span><span class="o">=</span><span class="mf">0.80</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">data_mask</span><span class="p">)</span>
+</span></code></pre></div>
+<p><img alt="V-channel reflectance (0.8μm) with C-channel geometry" src="../img/ORB0979_3__show_omega_v2_alb080_noVgeom.png" /></p>
+</div>
+<div class="tabbed-block">
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">op</span><span class="o">.</span><span class="n">show_omega_v2</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">lam</span><span class="o">=</span><span class="mf">0.80</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">data_mask</span><span class="p">,</span> <span class="n">use_V_geom</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></code></pre></div>
+<p><img alt="V-channel reflectance (0.8μm) with V-channel geometry" src="../img/ORB0979_3__show_omega_v2_alb080_Vgeom.png" /></p>
+</div>
+</div>
+</div>
+<h2 id="applying-masks">Applying masks</h2>
+<p>Let's assume you have generated a mask associated with your <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> observation,
+stored in the <code>data_mask</code> array,
+and you want to hide the flagged pixels while displaying the data.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">data_mask</span> <span class="o">=</span> <span class="n">od</span><span class="o">.</span><span class="n">omega_mask</span><span class="p">(</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    <span class="n">omega</span><span class="p">,</span> 
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    <span class="n">hide_128</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="n">emer_lim</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> 
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="n">inci_lim</span><span class="o">=</span><span class="mi">70</span><span class="p">,</span> 
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    <span class="n">tempc_lim</span><span class="o">=-</span><span class="mi">194</span><span class="p">,</span> 
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>    <span class="n">limsat_c</span><span class="o">=</span><span class="mi">500</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="p">)</span>
+</span></code></pre></div>
+<p>This is simply done by passing the <code>data_mask</code> array to the <code>mask</code>
+parameter of the <a href="../reference/omega_plots/#omega_plots.show_omega_v2"><code>show_omega_v2</code></a>
+function:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">op</span><span class="o">.</span><span class="n">show_omega_v2</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">lam</span><span class="o">=</span><span class="mf">1.085</span><span class="p">,</span> <span class="n">polar</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">data_mask</span><span class="p">)</span>
+</span></code></pre></div>
+<figure>
+<p><img alt="ORB0979 3 show_omega_v2 - mask" src="../img/ORB0979_3__show_omega_v2_mask.png" />
+  </p>
+<figcaption>
+    ORB0979_3 reflectance – Equatorial projection with mask
+  </figcaption>
+</figure>
+<p>Same example with polar viewing:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">op</span><span class="o">.</span><span class="n">show_omega_v2</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">lam</span><span class="o">=</span><span class="mf">1.085</span><span class="p">,</span> <span class="n">polar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">data_mask</span><span class="p">)</span>
+</span></code></pre></div></p>
+<figure>
+<p><img alt="ORB0979 3 show_omega_v2 - polar mask" src="../img/ORB0979_3__show_omega_v2_polar_mask.png" />
+  </p>
+<figcaption>
+    ORB0979_3 reflectance – Polar projection with mask
+  </figcaption>
+</figure>
+<h2 id="reflectance-vs-previously-computed-data">Reflectance <em>vs</em> previously computed data</h2>
+<p>It is possible to replace the reflectance by any data array derived from the <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr>
+observation (assuming the X,Y dimensions remains identical), to show for instance
+the spatial variations of a spectral criterion 
+(e.g., <a href="../example1_band_depth/">example 1 – Band depth</a>).</p>
+<p>This is done by using the <a href="../reference/omega_plots/#omega_plots.show_data_v2"><code>show_data_v2</code></a>
+function, which is very similar to <a href="../reference/omega_plots/#omega_plots.show_omega_v2"><code>show_omega_v2</code></a>
+except that instead of requiring a wavelength (<code>lam</code>) it uses an array of floats that
+will replace the reflectance values (<code>data</code>).</p>
+<div class="admonition tip">
+<p class="admonition-title">Colorbar</p>
+<p>Unlike the case of the reflectance, here the function cannot know by itself the
+nature of the data that you are plotting.
+Thus, you need to define the title of the colorbar with the <code>cb_title</code> argument
+(otherwise it will be set to <code>'data'</code> by default).</p>
+<p>It is also possible to deactivate the display of the colorbar with <code>cbar=False</code>,
+which may be useful when plotting multiple maps on the same figure
+(i.e., see <a href="../example2_overplot/">example 2 – Overplotting</a>).</p>
+</div>
+<p>Here we assume that we have computed the 3μm <abbr title="Integrated Band Depth">IBD</abbr> defined in Jouglet et al. (2007)<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>
+(also referred as "<em>Wide</em> 3μm <abbr title="Band Depth">BD</abbr>" in Stcherbinine et al. (2021)<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>) for the cube
+ORB0979_3, and stored it in the array <code>ibd30</code>.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">op</span><span class="o">.</span><span class="n">show_data_v2</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">ibd30</span><span class="p">,</span> <span class="n">cb_title</span><span class="o">=</span><span class="s2">&quot;3μm wide BD&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">data_mask</span><span class="p">,</span> <span class="n">polar</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span></code></pre></div>
+<figure>
+<p><img alt="ORB0979 3 show_data_v2 - NIBD30 mask" src="../img/ORB0979_3__show_data_v2_nibd30_mask.png" />
+  </p>
+<figcaption>
+    ORB0979_3 3μm IBD – Equatorial projection with mask
+  </figcaption>
+</figure>
+<p>Same example with polar viewing:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">op</span><span class="o">.</span><span class="n">show_data_v2</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">ibd30</span><span class="p">,</span> <span class="n">cb_title</span><span class="o">=</span><span class="s2">&quot;3μm wide BD&quot;</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">data_mask</span><span class="p">,</span> <span class="n">polar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></code></pre></div></p>
+<figure>
+<p><img alt="ORB0979 3 show_data_v2 - NIBD polar mask" src="../img/ORB0979_3__show_data_v2_nibd30_polar_mask.png" />
+  </p>
+<figcaption>
+    ORB0979_3 3μm IBD – Polar projection with mask
+  </figcaption>
+</figure>
+<h2 id="interactive-visualization">Interactive visualization</h2>
+<p>One of the very useful features for the exploration of <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> data is the
+interactive display, similar to what can be done with <em>ENVI</em> for IDL users. By
+clicking with the mouse on the <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> image (reflectance or derived map), the
+user can explore and extract the spectra from every pixel of the map.</p>
+<p>Plus, by holding the <span class="keys"><kbd class="key-control">Ctrl</kbd></span> key while clicking on the map, it is possible
+to select multiple spectra.</p>
+<div class="admonition tip">
+<p class="admonition-title">Important note for the interactive visualization</p>
+<p>Using the interactive function requires to have the figure displayed in an external window.
+So if you are using Jupyter or an IDE like Spyder, make sure to configure matplotlib for that.</p>
+<p>For instance, assuming you've already installed a Qt binding, e.g., with:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>pip<span class="w"> </span>install<span class="w"> </span>pyqt5
+</span></code></pre></div>
+you can activate it with
+<div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="o">%</span><span class="n">matplotlib</span> <span class="n">qt</span>
+</span></code></pre></div>
+(put this line at the beginning of your Jupyter notebook, or in your IDE console)</p>
+<details class="warning">
+<summary>Additional point if using a Google Colab notebook</summary>
+<p>It seems that Google Colab notebooks are blocking non inline backends diplay, so you cannot
+enable the Qt backend as described above.
+One workaround is to install and use the <code>ipympl</code> backend with:</p>
+<p>Install <code>ipympl</code>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>pip<span class="w"> </span>install<span class="w"> </span>ipympl
+</span></code></pre></div></p>
+<p>And allow third-party Jupyter
+widgets as described <a href="https://colab.research.google.com/notebooks/snippets/advanced_outputs.ipynb#scrollTo=-zTqxvNYbgZU">here</a> by putting these lines at the beginning of your notebook (instead of <code class="language-py highlight"><span class="o">%</span><span class="n">matplotlib</span> <span class="n">qt</span></code>):
+<div class="language-python highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># Allow for third-party Jupyter widgets</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">google.colab</span><span class="w"> </span><span class="kn">import</span> <span class="n">output</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="n">output</span><span class="o">.</span><span class="n">enable_custom_widget_manager</span><span class="p">()</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="c1"># Activate the ipympl interactive backend</span>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="o">%</span><span class="n">matplotlib</span> <span class="n">ipympl</span>
+</span></code></pre></div></p>
+</details>
+</div>
+<p>This is done by calling the <a href="../reference/omega_plots/#omega_plots.show_omega_interactif_v2"><code>show_omega_interactif_v2</code></a>
+function, which requires an <a href="../reference/omega_data/#omega_data.OMEGAdata"><code>OMEGAdata</code></a> object
+and either a wavelength (<code>lam</code>, in μm) or a data array to display (<code>data</code>):</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>If <code>data</code> is provided, 
+<a href="../reference/omega_plots/#omega_plots.show_data_v2"><code>show_data_v2</code></a> will be used
+to display the map, otherwise it will be
+<a href="../reference/omega_plots/#omega_plots.show_omega_v2"><code>show_omega_v2</code></a>.
+So other customization arguments of these functions can be used here.</p>
+</div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="n">op</span><span class="o">.</span><span class="n">show_omega_interactif_v2</span><span class="p">(</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>    <span class="n">omega</span><span class="p">,</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>    <span class="n">lam</span> <span class="o">=</span> <span class="mf">2.26</span><span class="p">,</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>    <span class="n">mask</span> <span class="o">=</span> <span class="n">data_mask</span><span class="p">,</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>    <span class="n">vmin</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>    <span class="n">vmax</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>    <span class="n">data</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>    <span class="c1"># Can be used to replace the reflectance by an other pre-computed map</span>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>    <span class="p">)</span>
+</span></code></pre></div>
+<figure>
+<p><img alt="Interactive display example" src="../img/exemple_affichage_interactif_ORB0979_3_alb226.png" />
+  </p>
+<figcaption>
+    Interactive display of cube ORB0979_3 </br> Equatorial projection of surface reflectance at
+    2.26 μm with mask.
+  </figcaption>
+</figure>
+<div class="admonition tip">
+<p class="admonition-title">Unprojected interactive visualization</p>
+<p>It is also possible to use a similar interactive display of an <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> data cube without
+any equatorial or polar projection, only using the (X, Y) axes of the cube with
+the <a href="../reference/omega_plots/#omega_plots.show_omega_interactif">show_omega_interactif</a>
+function.
+In this case it uses <a href="../reference/omega_plots/#omega_plots.show_omega">show_omega</a>
+instead of <a href="../reference/omega_plots/#omega_plots.show_omega_v2">show_omega_v2</a>
+to display the <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> map.</p>
+</div>
+<h2 id="composite-maps">Composite maps</h2>
+<p><abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr>-Py provides functions to generate composite maps from multiple <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr>
+observations, with either the reflectance or previously processed high-level
+maps (such as band depth). For instance, the maps in figures 3 to 5 of
+Stcherbinine et al. (2021)<sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup> have been generated using <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr>-Py functions.</p>
+<p>For the following examples, let's assume we have loaded these 3 <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> observations:
+<div class="language-python highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="n">omega41</span>  <span class="o">=</span> <span class="n">od</span><span class="o">.</span><span class="n">autoload_omega</span><span class="p">(</span><span class="s1">&#39;0041_1&#39;</span><span class="p">,</span> <span class="n">therm_corr</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">atm_corr</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="n">omega61</span>  <span class="o">=</span> <span class="n">od</span><span class="o">.</span><span class="n">autoload_omega</span><span class="p">(</span><span class="s1">&#39;0061_1&#39;</span><span class="p">,</span> <span class="n">therm_corr</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">atm_corr</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="n">omega103</span> <span class="o">=</span> <span class="n">od</span><span class="o">.</span><span class="n">autoload_omega</span><span class="p">(</span><span class="s1">&#39;0103_1&#39;</span><span class="p">,</span> <span class="n">therm_corr</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">atm_corr</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></code></pre></div></p>
+<p>Computing and displaying a composite map is done by using the 
+<a href="../reference/omega_plots/#omega_plots.show_omega_list_v2"><code>show_omega_list_v2</code></a> function.</p>
+<div class="admonition tip">
+<p class="admonition-title">Defining the grid</p>
+<p>Generating composite maps requires to project all the <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> observations on the same
+longitude/latide grid, defined by the following parameters in the call of the function:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Decription</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lon_min</code></td>
+<td>Minimum longitude in degrees E (comprised between 0 and 360)</td>
+</tr>
+<tr>
+<td><code>lon_max</code></td>
+<td>Maximum longitude in degrees E (comprised between 0 and 360)</td>
+</tr>
+<tr>
+<td><code>pas_lon</code></td>
+<td>Resolution of the longidude grid in degrees (<em>i.e., size of the pixels along the longitude axis</em>)</td>
+</tr>
+<tr>
+<td><code>lat_min</code></td>
+<td>Minimum latitude in degrees N (comprised between -90 and 90)</td>
+</tr>
+<tr>
+<td><code>lat_max</code></td>
+<td>Maximum latitude in degrees N (comprised between -90 and 90)</td>
+</tr>
+<tr>
+<td><code>pas_lat</code></td>
+<td>Resolution of the latidude grid in degrees (<em>i.e., size of the pixels along the latitude axis</em>)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Extracting the projected map</p>
+<p>The newly created arrays containing the composite map, and the associated longitude/latitude grids
+can be retrieved as an output of the <a href="../reference/omega_plots/#omega_plots.show_omega_list_v2"><code>show_omega_list_v2</code></a>
+function by adding <code>out = True</code> in the call.</p>
+<p>Alternatively, they can also be saved in a specific file then loaded when you want, as described
+in <a href="#saving-loading-composite-maps">Saving &amp; Loading composite maps</a>.</p>
+</div>
+<h3 id="reflectance">Reflectance</h3>
+<p>To generate a composite reflectance map, all we need to provide is:</p>
+<ul>
+<li>The list of <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> observations previously loaded as <a href="../reference/omega_data/#omega_data.OMEGAdata">OMEGAdata</a>
+   objects.</li>
+<li>The grid parameters.</li>
+<li>The desired wavelength in μm (<code>lam</code>).</li>
+</ul>
+<p>Then additional optional parameters can be used to customize the displayed map 
+(polar viewing, colormap, colorscale, title...).</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="n">op</span><span class="o">.</span><span class="n">show_omega_list_v2</span><span class="p">(</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>    <span class="c1"># OMEGA observations</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>    <span class="p">[</span><span class="n">omega41</span><span class="p">,</span> <span class="n">omega61</span><span class="p">,</span> <span class="n">omega103</span><span class="p">],</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>    <span class="c1"># Grid parameters</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>    <span class="n">lat_min</span><span class="o">=-</span><span class="mi">90</span><span class="p">,</span> <span class="n">lat_max</span><span class="o">=-</span><span class="mi">75</span><span class="p">,</span>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>    <span class="n">lon_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">lon_max</span><span class="o">=</span><span class="mi">360</span><span class="p">,</span>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>    <span class="n">pas_lon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">pas_lat</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>    <span class="c1"># Polar viewing</span>
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>    <span class="n">polar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>    <span class="c1"># Colorscale min/max</span>
+</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>    <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span>
+</span><span id="__span-18-12"><a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>    <span class="c1"># Reflectance wavelength</span>
+</span><span id="__span-18-13"><a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a>    <span class="n">lam</span><span class="o">=</span><span class="mf">1.085</span><span class="p">,</span>
+</span><span id="__span-18-14"><a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a>    <span class="c1"># Colormap</span>
+</span><span id="__span-18-15"><a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a>    <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;Greys_r&#39;</span><span class="p">,</span>
+</span><span id="__span-18-16"><a id="__codelineno-18-16" name="__codelineno-18-16" href="#__codelineno-18-16"></a>    <span class="p">)</span>
+</span></code></pre></div>
+<figure>
+<p><img alt="show_omega_list_v2 - South albedo" src="../img/ORB41-61-103__show_omega_list_v2_rfl_polar.png" />
+  </p>
+<figcaption>
+    ORB0041_1/ORB0061_1/ORB0103_1 </br> Reflectance – Polar projection
+  </figcaption>
+</figure>
+<h3 id="data-masks">Data &amp; Masks</h3>
+<p>Let's assume we have now also computed the corresponding masks (<code>mask_41</code>, <code>mask_61</code>, <code>mask_103</code>)
+and 1.5μm <abbr title="Band Depth">BD</abbr> maps (<code>bd15_41</code>, <code>bd15_61</code>, <code>bd15_103</code>).</p>
+<p>Similarly to how it works for the <a href="../reference/omega_plots/#omega_plots.show_omega_v2"><code>show_omega_v2</code></a> function,
+adding masks to hide some specific pixels of the <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> observations can be done simply by
+passing these masks as a list to the <code>mask_list</code> parameter.
+If using masks, then it is required that masks for all the observations present in <code>omega_list</code>
+are given, in the same order.</p>
+<p>Replacing the reflectance by pre-computed data maps for all <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> observations can be done
+by passing them to the <code>data_list</code> argument of the function 
+(instead of specifying the <code>lam</code> argument).</p>
+<div class="admonition danger">
+<p class="admonition-title">Important</p>
+<p>The data in <code>mask_list</code> and <code>data_list</code> (if used) must be in the same order as <code>omega_list</code>.
+Otherwise, if the dimensions of the content of all lists do not match, a <code>ValueError</code> will be
+raised.</p>
+</div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">cmocean.cm</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">cmo</span>    <span class="c1"># Some more very nice colormaps</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="n">op</span><span class="o">.</span><span class="n">show_omega_list_v2</span><span class="p">(</span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>    <span class="c1"># OMEGA observations</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>    <span class="p">[</span><span class="n">omega41</span><span class="p">,</span> <span class="n">omega61</span><span class="p">,</span> <span class="n">omega103</span><span class="p">],</span>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>    <span class="c1"># Grid parameters</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>    <span class="n">lat_min</span><span class="o">=-</span><span class="mi">90</span><span class="p">,</span> <span class="n">lat_max</span><span class="o">=-</span><span class="mi">75</span><span class="p">,</span>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>    <span class="n">lon_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">lon_max</span><span class="o">=</span><span class="mi">360</span><span class="p">,</span>
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>    <span class="n">pas_lon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">pas_lat</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a>    <span class="c1"># Polar viewing</span>
+</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a>    <span class="n">polar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a>    <span class="c1"># Colorscale min/max</span>
+</span><span id="__span-19-13"><a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a>    <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span>
+</span><span id="__span-19-14"><a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a>    <span class="c1"># Colormap</span>
+</span><span id="__span-19-15"><a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a>    <span class="n">cmap</span><span class="o">=</span><span class="n">cmo</span><span class="o">.</span><span class="n">ice</span><span class="p">,</span>
+</span><span id="__span-19-16"><a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a>    <span class="c1"># Data</span>
+</span><span id="__span-19-17"><a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a>    <span class="n">data_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">bd15_41</span><span class="p">,</span> <span class="n">bd15_61</span><span class="p">,</span> <span class="n">bd15_103</span><span class="p">],</span>
+</span><span id="__span-19-18"><a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a>    <span class="c1"># Masks</span>
+</span><span id="__span-19-19"><a id="__codelineno-19-19" name="__codelineno-19-19" href="#__codelineno-19-19"></a>    <span class="n">mask_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">mask_41</span><span class="p">,</span> <span class="n">mask_61</span><span class="p">,</span> <span class="n">mask_103</span><span class="p">],</span>
+</span><span id="__span-19-20"><a id="__codelineno-19-20" name="__codelineno-19-20" href="#__codelineno-19-20"></a>    <span class="c1"># Colorbar title</span>
+</span><span id="__span-19-21"><a id="__codelineno-19-21" name="__codelineno-19-21" href="#__codelineno-19-21"></a>    <span class="n">cb_title</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;1.5 μm BD&#39;</span><span class="p">,</span>
+</span><span id="__span-19-22"><a id="__codelineno-19-22" name="__codelineno-19-22" href="#__codelineno-19-22"></a>    <span class="p">)</span>
+</span></code></pre></div>
+<figure>
+<p><img alt="show_omega_list_v2 - South NBD15" src="../img/ORB41-61-103__show_omega_list_v2_nbd15_polar_mask__method1_ecface.png" />
+  </p>
+<figcaption>
+    ORB0041_1/ORB0061_1/ORB0103_1 </br> 1.5μm BD – Polar projection with mask
+  </figcaption>
+</figure>
+<h3 id="projection-methods">Projection methods</h3>
+<p>Since version 2.4, two projections methods are available to generate composite
+maps of <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> observations.</p>
+<p>They can be selected by specifying <code>proj_method=1</code> or <code>proj_method=2</code> in the call of the
+<a href="../reference/omega_plots/#omega_plots.show_omega_list_v2"><code>show_omega_list_v2</code></a> function
+(<em>current default is method 1</em>).</p>
+<h4 id="method-1">Method 1</h4>
+<p>The fastest way to generate composite maps.
+It will only consider the coordinates of the center of every pixels of an observation
+to fill the new grid.</p>
+<p>It works well for a grid with a coarser resolution compared to the size of the actual
+<abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> pixels, but for high-resolution maps (typically with pixels smaller than 1°x1°) it may
+results in gaps in the newly created map.</p>
+<div class="admonition tip">
+<p class="admonition-title">Nicer maps with method 1</p>
+<p>There is still a way to improve the rendering of high-resolution maps generated with
+the method 1, as shown in <a href="#illustration">Illustration</a>: it is possible to hide the
+small lines of <code>NaN</code> pixels within the map by adding contours on the edges of the plot.</p>
+<p>This is done by setting the <code>edgecolor</code> parameter to <code>'face'</code>, and controlling the
+with with <code>lw</code>.</br>
+<em>Default behaviour of the function is: <code>edgecolor='face'</code> and <code>lw=0.1</code>.</em></p>
+</div>
+<h4 id="method-2">Method 2</h4>
+<p>The second method allows to generate high-resolution composite maps.</p>
+<p>Here the algorithm is going to search for every pixels of the grid that are within the
+<abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> pixels footprints polygons.
+It fixes the issue of the gaps within the composite map that can be observed with the
+method 1 for high-resolution grid, but takes much more time to process.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>If the generation of composite maps can take a few seconds to minutes with the method 1,
+it can easily be hours with method 2 for a large number of observations.</p>
+<p>Thus, we suggest to use method 1 to preview the maps and make some test, then only
+use method 2 for the final processing, and save them directly
+(see <a href="#saving-loading-composite-maps">Saving &amp; Loading composite maps</a>) to only
+have to process them once.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Displaying maps generated with method 2</p>
+<p>For maps computed with method 2, it no longer needed to add the edges to hide the data
+gaps, so the <code>edgecolor</code> parameter can be set to <code>'none'</code>.</p>
+</div>
+<h4 id="illustration">Illustration</h4>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Method 1 with <code>edgecolor = 'face'</code> (default)</label><label for="__tabbed_2_2">Method 1 with <code>edgecolor = 'none'</code></label><label for="__tabbed_2_3">Method 2 with <code>edgecolor = 'none'</code></label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><img alt="Method 1 edgecolor='face' illustration - polar" src="../img/ORB41-61-103__show_omega_list_v2_nbd15_polar_mask__method1_ecface.png" />
+<img alt="Method 1 edgecolor='face' illustration - equatorial" src="../img/ORB41-61-103__show_omega_list_v2_nbd15_nonpolar_mask__method1_ecface.png" /></p>
+<details class="example">
+<summary>Source code</summary>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="n">op</span><span class="o">.</span><span class="n">show_omega_list_v2</span><span class="p">(</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>    <span class="c1"># OMEGA observations</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>    <span class="p">[</span><span class="n">omega41</span><span class="p">,</span> <span class="n">omega61</span><span class="p">,</span> <span class="n">omega103</span><span class="p">],</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>    <span class="c1"># Grid parameters</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>    <span class="n">lat_min</span><span class="o">=-</span><span class="mi">90</span><span class="p">,</span> <span class="n">lat_max</span><span class="o">=-</span><span class="mi">75</span><span class="p">,</span>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>    <span class="n">lon_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">lon_max</span><span class="o">=</span><span class="mi">360</span><span class="p">,</span>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>    <span class="n">pas_lon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">pas_lat</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>    <span class="c1"># Polar viewing</span>
+</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>    <span class="n">polar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>    <span class="c1"># Colorscale min/max</span>
+</span><span id="__span-20-11"><a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>    <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span>
+</span><span id="__span-20-12"><a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a>    <span class="c1"># Colormap</span>
+</span><span id="__span-20-13"><a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a>    <span class="n">cmap</span><span class="o">=</span><span class="n">cmo</span><span class="o">.</span><span class="n">ice</span><span class="p">,</span>
+</span><span id="__span-20-14"><a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a>    <span class="c1"># Data</span>
+</span><span id="__span-20-15"><a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a>    <span class="n">data_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">bd15_41</span><span class="p">,</span> <span class="n">bd15_61</span><span class="p">,</span> <span class="n">bd15_103</span><span class="p">],</span>
+</span><span id="__span-20-16"><a id="__codelineno-20-16" name="__codelineno-20-16" href="#__codelineno-20-16"></a>    <span class="c1"># Masks</span>
+</span><span id="__span-20-17"><a id="__codelineno-20-17" name="__codelineno-20-17" href="#__codelineno-20-17"></a>    <span class="n">mask_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">mask_41</span><span class="p">,</span> <span class="n">mask_61</span><span class="p">,</span> <span class="n">mask_103</span><span class="p">],</span>
+</span><span id="__span-20-18"><a id="__codelineno-20-18" name="__codelineno-20-18" href="#__codelineno-20-18"></a>    <span class="c1"># Colorbar title</span>
+</span><span id="__span-20-19"><a id="__codelineno-20-19" name="__codelineno-20-19" href="#__codelineno-20-19"></a>    <span class="n">cb_title</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;1.5 μm BD&#39;</span><span class="p">,</span>
+</span><span id="__span-20-20"><a id="__codelineno-20-20" name="__codelineno-20-20" href="#__codelineno-20-20"></a>    <span class="c1"># Projection method &amp; display</span>
+</span><span id="__span-20-21"><a id="__codelineno-20-21" name="__codelineno-20-21" href="#__codelineno-20-21"></a>    <span class="n">proj_method</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-20-22"><a id="__codelineno-20-22" name="__codelineno-20-22" href="#__codelineno-20-22"></a>    <span class="n">edgecolor</span> <span class="o">=</span> <span class="s1">&#39;face&#39;</span><span class="p">,</span>
+</span><span id="__span-20-23"><a id="__codelineno-20-23" name="__codelineno-20-23" href="#__codelineno-20-23"></a>    <span class="n">lw</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+</span><span id="__span-20-24"><a id="__codelineno-20-24" name="__codelineno-20-24" href="#__codelineno-20-24"></a>    <span class="p">)</span>
+</span></code></pre></div>
+</details>
+</div>
+<div class="tabbed-block">
+<p><img alt="Method 1 edgecolor=None illustration - polar" src="../img/ORB41-61-103__show_omega_list_v2_nbd15_polar_mask__method1_ecNone.png" />
+<img alt="Method 1 edgecolor=None illustration - equatorial" src="../img/ORB41-61-103__show_omega_list_v2_nbd15_nonpolar_mask__method1_ecNone.png" /></p>
+<details class="example">
+<summary>Source code</summary>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="n">op</span><span class="o">.</span><span class="n">show_omega_list_v2</span><span class="p">(</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>    <span class="c1"># OMEGA observations</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>    <span class="p">[</span><span class="n">omega41</span><span class="p">,</span> <span class="n">omega61</span><span class="p">,</span> <span class="n">omega103</span><span class="p">],</span>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>    <span class="c1"># Grid parameters</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>    <span class="n">lat_min</span><span class="o">=-</span><span class="mi">90</span><span class="p">,</span> <span class="n">lat_max</span><span class="o">=-</span><span class="mi">75</span><span class="p">,</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>    <span class="n">lon_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">lon_max</span><span class="o">=</span><span class="mi">360</span><span class="p">,</span>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>    <span class="n">pas_lon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">pas_lat</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>    <span class="c1"># Polar viewing</span>
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>    <span class="n">polar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>    <span class="c1"># Colorscale min/max</span>
+</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a>    <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span>
+</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a>    <span class="c1"># Colormap</span>
+</span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a>    <span class="n">cmap</span><span class="o">=</span><span class="n">cmo</span><span class="o">.</span><span class="n">ice</span><span class="p">,</span>
+</span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a>    <span class="c1"># Data</span>
+</span><span id="__span-21-15"><a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a>    <span class="n">data_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">bd15_41</span><span class="p">,</span> <span class="n">bd15_61</span><span class="p">,</span> <span class="n">bd15_103</span><span class="p">],</span>
+</span><span id="__span-21-16"><a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a>    <span class="c1"># Masks</span>
+</span><span id="__span-21-17"><a id="__codelineno-21-17" name="__codelineno-21-17" href="#__codelineno-21-17"></a>    <span class="n">mask_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">mask_41</span><span class="p">,</span> <span class="n">mask_61</span><span class="p">,</span> <span class="n">mask_103</span><span class="p">],</span>
+</span><span id="__span-21-18"><a id="__codelineno-21-18" name="__codelineno-21-18" href="#__codelineno-21-18"></a>    <span class="c1"># Colorbar title</span>
+</span><span id="__span-21-19"><a id="__codelineno-21-19" name="__codelineno-21-19" href="#__codelineno-21-19"></a>    <span class="n">cb_title</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;1.5 μm BD&#39;</span><span class="p">,</span>
+</span><span id="__span-21-20"><a id="__codelineno-21-20" name="__codelineno-21-20" href="#__codelineno-21-20"></a>    <span class="c1"># Projection method &amp; display</span>
+</span><span id="__span-21-21"><a id="__codelineno-21-21" name="__codelineno-21-21" href="#__codelineno-21-21"></a>    <span class="n">proj_method</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-21-22"><a id="__codelineno-21-22" name="__codelineno-21-22" href="#__codelineno-21-22"></a>    <span class="n">edgecolor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-21-23"><a id="__codelineno-21-23" name="__codelineno-21-23" href="#__codelineno-21-23"></a>    <span class="p">)</span>
+</span></code></pre></div>
+</details>
+</div>
+<div class="tabbed-block">
+<p><img alt="Method 2 edgecolor=None illustration - polar" src="../img/ORB41-61-103__show_omega_list_v2_nbd15_polar_mask__method2_ecNone.png" />
+<img alt="Method 2 edgecolor=None illustration - equatorial" src="../img/ORB41-61-103__show_omega_list_v2_nbd15_nonpolar_mask__method2_ecNone.png" /></p>
+<details class="example">
+<summary>Source code</summary>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="n">op</span><span class="o">.</span><span class="n">show_omega_list_v2</span><span class="p">(</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>    <span class="c1"># OMEGA observations</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>    <span class="p">[</span><span class="n">omega41</span><span class="p">,</span> <span class="n">omega61</span><span class="p">,</span> <span class="n">omega103</span><span class="p">],</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>    <span class="c1"># Grid parameters</span>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>    <span class="n">lat_min</span><span class="o">=-</span><span class="mi">90</span><span class="p">,</span> <span class="n">lat_max</span><span class="o">=-</span><span class="mi">75</span><span class="p">,</span>
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>    <span class="n">lon_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">lon_max</span><span class="o">=</span><span class="mi">360</span><span class="p">,</span>
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a>    <span class="n">pas_lon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">pas_lat</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>    <span class="c1"># Polar viewing</span>
+</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a>    <span class="n">polar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-22-10"><a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a>    <span class="c1"># Colorscale min/max</span>
+</span><span id="__span-22-11"><a id="__codelineno-22-11" name="__codelineno-22-11" href="#__codelineno-22-11"></a>    <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span>
+</span><span id="__span-22-12"><a id="__codelineno-22-12" name="__codelineno-22-12" href="#__codelineno-22-12"></a>    <span class="c1"># Colormap</span>
+</span><span id="__span-22-13"><a id="__codelineno-22-13" name="__codelineno-22-13" href="#__codelineno-22-13"></a>    <span class="n">cmap</span><span class="o">=</span><span class="n">cmo</span><span class="o">.</span><span class="n">ice</span><span class="p">,</span>
+</span><span id="__span-22-14"><a id="__codelineno-22-14" name="__codelineno-22-14" href="#__codelineno-22-14"></a>    <span class="c1"># Data</span>
+</span><span id="__span-22-15"><a id="__codelineno-22-15" name="__codelineno-22-15" href="#__codelineno-22-15"></a>    <span class="n">data_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">bd15_41</span><span class="p">,</span> <span class="n">bd15_61</span><span class="p">,</span> <span class="n">bd15_103</span><span class="p">],</span>
+</span><span id="__span-22-16"><a id="__codelineno-22-16" name="__codelineno-22-16" href="#__codelineno-22-16"></a>    <span class="c1"># Masks</span>
+</span><span id="__span-22-17"><a id="__codelineno-22-17" name="__codelineno-22-17" href="#__codelineno-22-17"></a>    <span class="n">mask_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">mask_41</span><span class="p">,</span> <span class="n">mask_61</span><span class="p">,</span> <span class="n">mask_103</span><span class="p">],</span>
+</span><span id="__span-22-18"><a id="__codelineno-22-18" name="__codelineno-22-18" href="#__codelineno-22-18"></a>    <span class="c1"># Colorbar title</span>
+</span><span id="__span-22-19"><a id="__codelineno-22-19" name="__codelineno-22-19" href="#__codelineno-22-19"></a>    <span class="n">cb_title</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;1.5 μm BD&#39;</span><span class="p">,</span>
+</span><span id="__span-22-20"><a id="__codelineno-22-20" name="__codelineno-22-20" href="#__codelineno-22-20"></a>    <span class="c1"># Projection method &amp; display</span>
+</span><span id="__span-22-21"><a id="__codelineno-22-21" name="__codelineno-22-21" href="#__codelineno-22-21"></a>    <span class="n">proj_method</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+</span><span id="__span-22-22"><a id="__codelineno-22-22" name="__codelineno-22-22" href="#__codelineno-22-22"></a>    <span class="n">edgecolor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-22-23"><a id="__codelineno-22-23" name="__codelineno-22-23" href="#__codelineno-22-23"></a>    <span class="p">)</span>
+</span></code></pre></div>
+</details>
+</div>
+</div>
+</div>
+<h3 id="saving-loading-composite-maps">Saving &amp; Loading composite maps</h3>
+<p>To avoid reprocessing every time the projection of the <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> observations to generate
+the composite maps, which may take time, especially for large datasets and/or if you
+are using the method 2, it is possible to export them in a single file after the processing.
+Then, all you have to do is to load this file and display the map as you want.</p>
+<h4 id="saving-composite-map">Saving composite map</h4>
+<p>Computing and saving a composite map is done by using the 
+<a href="../reference/omega_plots/#omega_plots.save_map_omega_list"><code>save_map_omega_list</code></a> function.
+It is very similar to <a href="../reference/omega_plots/#omega_plots.show_omega_list_v2"><code>show_omega_list_v2</code></a>
+except that you do not need to give the parameters related to the display of the map.</p>
+<p>Instead, you can define the path where the data will be saved, and the filename.</p>
+<div class="admonition tip">
+<p class="admonition-title">Good practises</p>
+<p>If you are not using the reflectance, it is recommended to fill the <code>data_desc</code>
+argument with a description of the data (similarly to <code>cb_title</code>).
+This value will be used by default as the colorbar label when displaying the map,
+and it is a good way to know what data are stored within the file when you load it.</p>
+<p>Also, if you use the automatically generated filename, it is recommended to
+use the <code>ext</code> argument to indicate the data used to generate the map, and identify them.</p>
+</div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="n">op</span><span class="o">.</span><span class="n">save_map_omega_list</span><span class="p">(</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>    <span class="c1"># OMEGA observations</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>    <span class="n">omega_list</span><span class="p">,</span>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>    <span class="c1"># Grid parameters</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>    <span class="n">lat_min</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">lat_max</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span>
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>    <span class="n">lon_min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">lon_max</span><span class="o">=</span><span class="mi">360</span><span class="p">,</span>
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>    <span class="n">pas_lat</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">pas_lon</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>    <span class="c1"># Data</span>
+</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a>    <span class="n">data_list</span><span class="o">=</span><span class="n">bd_19_list</span><span class="p">,</span>
+</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a>    <span class="n">data_desc</span><span class="o">=</span><span class="s1">&#39;1.9 μm BD&#39;</span><span class="p">,</span>
+</span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a>    <span class="c1"># Masks</span>
+</span><span id="__span-23-12"><a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a>    <span class="n">mask_list</span><span class="o">=</span><span class="n">mask_ice_list</span><span class="p">,</span>
+</span><span id="__span-23-13"><a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a>    <span class="c1"># Output file parameters</span>
+</span><span id="__span-23-14"><a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a>    <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;BD_1.9microns_mask4C&#39;</span><span class="p">,</span>
+</span><span id="__span-23-15"><a id="__codelineno-23-15" name="__codelineno-23-15" href="#__codelineno-23-15"></a>    <span class="n">sub_folder</span><span class="o">=</span><span class="s1">&#39;mask4C&#39;</span><span class="p">,</span>
+</span><span id="__span-23-16"><a id="__codelineno-23-16" name="__codelineno-23-16" href="#__codelineno-23-16"></a>    <span class="n">folder</span><span class="o">=</span><span class="s1">&#39;../data&#39;</span><span class="p">,</span>
+</span><span id="__span-23-17"><a id="__codelineno-23-17" name="__codelineno-23-17" href="#__codelineno-23-17"></a>    <span class="p">)</span>
+</span></code></pre></div>
+<h4 id="loading-displaying-previously-saved-map">Loading &amp; displaying previously saved map</h4>
+<p>Once you have saved a composite map in a file with 
+<a href="../reference/omega_plots/#omega_plots.save_map_omega_list"><code>save_map_omega_list</code></a>,
+you can load its content with
+<a href="../reference/omega_plots/#omega_plots.load_map_omega_list"><code>load_map_omega_list</code></a>
+and display the map with 
+<a href="../reference/omega_plots/#omega_plots.show_omega_list_v2_man"><code>show_omega_list_v2_man</code></a>.</p>
+<p>The function takes as argument the arrays previously loaded, and parameters to customize
+the plot, similarly to <a href="../reference/omega_plots/#omega_plots.show_omega_v2"><code>show_omega_v2</code></a>
+or <a href="../reference/omega_plots/#omega_plots.show_omega_list_v2"><code>show_omega_list_v2</code></a>
+(colormap, colorscale, title, polar viewing...).</p>
+<div class="admonition info">
+<p class="admonition-title">Colorbar title</p>
+<p>By default, the colorbar title will used the one passed to <code>data_desc</code> when saving the map,
+but it can be changed using the <code>cb_title</code> argument.</p>
+</div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="n">data_bd19</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">grid_lat</span><span class="p">,</span> <span class="n">grid_lon</span><span class="p">,</span> <span class="n">mask_obs</span><span class="p">,</span> <span class="n">infos</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">load_map_omega_list</span><span class="p">(</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>    <span class="s1">&#39;../data/mask4C/res_show_omega_list_v2__lat50-90_pas0.1_lon000-360_pas0.1_BD_1.9microns_mask4C.pkl&#39;</span>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>    <span class="p">)</span>
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="n">op</span><span class="o">.</span><span class="n">show_omega_list_v2_man</span><span class="p">(</span>
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>    <span class="n">data_bd19</span><span class="p">,</span>
+</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a>    <span class="n">grid_lat</span><span class="p">,</span>
+</span><span id="__span-24-8"><a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a>    <span class="n">grid_lon</span><span class="p">,</span>
+</span><span id="__span-24-9"><a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a>    <span class="n">infos</span><span class="p">,</span>
+</span><span id="__span-24-10"><a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a>    <span class="n">cmap</span> <span class="o">=</span> <span class="s1">&#39;inferno&#39;</span><span class="p">,</span>
+</span><span id="__span-24-11"><a id="__codelineno-24-11" name="__codelineno-24-11" href="#__codelineno-24-11"></a>    <span class="n">vmin</span> <span class="o">=</span> <span class="mf">0.02</span><span class="p">,</span>
+</span><span id="__span-24-12"><a id="__codelineno-24-12" name="__codelineno-24-12" href="#__codelineno-24-12"></a>    <span class="n">vmax</span> <span class="o">=</span> <span class="mf">0.08</span><span class="p">,</span>
+</span><span id="__span-24-13"><a id="__codelineno-24-13" name="__codelineno-24-13" href="#__codelineno-24-13"></a>    <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span>
+</span><span id="__span-24-14"><a id="__codelineno-24-14" name="__codelineno-24-14" href="#__codelineno-24-14"></a>    <span class="n">polar</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-24-15"><a id="__codelineno-24-15" name="__codelineno-24-15" href="#__codelineno-24-15"></a>    <span class="n">cb_title</span> <span class="o">=</span> <span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+</span><span id="__span-24-16"><a id="__codelineno-24-16" name="__codelineno-24-16" href="#__codelineno-24-16"></a>    <span class="p">)</span>
+</span></code></pre></div>
+<figure>
+<p><img alt="show_omega_list_v2_man - North 1.9μm BD" src="../img/nbd19_mask4C_north_my27_inferno_notitle.png" />
+  </p>
+<figcaption>
+    North 1.9μm BD – Polar projection with water ice mask</br> (Stcherbinine et al., 2021)
+  </figcaption>
+</figure>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>D. Jouglet, F. Poulet, R. E. Milliken, et al. (2007). 
+Hydration state of the Martian surface as seen by Mars Express <abbr title="Observatoire pour la Minéralogie, l'Eau, les Glaces et l'Activité">OMEGA</abbr> : 1. Analysis of the 3 μm hydration feature. 
+<em>Journal of Geophysical Research: Planets, 112</em>, E08S06. 
+<a href="http://dx.doi.org/10.1029/2006JE002846">doi:10.1029/2006JE002846</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>A. Stcherbinine, M. Vincendon, F. Montmessin, P. Beck (2021). 
+Identification of a new spectral signature at 3 µm over Martian northern high latitudes: implications for surface composition. 
+<em>Icarus, 369</em>, 114627. 
+<a href="https://doi.org/10.1016/j.icarus.2021.114627">doi:10.1016/j.icarus.2021.114627</a>&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025 Aurélien Stcherbinine
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        
+<div class="md-social">
+  
+    
+    
+    
+    
+    <a href="https://github.com/AStcherbinine" target="_blank" rel="noopener" title="AStcherbinine on GitHub" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://www.researchgate.net/profile/Aurelien-Stcherbinine" target="_blank" rel="noopener" title="Aurélien Stcherbinine on ResearchGate" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M0 32v448h448V32zm262.2 334.4c-6.6 3-33.2 6-50-14.2-9.2-10.6-25.3-33.3-42.2-63.6-8.9 0-14.7 0-21.4-.6v46.4c0 23.5 6 21.2 25.8 23.9v8.1c-6.9-.3-23.1-.8-35.6-.8-13.1 0-26.1.6-33.6.8v-8.1c15.5-2.9 22-1.3 22-23.9V225c0-22.6-6.4-21-22-23.9V193c25.8 1 53.1-.6 70.9-.6 31.7 0 55.9 14.4 55.9 45.6 0 21.1-16.7 42.2-39.2 47.5 13.6 24.2 30 45.6 42.2 58.9 7.2 7.8 17.2 14.7 27.2 14.7zm22.9-135c-23.3 0-32.2-15.7-32.2-32.2V167c0-12.2 8.8-30.4 34-30.4s30.4 17.9 30.4 17.9l-10.7 7.2s-5.5-12.5-19.7-12.5c-7.9 0-19.7 7.3-19.7 19.7v26.8c0 13.4 6.6 23.3 17.9 23.3 14.1 0 21.5-10.9 21.5-26.8h-17.9v-10.7h30.4c0 20.5 4.7 49.9-34 49.9m-116.5 44.7c-9.4 0-13.6-.3-20-.8v-69.7c6.4-.6 15-.6 22.5-.6 23.3 0 37.2 12.2 37.2 34.5 0 21.9-15 36.6-39.7 36.6"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://www.linkedin.com/in/aurelien-stcherbinine/" target="_blank" rel="noopener" title="Aurélien Stcherbinine on LinkedIn" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://aurelien.stcherbinine.net/" target="_blank" rel="noopener" title="Aurélien Stcherbinine personal page" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.0.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path fill="currentColor" d="M351.9 280H161c2.9 64.5 17.2 123.9 37.5 167.4 11.4 24.5 23.7 41.8 35.1 52.4 11.2 10.5 18.9 12.2 22.9 12.2s11.7-1.7 22.9-12.2c11.4-10.6 23.7-28 35.1-52.4 20.3-43.5 34.6-102.9 37.5-167.4zm-191-48h190.9c-2.8-64.5-17.1-123.9-37.4-167.4-11.4-24.4-23.7-41.8-35.1-52.4C268.1 1.7 260.4 0 256.4 0s-11.7 1.7-22.9 12.2c-11.4 10.6-23.7 28-35.1 52.4-20.3 43.5-34.6 102.9-37.5 167.4m-48 0c3.5-85.6 25.6-165.1 57.9-217.3C78.7 47.3 10.9 131.2 1.5 232zM1.5 280c9.4 100.8 77.2 184.7 169.3 217.3-32.3-52.2-54.4-131.7-57.9-217.3zm398.4 0c-3.5 85.6-25.6 165.1-57.9 217.3 92.1-32.7 159.9-116.5 169.3-217.3zm111.4-48C501.9 131.2 434.1 47.3 342 14.7c32.3 52.2 54.4 131.7 57.9 217.3z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.indexes", "toc.integrate", "toc.follow", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": "v2.4"}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.92b07e13.min.js"></script>
+      
+    
+  </body>
+</html>
