@@ -133,9 +133,9 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/AStcherbinine
       name: AStcherbinine on GitHub
-    - icon: fontawesome/brands/twitter
-      link: https://twitter.com/Astrorelien
-      name: Astrorelien on Twitter
+    #- icon: fontawesome/brands/twitter
+      #link: https://twitter.com/Astrorelien
+      #name: Astrorelien on Twitter
     - icon: fontawesome/brands/researchgate
       link: https://www.researchgate.net/profile/Aurelien-Stcherbinine
       name: Aurélien Stcherbinine on ResearchGate
