@@ -1,5 +1,11 @@
 ## OMEGA-Py communications
 
+A. Stcherbinine, Y. Langevin, J. Carter, et al. (2025). 
+The OMEGA-Py Python module: a complete and easy way to work with OMEGA/MEX observations.
+*EPSC-DPS Joint Meeting 2025*, Helsinki, 7–12 September 2025, [abstract 1434](https://doi.org/10.5194/epsc-dps2025-1434),
+[doi:10.5194/epsc-dps2025-1434](https://doi.org/10.5194/epsc-dps2025-1434) (poster):
+[abstract](Stcherbinine_2025_EPSC_omegapy.pdf) & [poster](poster_EPSC2025_stcherbinine_omegapy_upload.pdf)
+
 A. Stcherbinine, Y. Langevin, J. Carter, M. Vincendon, Y. Leseigneur, O. Barraud (2024). 
 OMEGA-Py: Python Tools for OMEGA data. *Journal of Open Source Software, 9(99)*, 6566. 
 [doi:10.21105/joss.06566](https://doi.org/10.21105/joss.06566)
