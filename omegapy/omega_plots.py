@@ -3,7 +3,7 @@
 
 ## omega_plots.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 08/01/2025
+## Last modified by Aurélien STCHERBININE : 24/09/2025
 
 ##----------------------------------------------------------------------------------------
 """Display of `OMEGAdata` cubes.
@@ -16,6 +16,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button, RadioButtons
+import matplotlib.ticker as mticker
 from copy import deepcopy
 from tqdm import tqdm
 import datetime
@@ -97,7 +98,8 @@ def _switch_default_geom_to_L(omega):
 
 ##----------------------------------------------------------------------------------------
 ## Affichage cube
-def show_cube(cube, i_lam, cmap='Greys_r', vmin=None, vmax=None, cb_title='', Nfig=None):
+def show_cube(cube, i_lam, cmap='Greys_r', vmin=None, vmax=None, cb_title='', Nfig=None,
+              clearfig=False):
     """Display the cube from an OMEGA/MEx observation.
 
     Parameters
@@ -116,8 +118,10 @@ def show_cube(cube, i_lam, cmap='Greys_r', vmin=None, vmax=None, cb_title='', Nf
         The title of the colorbar.
     Nfig : int or str or None, default None
         The target figure ID.
+    clearfig : bool, default False
+        If True and the figure already exists, then it is cleared.
     """
-    fig = plt.figure(Nfig)
+    fig = plt.figure(Nfig, clear=clearfig)
     plt.imshow(cube[:,:,i_lam], cmap=cmap, vmin=vmin, vmax=vmax,
                aspect='equal', origin='lower', interpolation=None)
     cb = plt.colorbar()
@@ -125,7 +129,8 @@ def show_cube(cube, i_lam, cmap='Greys_r', vmin=None, vmax=None, cb_title='', Nf
     plt.tight_layout()
 
 def show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None,
-               title='auto', xlim=(None, None), ylim=(None, None), Nfig=None, mask=None):
+               title='auto', xlim=(None, None), ylim=(None, None), Nfig=None, mask=None,
+               clearfig=False):
     """Display an OMEGA/MEx observation in a rectangular pixel grid.
 
     Parameters
@@ -160,6 +165,8 @@ def show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, v
         If `None`, all the pixels are conserved.</br>
         | `1` --> Good pixel</br>
         | `NaN` --> Bad pixel
+    clearfig : bool, default False
+        If True and the figure already exists, then it is cleared.
     """
     if ((lam_unit == 'm') or isinstance(lam, float)) and (lam < 10):
         i_lam = uf.where_closer(lam, omega.lam)
@@ -177,7 +184,10 @@ def show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, v
         cube = (cube.T * mask.T).T      # apply mask to remove bad pixels (turned to NaN)
     if title == 'auto':
         title = 'OMEGA/MEx observation {0}\n'.format(omega.name) 
-    show_cube(cube, i_lam, cmap, vmin, vmax, cb_title, Nfig)
+    show_cube(cube, i_lam, cmap, vmin, vmax, cb_title, Nfig, clearfig)
+    ax = plt.gca()
+    ax.xaxis.set_minor_locator(mticker.AutoMinorLocator())
+    ax.yaxis.set_minor_locator(mticker.AutoMinorLocator())
     plt.xlim(xlim)
     plt.ylim(ylim)
     plt.title(title)
@@ -186,7 +196,7 @@ def show_omega(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, v
 def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None, vmax=None,
                   alpha=None, title='auto', lonlim=(None, None), latlim=(None, None), Nfig=None,
                   polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto',
-                  use_V_geom=False, use_L_geom=False, **kwargs):
+                  use_V_geom=False, use_L_geom=False, clearfig=False, **kwargs):
     """Display an OMEGA/MEx observation with respect of the lat/lon coordinates of the pixels,
     and allows to use a polar projection if desired.
 
@@ -239,6 +249,8 @@ def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None
         If `True`, use the geometry of the V-channel instead of the C-channel.
     use_L_geom : bool, default False
         If `True`, use the geometry of the L-channel instead of the C-channel.
+    clearfig : bool, default False
+        If True and the figure already exists, then it is cleared.
     **kwargs:
         Optional arguments for the `plt.pcolormesh()` function.
     """
@@ -269,7 +281,7 @@ def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None
         mask_lat = (np.abs(omega.lat) < 85)
         if (omega.lon[mask_lat] < 10).any() and (omega.lon[mask_lat] > 350).any():
             negatives_longitudes = True
-    fig = plt.figure(Nfig)
+    fig = plt.figure(Nfig, clear=clearfig)
     Nfig = fig.number   # get the actual figure number if Nfig=None
     if len(fig.get_axes()) != 0:    # If presence of axes
         ax0 = fig.get_axes()[0]
@@ -306,28 +318,33 @@ def show_omega_v2(omega, lam, refl=True, lam_unit='m', cmap='Greys_r', vmin=None
         plt.xlim(lonlim)
         plt.ylim(latlim)
         plt.gca().set_adjustable('box')
-        plt.xlabel('Longitude [°]')
-        plt.ylabel('Latitude [°]')
+        plt.xlabel('Longitude [°E]')
+        plt.ylabel('Latitude [°N]')
     if cbar:
         cb = plt.colorbar()
         cb.set_label(cb_title)
     plt.grid(visible=False)
     if grid:
-        ax = plt.figure(Nfig).get_axes()[0]
-        lonlim = ax.get_xlim()
-        latlim = ax.get_ylim()
-        lon_sgn = np.sign(lonlim[1] - lonlim[0])
-        lat_sgn = np.sign(latlim[1] - latlim[0])
-        lon_grid = np.arange(np.round(lonlim[0]/10)*10, np.round(lonlim[1]/10)*10+lon_sgn, 
-                    10 * lon_sgn)   # 10° grid in longitude
-        lat_grid = np.arange(np.round(latlim[0]/10)*10, np.round(latlim[1]/10)*10+lat_sgn, 
-                    10 * lat_sgn)   # 10° grid in latitude
-        plt.grid(visible=True)
-        if polar:
-            ax.set_rticks(lat_grid)
-        else:
-            ax.set_xticks(lon_grid)
-            ax.set_yticks(lat_grid)
+        plt.grid(visible=True, c='gray', linestyle='--', lw=0.5)
+    # Axes ticks
+    ax = plt.figure(Nfig).get_axes()[0]
+    lonlim = ax.get_xlim()
+    latlim = ax.get_ylim()
+    lon_sgn = np.sign(lonlim[1] - lonlim[0])
+    lat_sgn = np.sign(latlim[1] - latlim[0])
+    lon_grid = np.arange(np.round(lonlim[0]/10)*10, np.round(lonlim[1]/10)*10+lon_sgn, 
+                10 * lon_sgn)   # 10° grid in longitude
+    lat_grid = np.arange(np.round(latlim[0]/10)*10, np.round(latlim[1]/10)*10+lat_sgn, 
+                10 * lat_sgn)   # 10° grid in latitude
+    if polar:
+        ax.set_rticks(lat_grid)
+    else:
+        # ax.set_xticks(lon_grid)
+        # ax.set_yticks(lat_grid)
+        ax.xaxis.set_major_locator(mticker.MaxNLocator(5))
+        ax.yaxis.set_major_locator(mticker.MaxNLocator(5))
+        ax.xaxis.set_minor_locator(mticker.AutoMinorLocator())
+        ax.yaxis.set_minor_locator(mticker.AutoMinorLocator())
     plt.title(title)
     plt.tight_layout()
 
@@ -842,7 +859,7 @@ def show_omega_interactif_v2(omega, lam=1.085, refl=True, lam_unit='m', data=Non
 def show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, title='auto', 
                 cb_title = 'data', lonlim=(None, None), latlim=(None, None), Nfig=None, 
                 polar=False, cbar=True, grid=True, mask=None, negatives_longitudes='auto',
-                use_V_geom=False, use_L_geom=False, **kwargs):
+                use_V_geom=False, use_L_geom=False, clearfig=False, **kwargs):
     """Display high-level data derived from an OMEGA/MEx observation with respect of the 
     lat/lon coordinates of the pixels, and allows to use a polar projection if desired.
 
@@ -890,6 +907,8 @@ def show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, 
         If `True`, use the geometry of the V-channel instead of the C-channel.
     use_L_geom : bool, default False
         If `True`, use the geometry of the L-channel instead of the C-channel.
+    clearfig : bool, default False
+        If True and the figure already exists, then it is cleared.
     **kwargs:
         Optional arguments for the `plt.pcolormesh()` function.
     """
@@ -905,7 +924,7 @@ def show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, 
             negatives_longitudes = True
     if title == 'auto':
         title = ('OMEGA/MEx observation {0}'.format(omega.name))
-    fig = plt.figure(Nfig)
+    fig = plt.figure(Nfig, clear=clearfig)
     Nfig = fig.number   # get the actual figure number if Nfig=None
     if not (mask is None):
         data = deepcopy(data) * mask     # apply mask to remove bad pixels (turned to NaN)
@@ -944,28 +963,33 @@ def show_data_v2(omega, data, cmap='viridis', vmin=None, vmax=None, alpha=None, 
         plt.xlim(lonlim)
         plt.ylim(latlim)
         plt.gca().set_adjustable('box')
-        plt.xlabel('Longitude [°]')
-        plt.ylabel('Latitude [°]')
+        plt.xlabel('Longitude [°E]')
+        plt.ylabel('Latitude [°N]')
     if cbar:
         cb = plt.colorbar()
         cb.set_label(cb_title)
     plt.grid(visible=False)
     if grid:
-        ax = plt.figure(Nfig).get_axes()[0]
-        lonlim = ax.get_xlim()
-        latlim = ax.get_ylim()
-        lon_sgn = np.sign(lonlim[1] - lonlim[0])
-        lat_sgn = np.sign(latlim[1] - latlim[0])
-        lon_grid = np.arange(np.round(lonlim[0]/10)*10, np.round(lonlim[1]/10)*10+lon_sgn, 
-                    10 * lon_sgn)   # 10° grid in longitude
-        lat_grid = np.arange(np.round(latlim[0]/10)*10, np.round(latlim[1]/10)*10+lat_sgn, 
-                    10 * lat_sgn)   # 10° grid in latitude
-        plt.grid(visible=True)
-        if polar:
-            ax.set_rticks(lat_grid)
-        else:
-            ax.set_xticks(lon_grid)
-            ax.set_yticks(lat_grid)
+        plt.grid(visible=True, c='gray', linestyle='--', lw=0.5)
+    # Axes ticks
+    ax = plt.figure(Nfig).get_axes()[0]
+    lonlim = ax.get_xlim()
+    latlim = ax.get_ylim()
+    lon_sgn = np.sign(lonlim[1] - lonlim[0])
+    lat_sgn = np.sign(latlim[1] - latlim[0])
+    lon_grid = np.arange(np.round(lonlim[0]/10)*10, np.round(lonlim[1]/10)*10+lon_sgn, 
+                10 * lon_sgn)   # 10° grid in longitude
+    lat_grid = np.arange(np.round(latlim[0]/10)*10, np.round(latlim[1]/10)*10+lat_sgn, 
+                10 * lat_sgn)   # 10° grid in latitude
+    if polar:
+        ax.set_rticks(lat_grid)
+    else:
+        # ax.set_xticks(lon_grid)
+        # ax.set_yticks(lat_grid)
+        ax.xaxis.set_major_locator(mticker.MaxNLocator(5))
+        ax.yaxis.set_major_locator(mticker.MaxNLocator(5))
+        ax.xaxis.set_minor_locator(mticker.AutoMinorLocator())
+        ax.yaxis.set_minor_locator(mticker.AutoMinorLocator())
     plt.title(title)
     plt.tight_layout()
 
@@ -1307,7 +1331,8 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
                        title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto',
                        data_list=None, mask_list=None, negative_values=False, plot=True, 
                        grid=True, out=False, negatives_longitudes=False, proj_method=1,
-                       use_V_geom=False, use_L_geom=False, edgecolor='face', lw=0.1, **kwargs):
+                       use_V_geom=False, use_L_geom=False, edgecolor='face', lw=0.1, 
+                       clearfig=False, **kwargs):
     """Display an composite map from a list OMEGA/MEx observations, sampled on a new lat/lon grid.
 
     Parameters
@@ -1381,6 +1406,8 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
         or `none` for projection method `2`.
     lw : float, default 0.1
         The line width of the edges (if displayed).
+    clearfig : bool, default False
+        If True and the figure already exists, then it is cleared.
     **kwargs:
         Optional arguments for the `plt.pcolormesh()` function.
 
@@ -1457,7 +1484,7 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
     if plot:
         if title == 'auto':
             title = 'Composite map from OMEGA/MEx observations' 
-        fig = plt.figure(Nfig)
+        fig = plt.figure(Nfig, clear=clearfig)
         Nfig = fig.number   # get the actual figure number if Nfig=None
         if polar:
             ax = plt.axes(polar=True)
@@ -1493,8 +1520,8 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
                                vmax=vmax, edgecolor=edgecolor, lw=lw, **kwargs)
             plt.gca().axis('equal')
             plt.gca().set_adjustable('box')
-            plt.xlabel('Longitude [°]')
-            plt.ylabel('Latitude [°]')
+            plt.xlabel('Longitude [°E]')
+            plt.ylabel('Latitude [°N]')
             plt.xlim(lon_min, lon_max)
             plt.ylim(lat_min, lat_max)
         if cbar:
@@ -1504,21 +1531,28 @@ def show_omega_list_v2(omega_list, lam=1.085, lat_min=-90, lat_max=90, lon_min=0
             cb.set_label(cb_title)
         plt.grid(visible=False)
         if grid:
-            ax = plt.figure(Nfig).get_axes()[0]
-            lonlim = ax.get_xlim()
-            latlim = ax.get_ylim()
-            lon_sgn = np.sign(lonlim[1] - lonlim[0])
-            lat_sgn = np.sign(latlim[1] - latlim[0])
-            lon_grid = np.arange(np.round(lonlim[0]/10)*10, np.round(lonlim[1]/10)*10+lon_sgn, 
-                        10 * lon_sgn)   # 10° grid in longitude
-            lat_grid = np.arange(np.round(latlim[0]/10)*10, np.round(latlim[1]/10)*10+lat_sgn, 
-                        10 * lat_sgn)   # 10° grid in latitude
-            plt.grid(visible=True)
-            if polar:
-                ax.set_rticks(lat_grid)
-            else:
-                ax.set_xticks(lon_grid)
-                ax.set_yticks(lat_grid)
+            plt.grid(visible=True, c='gray', linestyle='--', lw=0.5)
+        # Axes ticks
+        ax = plt.figure(Nfig).get_axes()[0]
+        lonlim = ax.get_xlim()
+        latlim = ax.get_ylim()
+        lon_sgn = np.sign(lonlim[1] - lonlim[0])
+        lat_sgn = np.sign(latlim[1] - latlim[0])
+        lon_grid = np.arange(np.round(lonlim[0]/10)*10, np.round(lonlim[1]/10)*10+lon_sgn, 
+                    10 * lon_sgn)   # 10° grid in longitude
+        lat_grid = np.arange(np.round(latlim[0]/10)*10, np.round(latlim[1]/10)*10+lat_sgn, 
+                    10 * lat_sgn)   # 10° grid in latitude
+        if polar:
+            ax.set_rticks(lat_grid)
+        else:
+            # ax.set_xticks(lon_grid)
+            # ax.set_yticks(lat_grid)
+            ax.xaxis.set_major_locator(mticker.MaxNLocator(5))
+            ax.yaxis.set_major_locator(mticker.MaxNLocator(5))
+            ax.xaxis.set_minor_locator(mticker.AutoMinorLocator())
+            ax.yaxis.set_minor_locator(mticker.AutoMinorLocator())
+        plt.title(title)
+        plt.tight_layout()
         plt.title(title)
         plt.tight_layout()
     # Output
@@ -1656,8 +1690,8 @@ def load_map_omega_list(filename):
 
 def show_omega_list_v2_man(data, grid_lat, grid_lon, infos, cmap='Greys_r', vmin=None, vmax=None, 
                            title='auto', Nfig=None, polar=False, cbar=True, cb_title='auto',
-                           grid=True, negatives_longitudes=False,
-                           edgecolor='face', lw=0.1, **kwargs):
+                           grid=True, negatives_longitudes=False, edgecolor='face', lw=0.1, 
+                           clearfig=False, **kwargs):
     """Display an composite map from a list OMEGA/MEx observations, previously sampled on 
     a new lat/lon grid with `show_omega_list_v2()` and saved with `save_map_omega_list()`.
 
@@ -1700,6 +1734,8 @@ def show_omega_list_v2_man(data, grid_lat, grid_lon, infos, cmap='Greys_r', vmin
         or `none` for projection method `2`.
     lw : float, default 0.1
         The line width of the edges (if displayed).
+    clearfig : bool, default False
+        If True and the figure already exists, then it is cleared.
     **kwargs:
         Optional arguments for the `plt.pcolormesh()` function.
     """
@@ -1707,7 +1743,7 @@ def show_omega_list_v2_man(data, grid_lat, grid_lon, infos, cmap='Greys_r', vmin
     lon_min, lon_max = infos['lon_min'], infos['lon_max']
     if title == 'auto':
         title = 'Composite map from OMEGA/MEx observations' 
-    fig = plt.figure(Nfig)
+    fig = plt.figure(Nfig, clear=clearfig)
     Nfig = fig.number   # get the actual figure number if Nfig=None
     if polar:
         ax = plt.axes(polar=True)
@@ -1743,8 +1779,8 @@ def show_omega_list_v2_man(data, grid_lat, grid_lon, infos, cmap='Greys_r', vmin
                            vmax=vmax, edgecolor=edgecolor, lw=lw, **kwargs)
         plt.gca().axis('equal')
         plt.gca().set_adjustable('box')
-        plt.xlabel('Longitude [°]')
-        plt.ylabel('Latitude [°]')
+        plt.xlabel('Longitude [°E]')
+        plt.ylabel('Latitude [°N]')
         plt.xlim(lon_min, lon_max)
         plt.ylim(lat_min, lat_max)
     if cbar:
@@ -1754,21 +1790,30 @@ def show_omega_list_v2_man(data, grid_lat, grid_lon, infos, cmap='Greys_r', vmin
         cb.set_label(cb_title)
     plt.grid(visible=False)
     if grid:
-        ax = plt.figure(Nfig).get_axes()[0]
-        lonlim = ax.get_xlim()
-        latlim = ax.get_ylim()
-        lon_sgn = np.sign(lonlim[1] - lonlim[0])
-        lat_sgn = np.sign(latlim[1] - latlim[0])
-        lon_grid = np.arange(np.round(lonlim[0]/10)*10, np.round(lonlim[1]/10)*10+lon_sgn, 
-                    10 * lon_sgn)   # 10° grid in longitude
-        lat_grid = np.arange(np.round(latlim[0]/10)*10, np.round(latlim[1]/10)*10+lat_sgn, 
-                    10 * lat_sgn)   # 10° grid in latitude
-        plt.grid(visible=True)
-        if polar:
-            ax.set_rticks(lat_grid)
-        else:
-            ax.set_xticks(lon_grid)
-            ax.set_yticks(lat_grid)
+        plt.grid(visible=True, c='gray', linestyle='--', lw=0.5)
+    # Axes ticks
+    ax = plt.figure(Nfig).get_axes()[0]
+    lonlim = ax.get_xlim()
+    latlim = ax.get_ylim()
+    lon_sgn = np.sign(lonlim[1] - lonlim[0])
+    lat_sgn = np.sign(latlim[1] - latlim[0])
+    lon_grid = np.arange(np.round(lonlim[0]/10)*10, np.round(lonlim[1]/10)*10+lon_sgn, 
+                10 * lon_sgn)   # 10° grid in longitude
+    lat_grid = np.arange(np.round(latlim[0]/10)*10, np.round(latlim[1]/10)*10+lat_sgn, 
+                10 * lat_sgn)   # 10° grid in latitude
+    if polar:
+        ax.set_rticks(lat_grid)
+    else:
+        # ax.set_xticks(lon_grid)
+        # ax.set_yticks(lat_grid)
+        ax.xaxis.set_major_locator(mticker.MaxNLocator(5))
+        ax.yaxis.set_major_locator(mticker.MaxNLocator(5))
+        ax.xaxis.set_minor_locator(mticker.AutoMinorLocator())
+        ax.yaxis.set_minor_locator(mticker.AutoMinorLocator())
+    plt.title(title)
+    plt.tight_layout()
+    plt.title(title)
+    plt.tight_layout()
     plt.title(title)
     plt.tight_layout()
 
