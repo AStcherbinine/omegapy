@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 08/01/2025
+## Last modified by Aurélien STCHERBININE : 27/10/2025
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -834,7 +834,7 @@ class OMEGAdata:
         The longitude of each pixel (deg).</br>
         *C channel*
     alt : 2D array
-        The elevation of the pixel footprint center point from MOMA topography (km).</br>
+        The elevation of the pixel footprint center point from MOLA topography (km).</br>
         *C channel*
     dist : 2D array
         The slant distance from the spacecraft to the pixel footprint center point (km).</br>
@@ -891,7 +891,7 @@ class OMEGAdata:
         The longitude of each pixel (deg).</br>
         *V channel*
     alt_v : 2D array
-        The elevation of the pixel footprint center point from MOMA topography (km).</br>
+        The elevation of the pixel footprint center point from MOLA topography (km).</br>
         *V channel*
     dist_v : 2D array
         The slant distance from the spacecraft to the pixel footprint center point (km).</br>
@@ -921,7 +921,7 @@ class OMEGAdata:
         The longitude of each pixel (deg).</br>
         *L channel*
     alt_l : 2D array
-        The elevation of the pixel footprint center point from MOMA topography (km).</br>
+        The elevation of the pixel footprint center point from MOLA topography (km).</br>
         *L channel*
     dist_l : 2D array
         The slant distance from the spacecraft to the pixel footprint center point (km).</br>
