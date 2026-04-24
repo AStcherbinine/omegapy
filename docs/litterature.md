@@ -22,6 +22,11 @@ OMEGA-Py: Python Tools for OMEGA Data – v2.3.
 
 ## Articles using OMEGA-Py
 
+I. Torres Auré, J. Carter, C. Quantin-Nataf, et al. (2026). 
+Clay continuity between Oxia Planum and Mawrth Vallis.
+*Icarus*, 117113. 
+[doi:10.1016/j.icarus.2026.117113](https://doi.org/10.1016/j.icarus.2026.117113)
+
 F. Brasil, P. Machado, G. Gilli, et al. (2025).
 Atmospheric Gravity Waves in Mars' Lower Atmosphere: Nadir Observations From OMEGA/Mars Express Data.
 *JGR: Planets, 130*, e2024JE008726.
