@@ -22,6 +22,11 @@ OMEGA-Py: Python Tools for OMEGA Data – v2.3.
 
 ## Articles using OMEGA-Py
 
+B. Hou, H. Sun, Z. Hu, et al. (2026).
+Manganese (Hydr)oxides record the dynamic evolution of a million-year Hesperian Ocean in Utopia Planitia, Mars. 
+*Nat Commun*. 
+[doi:10.1038/s41467-026-72858-y](https://doi.org/10.1038/s41467-026-72858-y)
+
 I. Torres Auré, J. Carter, C. Quantin-Nataf, et al. (2026). 
 Clay continuity between Oxia Planum and Mawrth Vallis.
 *Icarus*, 117113. 
