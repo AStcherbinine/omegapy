@@ -29,7 +29,7 @@ Manganese (Hydr)oxides record the dynamic evolution of a million-year Hesperian 
 
 I. Torres Auré, J. Carter, C. Quantin-Nataf, et al. (2026). 
 Clay continuity between Oxia Planum and Mawrth Vallis.
-*Icarus*, 117113. 
+*Icarus, 457*, 117113. 
 [doi:10.1016/j.icarus.2026.117113](https://doi.org/10.1016/j.icarus.2026.117113)
 
 F. Brasil, P. Machado, G. Gilli, et al. (2025).
