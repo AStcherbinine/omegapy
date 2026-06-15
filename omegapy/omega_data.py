@@ -3,7 +3,7 @@
 
 ## omega_data.py
 ## Created by Aurélien STCHERBININE
-## Last modified by Aurélien STCHERBININE : 27/10/2025
+## Last modified by Aurélien STCHERBININE : 15/06/2026
 
 ##----------------------------------------------------------------------------------------
 """Importation and correction of OMEGA/MEx observations from binaries files.
@@ -35,7 +35,7 @@ from . import useful_functions as uf
 
 # Name of the current file
 _py_file = 'omega_data.py'
-_Version = 3.2
+_Version = 3.3
 
 # Path of the package files
 package_path = os.path.abspath(os.path.dirname(__file__))
@@ -944,6 +944,24 @@ class OMEGAdata:
     lon_grid_l : 2D array
         The longitude grid of the observation (from the edge of the pixels).</br>
         *L channel*
+    lam0 : 1D array
+        The wavelength array (in µm).</br>
+        *Without overlap correction and bad spectels removal on wvl array.*
+    cube_i0 : 3D array
+        The hyperspectral data cube in physical units (W.m-2.sr-1.µm-1).</br>
+        `dim : [X, Y, wvl]`</br>
+        *Without overlap correction and bad spectels removal on wvl array.*
+    cube_rf0 : 3D array
+        The I/F ratio hyperspectral data cube.</br>
+        `dim : [X, Y, wvl]`</br>
+        *Without overlap correction and bad spectels removal on wvl array.*
+    specmars0 : 1D array
+        The Solar radiation spectrum on Mars (W.m-2.sr-1.µm-1).</br>
+        *Without overlap correction and bad spectels removal on wvl array.*
+    ic0 : dict
+        The index of the "good" spectral pixels for each channel.</br>
+        Indexes re-ordeder to match the `lam0` array (V/C/L channels).</br>
+        *Without overlap correction and bad spectels removal on wvl array.*
     summation : int
         The downtrack summing.
     bits_per_data : float
@@ -1093,6 +1111,14 @@ class OMEGAdata:
             self.phase_n_l = np.array([[]])
             self.lon_grid_l = np.array([[]])
             self.lat_grid_l = np.array([[]])
+            self.lam0 = np.array([])
+            self.cube_i0 = np.array([[[]]])
+            self.cube_rf0 = np.array([[[]]])
+            self.specmars0 = np.array([])
+            self.ic0 = {'V' : np.arange(0, 96),
+                        'C' : np.arange(96, 224),
+                        'L' : np.arange(224, 352),
+                        'all': np.arange(0, 352)}
             self.focal_plane_temperatures = {'V' : None, 'C' : None, 'L' : None}
             self.spectrometer_temperatures = {'V' : None, 'C' : None, 'L' : None}
             # Nav
@@ -1177,6 +1203,14 @@ class OMEGAdata:
             lon_px_V = geom_dict['lon_grid_v']
             lat_px_V = geom_dict['lat_grid_v']       
 
+            # Version cubes before overlap and spectels corrections
+            order_spectels = np.concatenate([np.arange(256, 352), np.arange(0, 256)])   # re-order V/C/L
+            lam0 = wvl[order_spectels]
+            specmars0 = specmars[order_spectels]
+            ic_C0 = ic[ic < 128] + 96
+            ic_L0 = ic[(ic >= 128) & (ic < 256)] + 96
+            ic_V0 = ic[ic >= 256] - 256
+
             # Correction of OMEGA data (same as clean_spec.pro)
             ic_C= ic[(ic >= 8) & (ic <= 122)]        # IR short (voie C)
             ic_L = ic[(ic >= 137) & (ic <= 255)]     # IR long (voie L)
@@ -1191,11 +1225,15 @@ class OMEGAdata:
             orbit_nb = 1000 * orbnum + int(nomfic0[4:7])
             # Cube in physical units (W.m-2.sr-1.µm-1)
             cube_i = jdat[:, ic2, :]
+            cube_i0 = jdat[:, order_spectels, :]
             # Cube of reflectance factor I/F
             cube_rf = ldat[:, ic2, :]
+            cube_rf0 = ldat[:, order_spectels, :]
             # Cube as [X, Y, lam]
             cube_i2 = np.swapaxes(cube_i, 1, 2)
             cube_rf2 = np.swapaxes(cube_rf, 1, 2)
+            cube_i02 = np.swapaxes(cube_i0, 1, 2)
+            cube_rf02 = np.swapaxes(cube_rf0, 1, 2)
             # Observation UTC date & time
             Y, M, D, h, m, s = np.median(utc[:,:6], axis=0).astype(np.int64)
             utc_dt = datetime.datetime(Y, M, D, h, m, s)
@@ -1279,6 +1317,14 @@ class OMEGAdata:
             self.phase_n_v = phase_n_V.astype(np.float64)
             self.lat_grid_v = lat_grid_V
             self.lon_grid_v = lon_grid_V
+            self.lam0 = lam0.astype(np.float64)
+            self.cube_i0 = cube_i02.astype(np.float64)
+            self.cube_rf0 = cube_rf02.astype(np.float64)
+            self.specmars0 = specmars0.astype(np.float64)
+            self.ic0 = {'V' : ic_V0.astype(int), 
+                        'C' : ic_C0.astype(int), 
+                        'L' : ic_L0.astype(int),
+                        'all' : np.concatenate([ic_V0, ic_C0, ic_L0]).astype(int)}
             #--------------------------
             # Data from the .QUB header
             #--------------------------
@@ -1436,6 +1482,14 @@ class OMEGAdata:
         new_omega.lat_grid_l = self.lat_grid_l
         new_omega.focal_plane_temperatures = self.focal_plane_temperatures
         new_omega.spectrometer_temperatures = self.spectrometer_temperatures
+        try:
+            new_omega.lam0 = self.lam0
+            new_omega.cube_i0 = self.cube_i0
+            new_omega.cube_rf0 = self.cube_rf0
+            new_omega.specmars0 = self.specmars0
+            new_omega.ic0 = self.ic0
+        except AttributeError as error:
+            print("\033[33;03mWarning: copying from version <3.3, so no uncorrected cubes arguments to copy.")
         # Nav
         new_omega.lrec = self.lrec
         new_omega.nrec = self.nrec
@@ -1522,6 +1576,14 @@ class OMEGAdata:
         new_omega.ref_C = deepcopy(self.ref_C, memo)
         new_omega.focal_plane_temperatures = deepcopy(self.focal_plane_temperatures, memo)
         new_omega.spectrometer_temperatures = deepcopy(self.spectrometer_temperatures, memo)
+        try:
+            new_omega.lam0 = deepcopy(self.lam0, memo)
+            new_omega.cube_i0 = deepcopy(self.cube_i0, memo)
+            new_omega.cube_rf0 = deepcopy(self.cube_rf0, memo)
+            new_omega.specmars0 = deepcopy(self.specmars0, memo)
+            new_omega.ic0 = deepcopy(self.ic0, memo)
+        except AttributeError as error:
+            print("\033[33;03mWarning: copying from version <3.3, so no uncorrected cubes arguments to copy.")
         # Nav
         new_omega.lrec = deepcopy(self.lrec, memo)
         new_omega.nrec = deepcopy(self.nrec, memo)
