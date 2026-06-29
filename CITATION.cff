@@ -18,6 +18,9 @@ authors:
 - family-names: Barraud
   given-names: Océane
   orcid: "https://orcid.org/0000-0002-9985-1109"
+- family-names: Schmidts
+  given-names: Frédéric
+  orcid: "https://orcid.org/0000-0002-2857-6621"
 doi: 10.5281/zenodo.7818828
 message: If you use this software, please cite our article in the
   Journal of Open Source Software.
