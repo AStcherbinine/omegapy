@@ -22,9 +22,14 @@ OMEGA-Py: Python Tools for OMEGA Data – v2.3.
 
 ## Articles using OMEGA-Py
 
+A. Farina, M. Popescu, M. Lazzarin, J. de León, et al. (2026).
+Cross-calibration of Hera/HyperScout-H with MRO/CRISM and MEx/OMEGA based on Mars observations.
+*Icarus*, 117380.
+[doi:10.1016/j.icarus.2026.117380](https://doi.org/10.1016/j.icarus.2026.117380)
+
 B. Hou, H. Sun, Z. Hu, et al. (2026).
 Manganese (Hydr)oxides record the dynamic evolution of a million-year Hesperian Ocean in Utopia Planitia, Mars. 
-*Nat Commun*. 
+*Nat Commun, 17*, 6436. 
 [doi:10.1038/s41467-026-72858-y](https://doi.org/10.1038/s41467-026-72858-y)
 
 I. Torres Auré, J. Carter, C. Quantin-Nataf, et al. (2026). 
