@@ -24,7 +24,7 @@ OMEGA-Py: Python Tools for OMEGA Data – v2.3.
 
 A. Farina, M. Popescu, M. Lazzarin, J. de León, et al. (2026).
 Cross-calibration of Hera/HyperScout-H with MRO/CRISM and MEx/OMEGA based on Mars observations.
-*Icarus*, 117380.
+*Icarus, 464*, 117380.
 [doi:10.1016/j.icarus.2026.117380](https://doi.org/10.1016/j.icarus.2026.117380)
 
 B. Hou, H. Sun, Z. Hu, et al. (2026).
